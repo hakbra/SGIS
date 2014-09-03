@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GeoLib;
+using NetTopologySuite.Geometries;
+using GeoAPI.Geometries;
 
 namespace SGIS
 {
+    public enum ShapeType
+    {
+        POINT,
+        LINE,
+        POLYGON
+    }
     public class Layer
     {
-        public Dictionary<int, GeoLib.Shape> shapes = new Dictionary<int, Shape>();
+        public Dictionary<int, Geometry> shapes = new Dictionary<int, Geometry>();
         public System.Drawing.Color color;
         public bool visible;
         ShapeType shapetype;
         string name;
-        public C2DRect boundingbox;
+        public Envelope boundingbox;
         
         public Layer(string n, ShapeType st)
         {
@@ -30,37 +37,37 @@ namespace SGIS
             {
                 case ShapeType.POINT:
                     return "P: " + name;
-                case ShapeType.POLYLINE:
+                case ShapeType.LINE:
                     return "L: " + name;
                 case ShapeType.POLYGON:
                     return "F: " + name;
             }
             return name;
         }
-        public void addShape(Shape s)
+        public void addShape(int id, Geometry s)
         {
-            shapes.Add(s.id, s);
+            shapes.Add(id, s);
         }
 
-        public Shape getClosest(C2DPoint p)
+        public int getClosest(Point p)
         {
             double min = 0;
-            Shape mins = null;
-            foreach (Shape s in shapes.Values)
+            int minid = -1;
+            foreach (var pair in shapes)
             {
-                double dist = s.distanceTo(p);
-                if (mins == null || dist < min)
+                double dist = pair.Value.Distance(p);
+                if (minid == -1 || dist < min)
                 {
+                    minid = pair.Key;
                     min = dist;
-                    mins = s;
                 }
             }
-            return mins;
+            return minid;
         }
 
-        public List<Shape> getWithin(C2DRect c2DRect)
+        public List<int> getWithin(Envelope rect)
         {
-            return new List<Shape>();
+            return new List<int>();
         }
     }
 }

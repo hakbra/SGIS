@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,15 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GeoLib;
 
 namespace SGIS
 {
     public partial class SGIS : Form
     {
         public BindingList<Layer> layers = new BindingList<Layer>();
-        GeoLib.CGeoDraw render = new GeoLib.CGeoDraw();
-        public GeoLib.CScreenManager screen = new GeoLib.CScreenManager();
+        public ScreenManager screenManager = new ScreenManager();
         MouseTactic mouse = new StandardMouseTactic();
 
         public SGIS()
@@ -29,13 +28,19 @@ namespace SGIS
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            screen.WindowsRect = new Rectangle(0, 0, pictureBox1.Width, pictureBox1.Height);
-            screen.RealRect.Set(0, 0, 100, 100);
-            screen.Calculate();
+            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, pictureBox1.Width, 0, pictureBox1.Height);
+            screenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
+            screenManager.Calculate();
 
             layers.ListChanged += this.PopulateLayerControls;
             LayerControl.sgis = this;
             MouseTactic.sgis = this;
+            Render.sm = screenManager;
+
+            NetTopologySuite.Geometries.Point p = new NetTopologySuite.Geometries.Point(20, 20);
+            Layer l = new Layer("CustomPoint", ShapeType.POINT);
+            l.addShape(1, p);
+            layers.Add(l);
         }
 
         private void PopulateLayerControls(object sender, ListChangedEventArgs args)
@@ -56,15 +61,15 @@ namespace SGIS
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
         {
-            render.Scale = screen.Scale;
-            render.Offset = screen.Offset;
 
             foreach (Layer l in layers.Reverse())
             {
                 if (!l.visible)
                     continue;
-                foreach (GeoLib.ShapeInterface s in l.shapes.Values)
-                    s.Draw(render, e.Graphics, l.color);
+                foreach (Geometry s in l.shapes.Values)
+                {
+                    Render.Draw(s, e.Graphics, l.color);
+                }
             }
 
             mouse.render(e.Graphics);
@@ -92,8 +97,8 @@ namespace SGIS
 
         private void SGIS_Resize(object sender, EventArgs e)
         {
-            screen.WindowsRect = new Rectangle(0, 0, pictureBox1.Width, pictureBox1.Height);
-            screen.Calculate();
+            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, pictureBox1.Width, 0, pictureBox1.Height);
+            screenManager.Calculate();
             this.Refresh();
         }
 
@@ -111,8 +116,8 @@ namespace SGIS
                 ShapeReader sr = new ShapeReader();
                 Layer l = sr.read(openFileDialog1.FileName);
                 layers.Insert(0, l);
-                screen.RealRect.Set(l.boundingbox);
-                screen.Calculate();
+                screenManager.RealRect.Set(l.boundingbox);
+                screenManager.Calculate();
                 this.Refresh();
             }
         }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GeoLib;
+using GeoAPI.Geometries;
 
 namespace SGIS
 {
@@ -67,9 +67,9 @@ namespace SGIS
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var bb = new C2DRect(layer.boundingbox);
-            sgis.screen.RealRect.Set(bb);
-            sgis.screen.Calculate();
+            var bb = new Envelope(layer.boundingbox);
+            sgis.screenManager.RealRect.Set(bb);
+            sgis.screenManager.Calculate();
             sgis.Refresh();
         }
 

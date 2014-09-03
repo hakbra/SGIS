@@ -1,4 +1,5 @@
-﻿using GeoLib;
+﻿using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NTSPoint = NetTopologySuite.Geometries.Point;
 
 namespace SGIS
 {
@@ -16,7 +18,7 @@ namespace SGIS
         public abstract void MouseUp(MouseEventArgs e);
         public abstract void MouseMove(MouseEventArgs e);
         public abstract void MouseWheel(MouseEventArgs e);
-        public abstract void render(Graphics g);
+        public abstract void render(System.Drawing.Graphics g);
     }
 
     public class StandardMouseTactic : MouseTactic
@@ -54,15 +56,16 @@ namespace SGIS
                 if (LayerControl.current == null)
                     return;
                 Layer l = LayerControl.current.layer;
-                if (new GeoLib.Point(mouse).distanceTo(new GeoLib.Point(rightMouse)) < 5)
+                double dist = Math.Abs(mouse.X - rightMouse.X) + Math.Abs(mouse.Y - rightMouse.Y);
+                if (dist < 5)
                 {
-                    Shape s = l.getClosest(sgis.screen.MapScreenToReal(mouse));
-                    if (s != null)
-                        sgis.setStatusText("Id: " + s.id);
+                    int s = l.getClosest(sgis.screenManager.MapScreenToReal(mouse));
+                    if (s > 0)
+                        sgis.setStatusText("Id: " + s);
                 }
                 else
                 {
-                    List<Shape> s = l.getWithin(new C2DRect(new GeoLib.Point(mouse), new GeoLib.Point(rightMouse)));
+                    List<int> s = l.getWithin(new Envelope(mouse.X, rightMouse.X, mouse.Y, rightMouse.Y));
                     sgis.setStatusText(s.Count + " objects");
                 }
             }
@@ -73,8 +76,8 @@ namespace SGIS
             var newmouse = sgis.getMousePos();
             if (leftMouseDown)
             {
-                sgis.screen.ScrollScreen(new C2DVector(mouse.X - newmouse.X, mouse.Y - newmouse.Y));
-                sgis.screen.Calculate();
+                sgis.screenManager.ScrollScreen(new NTSPoint(mouse.X - newmouse.X, mouse.Y - newmouse.Y));
+                sgis.screenManager.Calculate();
             }
             sgis.redraw();
             mouse = newmouse;
@@ -82,20 +85,18 @@ namespace SGIS
 
         public override void MouseWheel(MouseEventArgs e)
         {
-            var oldGeoPos = sgis.screen.MapScreenToReal(mouse);
+            var oldGeoPos = sgis.screenManager.MapScreenToReal(mouse);
             double scale = 1.3;
             if (e.Delta > 0)
             { // Zoom in
-                if (sgis.screen.Scale.x > 50)
-                    return;
-                sgis.screen.RealRect.Grow(1 / scale);
+                sgis.screenManager.RealRect.Grow(1 / scale);
             }
             else if (e.Delta < 0) // Zoom out
-                sgis.screen.RealRect.Grow(scale);
-            sgis.screen.Calculate();
-            var newGeoPos = sgis.screen.MapScreenToReal(mouse);
-            sgis.screen.ScrollReal(newGeoPos.MakeVector(oldGeoPos));
-            sgis.screen.Calculate();
+                sgis.screenManager.RealRect.Grow(scale);
+            sgis.screenManager.Calculate();
+            var newGeoPos = sgis.screenManager.MapScreenToReal(mouse);
+            sgis.screenManager.ScrollReal(new NTSPoint(oldGeoPos.X - newGeoPos.X, oldGeoPos.Y - newGeoPos.Y));
+            sgis.screenManager.Calculate();
             sgis.redraw();
         }
 
@@ -106,16 +107,16 @@ namespace SGIS
             Brush brush = new SolidBrush(System.Drawing.Color.Black);
             Pen pen = new Pen(Color.Black);
 
-            var realP = sgis.screen.MapScreenToReal(mouse);
+            var realP = sgis.screenManager.MapScreenToReal(mouse);
 
             g.DrawString("Mpos: " + (int)mouse.X + ", " + (int)mouse.Y, font, brush, 10, 10);
-            g.DrawString("Gpos: " + (int)realP.x + ", " + (int)realP.y, font, brush, 10, 22);
-            g.DrawString("Offset: " + (int)sgis.screen.Offset.x + ", " + (int)sgis.screen.Offset.y, font, brush, 10, 34);
-            g.DrawString("Scale: " + (int)(1 / sgis.screen.Scale.x) + ", " + (int)(1 / sgis.screen.Scale.y), font, brush, 10, 46);
+            g.DrawString("Gpos: " + (int)realP.X + ", " + (int)realP.Y, font, brush, 10, 22);
+            g.DrawString("Offset: " + (int)sgis.screenManager.Offset.X + ", " + (int)sgis.screenManager.Offset.Y, font, brush, 10, 34);
+            g.DrawString("Scale: " + (int)(1 / sgis.screenManager.Scale.X) + ", " + (int)(1 / sgis.screenManager.Scale.Y), font, brush, 10, 46);
 
             if (rightMouseDown)
             {
-                g.DrawRectangle(pen, new Rectangle(
+                g.DrawRectangle(pen, new System.Drawing.Rectangle(
                         Math.Min(mouse.X, rightMouse.X),
                         Math.Min(mouse.Y, rightMouse.Y),
                         Math.Abs(rightMouse.X - mouse.X),

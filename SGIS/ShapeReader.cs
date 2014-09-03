@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GeoLib;
+using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 
 namespace SGIS
 {
@@ -41,7 +42,7 @@ namespace SGIS
             if (type == 1)
                 layer = new Layer(name, ShapeType.POINT);
             else if (type == 3)
-                layer = new Layer(name, ShapeType.POLYLINE);
+                layer = new Layer(name, ShapeType.LINE);
             else if (type == 5)
                 layer = new Layer(name, ShapeType.POLYGON);
             else
@@ -53,7 +54,7 @@ namespace SGIS
 
             br.Close();
 
-            layer.boundingbox = new C2DRect(minx, maxy, maxx, miny);
+            layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
             return layer;
         }
 
@@ -66,19 +67,19 @@ namespace SGIS
 
             if (stype == 0) // Null
                 return;
-            ShapeInterface s = null;
+            Geometry g = null;
             if (stype == 1) // Point
-                s = readPoint();
+                g = readPoint();
             if (stype == 3) // Polyline
-                s = readPolyline();
+                g = readPolyline();
             if (stype == 5) // Polygon
-                s = readPolygon();
+                g = readPolygon();
 
-            if (s != null)
-                layer.addShape(new Shape(s, id));
+            if (g != null)
+                layer.addShape(id, g);
         }
 
-        private PolyLine readPolyline()
+        private LineString readPolyline()
         {
             br.BaseStream.Seek(4*8, SeekOrigin.Current); // Skip bounding box
             int numparts = br.ReadInt32();
@@ -90,11 +91,11 @@ namespace SGIS
             for (int i = 0; i < numparts; i++)
                 parts[i] = br.ReadInt32();
             pos += 4 * numparts;
-            List<Point> points = new List<Point>();
+            List<Coordinate> points = new List<Coordinate>();
             for (int i = 0; i < numpoints; i++)
-                points.Add(readPoint());
-            
-            return new PolyLine(points.ToArray<Point>());
+                points.Add(readCoordinate());
+
+            return new LineString(points.ToArray());
         }
         private Polygon readPolygon()
         {
@@ -107,30 +108,39 @@ namespace SGIS
                 parts[i] = br.ReadInt32();
             parts[numparts] = numpoints;
             pos += 4 * numparts;
-            Polygon p = null;
+
+            ILinearRing p = null;
+            List<ILinearRing> holes = new List<ILinearRing>();
+
             for (int i = 0; i < numparts; i++)
             {
                 var points = readPolygonPart(parts[i + 1] - parts[i]);
                 if (p == null)
-                    p = new Polygon(points.ToArray());
+                    p = new LinearRing(points.ToArray());
                 else
-                    p.AddHole(new C2DPolygon(points, false));
+                    holes.Add(new LinearRing(points.ToArray()));
             }
-            return p;
+            return new Polygon(p, holes.ToArray());
         }
-        private List<C2DPoint> readPolygonPart(int num)
+        private List<Coordinate> readPolygonPart(int num)
         {
-            List<C2DPoint> points = new List<C2DPoint>();
+            List<Coordinate> points = new List<Coordinate>();
             for (; num > 0; num--)
-                points.Add(readPoint());
+                points.Add(readCoordinate());
             return points;
         }
 
-        private Point readPoint()
+        private Point readPoint() {
+            var c = readCoordinate();
+            Point p = new Point(c);
+            return p;
+        }
+
+        private Coordinate readCoordinate()
         {
-            Point p = new Point();
-            p.x = br.ReadDouble();
-            p.y = br.ReadDouble();
+            Coordinate p = new Coordinate();
+            p.X = br.ReadDouble();
+            p.Y = br.ReadDouble();
             pos += 16;
             return p;
         }

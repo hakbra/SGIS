@@ -67,7 +67,16 @@ namespace SGIS
 
         public List<int> getWithin(Envelope rect)
         {
-            return new List<int>();
+            OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
+            var bb = fact.ToGeometry(rect);
+
+            var ret = new List<int>();
+            foreach (var pair in shapes)
+            {
+                if (pair.Value.Intersects(bb))
+                    ret.Add(pair.Key);
+            }
+            return ret;
         }
     }
 }

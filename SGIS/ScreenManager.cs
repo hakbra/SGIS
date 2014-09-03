@@ -142,12 +142,14 @@ namespace SGIS
 
         }
 
-        public void ScaleAndOffSet(Point pt)
+        public Point ScaleAndOffSet(Point pt)
         {
-            pt.X -= Offset.X;
-            pt.Y -= Offset.Y;
-            pt.X *= Scale.X;
-            pt.Y *= Scale.Y;
+            Point p = new Point(0, 0);
+            p.X = pt.X - Offset.X;
+            p.Y = pt.Y - Offset.Y;
+            p.X *= Scale.X;
+            p.Y *= Scale.Y;
+            return p;
         }
 
         /// <summary>

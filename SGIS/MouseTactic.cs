@@ -42,6 +42,7 @@ namespace SGIS
                 rightMouseDown = true;
                 rightMouse = mouse;
             }
+            sgis.Focus();
         }
 
         public override void MouseUp(MouseEventArgs e)
@@ -65,7 +66,9 @@ namespace SGIS
                 }
                 else
                 {
-                    List<int> s = l.getWithin(new Envelope(mouse.X, rightMouse.X, mouse.Y, rightMouse.Y));
+                    var a = sgis.screenManager.MapScreenToReal(mouse);
+                    var b = sgis.screenManager.MapScreenToReal(rightMouse);
+                    List<int> s = l.getWithin(new Envelope(a.X, b.X, a.Y, b.Y));
                     sgis.setStatusText(s.Count + " objects");
                 }
             }

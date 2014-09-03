@@ -36,11 +36,6 @@ namespace SGIS
             LayerControl.sgis = this;
             MouseTactic.sgis = this;
             Render.sm = screenManager;
-
-            NetTopologySuite.Geometries.Point p = new NetTopologySuite.Geometries.Point(20, 20);
-            Layer l = new Layer("CustomPoint", ShapeType.POINT);
-            l.addShape(1, p);
-            layers.Add(l);
         }
 
         private void PopulateLayerControls(object sender, ListChangedEventArgs args)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 using GeoAPI.Geometries;
+using System.Data;
 
 namespace SGIS
 {
@@ -16,12 +17,14 @@ namespace SGIS
     }
     public class Layer
     {
-        public Dictionary<int, Geometry> shapes = new Dictionary<int, Geometry>();
+        public Dictionary<int, Feature> shapes = new Dictionary<int, Feature>();
+        public List<Feature> selected = new List<Feature>();
         public System.Drawing.Color color;
         public bool visible;
         ShapeType shapetype;
         string name;
         public Envelope boundingbox;
+        public DataTable dataTable = null;
         
         public Layer(string n, ShapeType st)
         {
@@ -44,37 +47,37 @@ namespace SGIS
             }
             return name;
         }
-        public void addShape(int id, Geometry s)
+        public void addFeature(Feature s)
         {
-            shapes.Add(id, s);
+            shapes.Add(s.id, s);
         }
 
-        public int getClosest(Point p)
+        public Feature getClosest(Point p)
         {
             double min = 0;
-            int minid = -1;
+            Feature g = null;
             foreach (var pair in shapes)
             {
-                double dist = pair.Value.Distance(p);
-                if (minid == -1 || dist < min)
+                double dist = pair.Value.geometry.Distance(p);
+                if (g == null || dist < min)
                 {
-                    minid = pair.Key;
+                    g = pair.Value;
                     min = dist;
                 }
             }
-            return minid;
+            return g;
         }
 
-        public List<int> getWithin(Envelope rect)
+        public List<Feature> getWithin(Envelope rect)
         {
             OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
             var bb = fact.ToGeometry(rect);
 
-            var ret = new List<int>();
+            var ret = new List<Feature>();
             foreach (var pair in shapes)
             {
-                if (pair.Value.Intersects(bb))
-                    ret.Add(pair.Key);
+                if (pair.Value.geometry.Intersects(bb))
+                    ret.Add(pair.Value);
             }
             return ret;
         }

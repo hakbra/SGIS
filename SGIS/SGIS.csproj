@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBFReader.cs" />
+    <Compile Include="Feature.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="ScreenManager.cs" />
     <Compile Include="SGIS.cs">
@@ -71,7 +73,7 @@
     <Compile Include="MouseTactic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShapeReader.cs" />
+    <Compile Include="ShpReader.cs" />
     <EmbeddedResource Include="SGIS.resx">
       <DependentUpon>SGIS.cs</DependentUpon>
     </EmbeddedResource>

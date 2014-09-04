@@ -13,6 +13,7 @@ namespace SGIS
 {
     public partial class SGIS : Form
     {
+        public static SGIS app;
         public BindingList<Layer> layers = new BindingList<Layer>();
         public ScreenManager screenManager = new ScreenManager();
         MouseTactic mouse = new StandardMouseTactic();
@@ -22,25 +23,24 @@ namespace SGIS
             InitializeComponent();
             this.MouseWheel += new MouseEventHandler(SGIS_MouseWheel);
 
-            tableLayoutPanel1.RowStyles.Clear();
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+            layerList.RowStyles.Clear();
+            layerList.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+
+            app = this;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void SGIS_Load(object sender, EventArgs e)
         {
-            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, pictureBox1.Width, 0, pictureBox1.Height);
+            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             screenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
             screenManager.Calculate();
 
             layers.ListChanged += this.PopulateLayerControls;
-            LayerControl.sgis = this;
-            MouseTactic.sgis = this;
-            Render.sm = screenManager;
         }
 
         private void PopulateLayerControls(object sender, ListChangedEventArgs args)
         {
-            var controls = tableLayoutPanel1.Controls;
+            var controls = layerList.Controls;
             controls.Clear();
             foreach (Layer l in layers)
             {
@@ -61,9 +61,12 @@ namespace SGIS
             {
                 if (!l.visible)
                     continue;
-                foreach (Geometry s in l.shapes.Values)
+                foreach (Feature s in l.shapes.Values)
                 {
-                    Render.Draw(s, e.Graphics, l.color);
+                    if (!s.selected || l != LayerControl.current.layer)
+                        Render.Draw(s.geometry, e.Graphics, l.color);
+                    else if(l == LayerControl.current.layer)
+                        Render.Draw(s.geometry, e.Graphics, Color.DarkCyan);
                 }
             }
 
@@ -92,45 +95,49 @@ namespace SGIS
 
         private void SGIS_Resize(object sender, EventArgs e)
         {
-            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, pictureBox1.Width, 0, pictureBox1.Height);
+            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             screenManager.Calculate();
             this.Refresh();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void shapefileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void shapefileMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "shp files|*.shp";
+            openFileDialog1.Multiselect = true;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                ShapeReader sr = new ShapeReader();
-                Layer l = sr.read(openFileDialog1.FileName);
-                layers.Insert(0, l);
-                screenManager.RealRect.Set(l.boundingbox);
-                screenManager.Calculate();
-                this.Refresh();
+                foreach (String file in openFileDialog1.FileNames)
+                {
+                    ShpReader sr = new ShpReader();
+                    Layer l = sr.read(file);
+                    layers.Insert(0, l);
+                    screenManager.RealRect.Set(l.boundingbox);
+                    screenManager.Calculate();
+                    this.Refresh();
+                }
             }
         }
 
         public void redraw()
         {
-            pictureBox1.Refresh();
+            mapWindow.Refresh();
         }
 
         public void setStatusText(string s)
         {
-            toolStripStatusLabel1.Text = s;
+            statusLabel.Text = s;
         }
 
         public System.Drawing.Point getMousePos()
         {
             var mouse = new System.Drawing.Point(Cursor.Position.X, Cursor.Position.Y);
-            mouse = pictureBox1.PointToClient(mouse);
+            mouse = mapWindow.PointToClient(mouse);
             return mouse;
         }
     }

@@ -9,7 +9,7 @@ using NetTopologySuite.Geometries;
 
 namespace SGIS
 {
-    class ShapeReader
+    class ShpReader
     {
         private class BinaryReaderExtension : BinaryReader
         {
@@ -55,6 +55,11 @@ namespace SGIS
             br.Close();
 
             layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
+
+            string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
+            if (File.Exists(dbfName))
+                layer.dataTable = DBFReader.read(dbfName);
+
             return layer;
         }
 
@@ -76,7 +81,7 @@ namespace SGIS
                 g = readPolygon();
 
             if (g != null)
-                layer.addShape(id, g);
+                layer.addFeature(new Feature(g, id));
         }
 
         private LineString readPolyline()

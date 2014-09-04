@@ -13,7 +13,6 @@ namespace SGIS
 {
     public abstract class MouseTactic
     {
-        public static SGIS sgis;
         public abstract void MouseDown(MouseEventArgs e);
         public abstract void MouseUp(MouseEventArgs e);
         public abstract void MouseMove(MouseEventArgs e);
@@ -42,7 +41,7 @@ namespace SGIS
                 rightMouseDown = true;
                 rightMouse = mouse;
             }
-            sgis.Focus();
+            SGIS.app.Focus();
         }
 
         public override void MouseUp(MouseEventArgs e)
@@ -58,49 +57,61 @@ namespace SGIS
                     return;
                 Layer l = LayerControl.current.layer;
                 double dist = Math.Abs(mouse.X - rightMouse.X) + Math.Abs(mouse.Y - rightMouse.Y);
+                foreach (Feature f in l.selected)
+                    f.selected = false;
+                l.selected.Clear();
                 if (dist < 5)
                 {
-                    int s = l.getClosest(sgis.screenManager.MapScreenToReal(mouse));
-                    if (s > 0)
-                        sgis.setStatusText("Id: " + s);
+                    Feature s = l.getClosest(SGIS.app.screenManager.MapScreenToReal(mouse));
+                    if (s != null)
+                        SGIS.app.setStatusText("Id: " + s.id);
+                    s.selected = true;
+                    l.selected.Add(s);
                 }
                 else
                 {
-                    var a = sgis.screenManager.MapScreenToReal(mouse);
-                    var b = sgis.screenManager.MapScreenToReal(rightMouse);
-                    List<int> s = l.getWithin(new Envelope(a.X, b.X, a.Y, b.Y));
-                    sgis.setStatusText(s.Count + " objects");
+                    var a = SGIS.app.screenManager.MapScreenToReal(mouse);
+                    var b = SGIS.app.screenManager.MapScreenToReal(rightMouse);
+                    List<Feature> s = l.getWithin(new Envelope(a.X, b.X, a.Y, b.Y));
+                    SGIS.app.setStatusText(s.Count + " objects");
+                    foreach (Feature f in s)
+                    {
+                        f.selected = true;
+                        l.selected.Add(f);
+                    }
                 }
             }
         }
 
         public override void MouseMove(MouseEventArgs e)
         {
-            var newmouse = sgis.getMousePos();
+            var newmouse = SGIS.app.getMousePos();
             if (leftMouseDown)
             {
-                sgis.screenManager.ScrollScreen(new NTSPoint(mouse.X - newmouse.X, mouse.Y - newmouse.Y));
-                sgis.screenManager.Calculate();
+                SGIS.app.screenManager.ScrollScreen(new NTSPoint(mouse.X - newmouse.X, mouse.Y - newmouse.Y));
+                SGIS.app.screenManager.Calculate();
             }
-            sgis.redraw();
+            SGIS.app.redraw();
             mouse = newmouse;
         }
 
         public override void MouseWheel(MouseEventArgs e)
         {
-            var oldGeoPos = sgis.screenManager.MapScreenToReal(mouse);
+            var oldGeoPos = SGIS.app.screenManager.MapScreenToReal(mouse);
             double scale = 1.3;
             if (e.Delta > 0)
             { // Zoom in
-                sgis.screenManager.RealRect.Grow(1 / scale);
+                if (SGIS.app.screenManager.RealRect.Width < 5)
+                    return;
+                SGIS.app.screenManager.RealRect.Grow(1 / scale);
             }
             else if (e.Delta < 0) // Zoom out
-                sgis.screenManager.RealRect.Grow(scale);
-            sgis.screenManager.Calculate();
-            var newGeoPos = sgis.screenManager.MapScreenToReal(mouse);
-            sgis.screenManager.ScrollReal(new NTSPoint(oldGeoPos.X - newGeoPos.X, oldGeoPos.Y - newGeoPos.Y));
-            sgis.screenManager.Calculate();
-            sgis.redraw();
+                SGIS.app.screenManager.RealRect.Grow(scale);
+            SGIS.app.screenManager.Calculate();
+            var newGeoPos = SGIS.app.screenManager.MapScreenToReal(mouse);
+            SGIS.app.screenManager.ScrollReal(new NTSPoint(oldGeoPos.X - newGeoPos.X, oldGeoPos.Y - newGeoPos.Y));
+            SGIS.app.screenManager.Calculate();
+            SGIS.app.redraw();
         }
 
         public override void render(Graphics g)
@@ -110,12 +121,12 @@ namespace SGIS
             Brush brush = new SolidBrush(System.Drawing.Color.Black);
             Pen pen = new Pen(Color.Black);
 
-            var realP = sgis.screenManager.MapScreenToReal(mouse);
+            var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
 
             g.DrawString("Mpos: " + (int)mouse.X + ", " + (int)mouse.Y, font, brush, 10, 10);
             g.DrawString("Gpos: " + (int)realP.X + ", " + (int)realP.Y, font, brush, 10, 22);
-            g.DrawString("Offset: " + (int)sgis.screenManager.Offset.X + ", " + (int)sgis.screenManager.Offset.Y, font, brush, 10, 34);
-            g.DrawString("Scale: " + (int)(1 / sgis.screenManager.Scale.X) + ", " + (int)(1 / sgis.screenManager.Scale.Y), font, brush, 10, 46);
+            g.DrawString("Offset: " + (int)SGIS.app.screenManager.Offset.X + ", " + (int)SGIS.app.screenManager.Offset.Y, font, brush, 10, 34);
+            g.DrawString("Scale: " + (int)(1 / SGIS.app.screenManager.Scale.X) + ", " + (int)(1 / SGIS.app.screenManager.Scale.Y), font, brush, 10, 46);
 
             if (rightMouseDown)
             {

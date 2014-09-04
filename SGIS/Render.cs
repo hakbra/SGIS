@@ -11,7 +11,6 @@ namespace SGIS
 {
     class Render
     {
-        public static ScreenManager sm;
         public static void Draw(Geometry ge, Graphics gr, Color c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
@@ -25,7 +24,7 @@ namespace SGIS
         {
             Brush b = new SolidBrush(c);
             int rad = 5;
-            var mid = sm.ScaleAndOffSet(ge);
+            var mid = SGIS.app.screenManager.ScaleAndOffSet(ge);
 
             gr.FillEllipse(b, (int)(mid.X + rad / 2), (int)(mid.Y + rad / 2), (int)(rad*2), (int)(rad*2));
         }
@@ -36,8 +35,8 @@ namespace SGIS
             var points = ge.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = sm.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = sm.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i]));
                 gr.DrawLine(p, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
         }
@@ -48,8 +47,8 @@ namespace SGIS
             var points = poly.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = sm.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = sm.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i]));
                 gp.AddLine((int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
             return gp;

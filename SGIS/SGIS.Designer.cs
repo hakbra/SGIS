@@ -39,7 +39,7 @@
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mapWindow = new System.Windows.Forms.PictureBox();
-            this.layerList = new System.Windows.Forms.TableLayoutPanel();
+            this.layerList = new System.Windows.Forms.ListBox();
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -120,6 +120,7 @@
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Cursor = System.Windows.Forms.Cursors.Default;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -153,21 +154,15 @@
             // 
             // layerList
             // 
-            this.layerList.AutoScroll = true;
-            this.layerList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.layerList.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.layerList.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.layerList.ColumnCount = 1;
-            this.layerList.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.layerList.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.layerList.Dock = System.Windows.Forms.DockStyle.Top;
-            this.layerList.Location = new System.Drawing.Point(0, 0);
+            this.layerList.AllowDrop = true;
+            this.layerList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.layerList.FormattingEnabled = true;
+            this.layerList.Location = new System.Drawing.Point(3, 3);
             this.layerList.Name = "layerList";
-            this.layerList.RowCount = 1;
-            this.layerList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.layerList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.layerList.Size = new System.Drawing.Size(176, 189);
-            this.layerList.TabIndex = 1;
+            this.layerList.Size = new System.Drawing.Size(170, 173);
+            this.layerList.TabIndex = 0;
+            this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
             // SGIS
             // 
@@ -210,7 +205,7 @@
         private System.Windows.Forms.PictureBox mapWindow;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem shapefileMenuItem;
-        private System.Windows.Forms.TableLayoutPanel layerList;
+        private System.Windows.Forms.ListBox layerList;
     }
 }
 

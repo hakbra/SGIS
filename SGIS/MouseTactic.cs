@@ -31,6 +31,7 @@ namespace SGIS
 
         public override void MouseDown(MouseEventArgs e)
         {
+            mouse = SGIS.app.getMousePos();
             if (e.Button == MouseButtons.Left)
             {
                 leftMouseDown = true;
@@ -53,9 +54,9 @@ namespace SGIS
             if (e.Button == MouseButtons.Right)
             {
                 rightMouseDown = false;
-                if (LayerControl.current == null)
+                Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
+                if (l == null)
                     return;
-                Layer l = LayerControl.current.layer;
                 double dist = Math.Abs(mouse.X - rightMouse.X) + Math.Abs(mouse.Y - rightMouse.Y);
                 foreach (Feature f in l.selected)
                     f.selected = false;
@@ -114,20 +115,12 @@ namespace SGIS
 
         public override void render(Graphics g)
         {
-
-            Font font = new System.Drawing.Font("Helvetica", 10, FontStyle.Italic);
-            Brush brush = new SolidBrush(System.Drawing.Color.Black);
-            Pen pen = new Pen(Color.Black);
-
             var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
-
-            g.DrawString("Mpos: " + (int)mouse.X + ", " + (int)mouse.Y, font, brush, 10, 10);
-            g.DrawString("Gpos: " + (int)realP.X + ", " + (int)realP.Y, font, brush, 10, 22);
-            g.DrawString("Offset: " + (int)SGIS.app.screenManager.Offset.X + ", " + (int)SGIS.app.screenManager.Offset.Y, font, brush, 10, 34);
-            g.DrawString("Scale: " + (int)(1 / SGIS.app.screenManager.Scale.X) + ", " + (int)(1 / SGIS.app.screenManager.Scale.Y), font, brush, 10, 46);
+            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
 
             if (rightMouseDown)
             {
+                Pen pen = new Pen(Color.Black);
                 g.DrawRectangle(pen, new System.Drawing.Rectangle(
                         Math.Min(mouse.X, rightMouse.X),
                         Math.Min(mouse.Y, rightMouse.Y),

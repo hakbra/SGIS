@@ -17,40 +17,75 @@ namespace SGIS
         public BindingList<Layer> layers = new BindingList<Layer>();
         public ScreenManager screenManager = new ScreenManager();
         MouseTactic mouse = new StandardMouseTactic();
+        private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
 
         public SGIS()
         {
             InitializeComponent();
-            this.MouseWheel += new MouseEventHandler(SGIS_MouseWheel);
-
-            layerList.RowStyles.Clear();
-            layerList.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
-
-            app = this;
         }
 
         private void SGIS_Load(object sender, EventArgs e)
         {
+            app = this;
+
+            this.MouseWheel += new MouseEventHandler(SGIS_MouseWheel);
+
             screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             screenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
             screenManager.Calculate();
+
+            layerList.DataSource = layers;
+
+            layerListContextMenu.Opening += new CancelEventHandler(layerListContextMenu_Opening);
+            //layerList.ContextMenuStrip = layerListContextMenu;
+            //layerList.SelectedIndexChanged += (o, i) => { this.redraw(); };
+            //layers.ListChanged += (o, i) => { this.redraw(); };
         }
 
-        public void UpdateLayerList()
+        private void layerListContextMenu_Opening(object sender, CancelEventArgs e)
         {
-            var controls = layerList.Controls;
-            controls.Clear();
-            foreach (Layer l in layers)
+            e.Cancel = false;
+            Layer l = (Layer) layerList.SelectedItem;
+            Bitmap colorImg = new Bitmap(20, 20);
+            for (int x = 0; x < 20; x++)
+                for (int y = 0; y < 20; y++)
+                colorImg.SetPixel(x, y, l.color);
+
+            layerListContextMenu.Items.Clear();
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) => {
+                Layer selected = (Layer)layerList.SelectedItem;
+                int index = layers.IndexOf(l);
+                if (index == 0)
+                    return;
+                layers.Remove(l);
+                layers.Insert(index-1, l);
+                layerList.SelectedItem = selected;
+                redraw();
+            }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Down", null, (o, i) =>
             {
-                LayerControl lc = new LayerControl();
-                lc.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
-                lc.setLayer(l);
-                if (LayerControl.current == null || LayerControl.current.layer == l)
-                    LayerControl.current = lc;
-                controls.Add(lc);
-            }
-            if (LayerControl.current != null)
-                LayerControl.current.BackColor = Color.LightBlue;
+                Layer selected = (Layer)layerList.SelectedItem;
+                int index = layers.IndexOf(l);
+                if (index == layers.Count - 1)
+                    return;
+                layers.Remove(l);
+                layers.Insert(index+1, l);
+                layerList.SelectedItem = selected;
+                redraw();
+            }));
+            layerListContextMenu.Items.Add("-");
+            layerListContextMenu.Items.Add(new ToolStripMenuItem(l.visible ? "Hide" : "Show", null, (o, i) => { l.visible = !l.visible; redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Color...", colorImg, (o, i) => { l.color = chooseColor(l.color); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) => { layers.Remove(l); redraw(); }));
+        }
+
+        private Color chooseColor(Color c)
+        {
+            ColorDialog cd = new ColorDialog();
+            if (cd.ShowDialog() == DialogResult.OK)
+                return cd.Color;
+            return c;
         }
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
@@ -63,13 +98,13 @@ namespace SGIS
                 var visibleFeatures = l.getWithin(boundary);
                 foreach (Feature s in visibleFeatures)
                 {
-                    if (!s.selected || l != LayerControl.current.layer)
+                    if (!s.selected || l != layerList.SelectedItem)
                         Render.Draw(s.geometry, e.Graphics, l.color);
-                    else if(l == LayerControl.current.layer)
+                    else if (l == layerList.SelectedItem)
                         Render.Draw(s.geometry, e.Graphics, Color.DarkCyan);
                 }
-                if (l.quadTree != null)
-                    l.quadTree.render(e.Graphics);
+                //if (l.quadTree != null)
+                //    l.quadTree.render(e.Graphics);
             }
 
             mouse.render(e.Graphics);
@@ -121,7 +156,6 @@ namespace SGIS
                     layers.Insert(0, l);
                     screenManager.RealRect.Set(l.boundingbox);
                     screenManager.Calculate();
-                    SGIS.app.UpdateLayerList();
                     this.Refresh();
                 }
             }
@@ -147,6 +181,25 @@ namespace SGIS
         internal PictureBox getMapWindow()
         {
             return mapWindow;
+        }
+
+        internal ListBox getLayerList()
+        {
+            return layerList;
+        }
+
+        private void layerList_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Right)
+            {
+                var index = layerList.IndexFromPoint(e.Location);
+                if (index != -1)
+                    layerList.SelectedIndex = index;
+                if (layerList.SelectedIndex != -1)
+                    layerListContextMenu.Show(layerList.PointToScreen(e.Location));
+            }
+            redraw();
         }
     }
 }

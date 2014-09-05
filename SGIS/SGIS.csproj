@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="DBFReader.cs" />
     <Compile Include="Feature.cs" />
+    <Compile Include="QuadTree.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="ScreenManager.cs" />
     <Compile Include="SGIS.cs">

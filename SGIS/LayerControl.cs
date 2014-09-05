@@ -78,6 +78,7 @@ namespace SGIS
             if (LayerControl.current == this)
                 LayerControl.current = null;
             SGIS.app.layers.Remove(layer);
+            SGIS.app.UpdateLayerList();
             SGIS.app.Refresh();
         }
 
@@ -88,6 +89,7 @@ namespace SGIS
             index = Math.Max(0, index - 1);
             layers.Remove(layer);
             layers.Insert(index, layer);
+            SGIS.app.UpdateLayerList();
             SGIS.app.Refresh();
         }
 
@@ -100,6 +102,7 @@ namespace SGIS
             index += 1;
             layers.Remove(layer);
             layers.Insert(index, layer);
+            SGIS.app.UpdateLayerList();
             SGIS.app.Refresh();
         }
     }

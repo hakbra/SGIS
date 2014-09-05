@@ -26,7 +26,7 @@ namespace SGIS
             int rad = 5;
             var mid = SGIS.app.screenManager.ScaleAndOffSet(ge);
 
-            gr.FillEllipse(b, (int)(mid.X + rad / 2), (int)(mid.Y + rad / 2), (int)(rad*2), (int)(rad*2));
+            gr.FillEllipse(b, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
         }
 
         private static void drawLine(LineString ge, Graphics gr, Color c)

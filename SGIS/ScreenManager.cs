@@ -130,6 +130,15 @@ namespace SGIS
             return new Point(Offset.X + (float)pt.X / Scale.X,
 					           Offset.Y + (float)pt.Y / Scale.Y);
         }
+        public IGeometry MapScreenToReal(Envelope e)
+        {
+            var min = MapScreenToReal(new System.Drawing.Point((int)e.MinX, (int)e.MinY));
+            var max = MapScreenToReal(new System.Drawing.Point((int)e.MaxX, (int)e.MaxY));
+            var re = new Envelope(min.X, max.X, min.Y, max.Y);
+
+            OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
+            return fact.ToGeometry(re);
+        }
 
         /// <summary>
         /// Returns a point on the screen from a real world point.

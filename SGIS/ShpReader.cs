@@ -48,13 +48,15 @@ namespace SGIS
             else
                 throw new Exception("Uh oh");
 
+            layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
+            layer.createQuadTree();
+
             pos = 100;
             while (pos < length)
                 readShape();
 
             br.Close();
 
-            layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
 
             string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
             if (File.Exists(dbfName))

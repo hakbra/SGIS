@@ -98,20 +98,20 @@
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.shapefileMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.openToolStripMenuItem.Text = "Open...";
             // 
             // shapefileMenuItem
             // 
             this.shapefileMenuItem.Name = "shapefileMenuItem";
-            this.shapefileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.shapefileMenuItem.Size = new System.Drawing.Size(122, 22);
             this.shapefileMenuItem.Text = "Shapefile";
             this.shapefileMenuItem.Click += new System.EventHandler(this.shapefileMenuItem_Click);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -154,6 +154,7 @@
             // layerList
             // 
             this.layerList.AutoScroll = true;
+            this.layerList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.layerList.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.layerList.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.layerList.ColumnCount = 1;

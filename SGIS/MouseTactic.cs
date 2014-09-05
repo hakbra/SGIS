@@ -41,7 +41,7 @@ namespace SGIS
                 rightMouseDown = true;
                 rightMouse = mouse;
             }
-            SGIS.app.Focus();
+            SGIS.app.getMapWindow().Focus();
         }
 
         public override void MouseUp(MouseEventArgs e)
@@ -70,9 +70,7 @@ namespace SGIS
                 }
                 else
                 {
-                    var a = SGIS.app.screenManager.MapScreenToReal(mouse);
-                    var b = SGIS.app.screenManager.MapScreenToReal(rightMouse);
-                    List<Feature> s = l.getWithin(new Envelope(a.X, b.X, a.Y, b.Y));
+                    List<Feature> s = l.getWithin(SGIS.app.screenManager.MapScreenToReal(new Envelope(mouse.X, rightMouse.X, mouse.Y, rightMouse.Y)));
                     SGIS.app.setStatusText(s.Count + " objects");
                     foreach (Feature f in s)
                     {

@@ -34,11 +34,9 @@ namespace SGIS
             screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             screenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
             screenManager.Calculate();
-
-            layers.ListChanged += this.PopulateLayerControls;
         }
 
-        private void PopulateLayerControls(object sender, ListChangedEventArgs args)
+        public void UpdateLayerList()
         {
             var controls = layerList.Controls;
             controls.Clear();
@@ -51,23 +49,27 @@ namespace SGIS
                     LayerControl.current = lc;
                 controls.Add(lc);
             }
-            LayerControl.current.BackColor = Color.LightBlue;
+            if (LayerControl.current != null)
+                LayerControl.current.BackColor = Color.LightBlue;
         }
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
         {
-
+            var boundary = screenManager.MapScreenToReal(screenManager.WindowsRect);
             foreach (Layer l in layers.Reverse())
             {
                 if (!l.visible)
                     continue;
-                foreach (Feature s in l.shapes.Values)
+                var visibleFeatures = l.getWithin(boundary);
+                foreach (Feature s in visibleFeatures)
                 {
                     if (!s.selected || l != LayerControl.current.layer)
                         Render.Draw(s.geometry, e.Graphics, l.color);
                     else if(l == LayerControl.current.layer)
                         Render.Draw(s.geometry, e.Graphics, Color.DarkCyan);
                 }
+                if (l.quadTree != null)
+                    l.quadTree.render(e.Graphics);
             }
 
             mouse.render(e.Graphics);
@@ -119,6 +121,7 @@ namespace SGIS
                     layers.Insert(0, l);
                     screenManager.RealRect.Set(l.boundingbox);
                     screenManager.Calculate();
+                    SGIS.app.UpdateLayerList();
                     this.Refresh();
                 }
             }
@@ -139,6 +142,11 @@ namespace SGIS
             var mouse = new System.Drawing.Point(Cursor.Position.X, Cursor.Position.Y);
             mouse = mapWindow.PointToClient(mouse);
             return mouse;
+        }
+
+        internal PictureBox getMapWindow()
+        {
+            return mapWindow;
         }
     }
 }

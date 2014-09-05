@@ -175,7 +175,6 @@ namespace SGIS
                         default:
                             throw new Exception("Unknown fieldType");
                     }
-                    Console.WriteLine(field.fieldName + ": " + row[field.fieldName]);
                 }
 
                 recReader.Close();

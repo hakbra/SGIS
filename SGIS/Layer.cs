@@ -25,6 +25,13 @@ namespace SGIS
         string name;
         public Envelope boundingbox;
         public DataTable dataTable = null;
+        public QuadTree quadTree = null;
+        public void createQuadTree()
+        {
+            if (boundingbox == null)
+                throw new Exception("Need boundingbox to create quadTree");
+            quadTree = new QuadTree(boundingbox.MinX, boundingbox.MaxX, boundingbox.MinY, boundingbox.MaxY);
+        }
         
         public Layer(string n, ShapeType st)
         {
@@ -50,6 +57,8 @@ namespace SGIS
         public void addFeature(Feature s)
         {
             shapes.Add(s.id, s);
+            if (quadTree != null)
+                quadTree.add(s);
         }
 
         public Feature getClosest(Point p)
@@ -68,15 +77,14 @@ namespace SGIS
             return g;
         }
 
-        public List<Feature> getWithin(Envelope rect)
+        public List<Feature> getWithin(IGeometry rect)
         {
-            OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
-            var bb = fact.ToGeometry(rect);
-
+            if (quadTree != null)
+                return quadTree.getWithin(rect);
             var ret = new List<Feature>();
             foreach (var pair in shapes)
             {
-                if (pair.Value.geometry.Intersects(bb))
+                if (pair.Value.geometry.Intersects(rect))
                     ret.Add(pair.Value);
             }
             return ret;

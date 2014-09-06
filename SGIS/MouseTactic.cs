@@ -20,7 +20,7 @@ namespace SGIS
         protected bool leftMouseDown = false;
         protected bool rightMouseDown = false;
 
-        public void MouseDown(MouseEventArgs e)
+        public virtual void MouseDown(MouseEventArgs e)
         {
             mouse = SGIS.app.getMousePos();
             if (e.Button == MouseButtons.Left)
@@ -34,10 +34,8 @@ namespace SGIS
                 rightMouse = mouse;
             }
             SGIS.app.getMapWindow().Focus();
-            
-            this.MouseDownImpl(e);
         }
-        public void MouseUp(MouseEventArgs e)
+        public virtual void MouseUp(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -47,81 +45,14 @@ namespace SGIS
             {
                 rightMouseDown = false;
             }
-            this.MouseUpImpl(e);
         }
-        public void MouseMove(MouseEventArgs e)
+        public virtual void MouseMove(MouseEventArgs e)
         {
             oldMouse = mouse;
             mouse = SGIS.app.getMousePos();
             SGIS.app.redraw();
-            this.MouseMoveImpl(e);
         }
-        public void MouseWheel(MouseEventArgs e)
-        {
-            this.MouseWheelImpl(e);
-        }
-        public void render(System.Drawing.Graphics g)
-        {
-            var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
-            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
-
-            this.renderImpl(g);
-        }
-
-        public abstract void MouseDownImpl(MouseEventArgs e);
-        public abstract void MouseUpImpl(MouseEventArgs e);
-        public abstract void MouseMoveImpl(MouseEventArgs e);
-        public abstract void MouseWheelImpl(MouseEventArgs e);
-        public abstract void renderImpl(System.Drawing.Graphics g);
-    }
-
-    public class StandardMouseTactic : MouseTactic
-    {
-
-        public override void MouseDownImpl(MouseEventArgs e) { }
-
-        public override void MouseUpImpl(MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
-                if (l == null)
-                    return;
-                double dist = Math.Abs(mouse.X - rightMouse.X) + Math.Abs(mouse.Y - rightMouse.Y);
-                foreach (Feature f in l.selected)
-                    f.selected = false;
-                l.selected.Clear();
-                if (dist < 5)
-                {
-                    Feature s = l.getClosest(SGIS.app.screenManager.MapScreenToReal(mouse));
-                    if (s != null)
-                        SGIS.app.setStatusText("Id: " + s.id);
-                    s.selected = true;
-                    l.selected.Add(s);
-                }
-                else
-                {
-                    List<Feature> s = l.getWithin(SGIS.app.screenManager.MapScreenToReal(new Envelope(mouse.X, rightMouse.X, mouse.Y, rightMouse.Y)));
-                    SGIS.app.setStatusText(s.Count + " objects");
-                    foreach (Feature f in s)
-                    {
-                        f.selected = true;
-                        l.selected.Add(f);
-                    }
-                }
-            }
-        }
-
-        public override void MouseMoveImpl(MouseEventArgs e)
-        {
-            if (leftMouseDown)
-            {
-                SGIS.app.screenManager.ScrollScreen(new NTSPoint(oldMouse.X - mouse.X, oldMouse.Y - mouse.Y));
-                SGIS.app.screenManager.Calculate();
-            }
-        }
-
-        public override void MouseWheelImpl(MouseEventArgs e)
+        public virtual void MouseWheel(MouseEventArgs e)
         {
             var oldGeoPos = SGIS.app.screenManager.MapScreenToReal(mouse);
             double scale = 1.3;
@@ -139,17 +70,88 @@ namespace SGIS
             SGIS.app.screenManager.Calculate();
             SGIS.app.redraw();
         }
-
-        public override void renderImpl(Graphics g)
+        public virtual void render(System.Drawing.Graphics g)
         {
-            if (rightMouseDown)
+            var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
+            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
+        }
+    }
+
+    public class MoveMouseTactic : MouseTactic
+    {
+        public override void MouseMove(MouseEventArgs e)
+        {
+            base.MouseMove(e);
+
+            if (leftMouseDown)
+            {
+                SGIS.app.screenManager.ScrollScreen(new NTSPoint(oldMouse.X - mouse.X, oldMouse.Y - mouse.Y));
+                SGIS.app.screenManager.Calculate();
+            }
+        }
+    }
+
+    public class SelectMouseTactic : MouseTactic
+    {
+        public override void MouseUp(MouseEventArgs e)
+        {
+            base.MouseUp(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
+                if (l == null)
+                    return;
+
+                foreach (Feature f in l.selected)
+                    f.selected = false;
+                l.selected.Clear();
+
+                List<Feature> s = l.getWithin(SGIS.app.screenManager.MapScreenToReal(new Envelope(mouse.X, leftMouse.X, mouse.Y, leftMouse.Y)));
+                SGIS.app.setStatusText(s.Count + " objects");
+                foreach (Feature f in s)
+                {
+                    f.selected = true;
+                    l.selected.Add(f);
+                }
+            }
+        }
+
+        public override void render(Graphics g)
+        {
+            base.render(g);
+
+            if (leftMouseDown)
             {
                 Pen pen = new Pen(Color.Black);
                 g.DrawRectangle(pen, new System.Drawing.Rectangle(
-                        Math.Min(mouse.X, rightMouse.X),
-                        Math.Min(mouse.Y, rightMouse.Y),
-                        Math.Abs(rightMouse.X - mouse.X),
-                        Math.Abs(rightMouse.Y - mouse.Y)));
+                        Math.Min(mouse.X, leftMouse.X),
+                        Math.Min(mouse.Y, leftMouse.Y),
+                        Math.Abs(leftMouse.X - mouse.X),
+                        Math.Abs(leftMouse.Y - mouse.Y)));
+            }
+        }
+    }
+
+    public class InfoMouseTactic : MouseTactic
+    {
+        public override void MouseUp(MouseEventArgs e)
+        {
+            base.MouseUp(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
+                if (l == null)
+                    return;
+
+                foreach (Feature f in l.selected)
+                    f.selected = false;
+                l.selected.Clear();
+
+                Feature s = l.getClosest(SGIS.app.screenManager.MapScreenToReal(mouse));
+                if (s != null)
+                    SGIS.app.setStatusText("Id: " + s.id);
             }
         }
     }

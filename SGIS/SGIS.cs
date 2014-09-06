@@ -16,7 +16,7 @@ namespace SGIS
         public static SGIS app;
         public BindingList<Layer> layers = new BindingList<Layer>();
         public ScreenManager screenManager = new ScreenManager();
-        MouseTactic mouse = new StandardMouseTactic();
+        MouseTactic mouse = new MoveMouseTactic();
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
 
         public SGIS()
@@ -200,6 +200,27 @@ namespace SGIS
                     layerListContextMenu.Show(layerList.PointToScreen(e.Location));
             }
             redraw();
+        }
+
+        private void mouseMoveItem_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouse = new MoveMouseTactic();
+            mouseInfoItem.Enabled = true;
+            mouseSelectItem.Enabled = true;
+        }
+
+        private void mouseSelectItem_Click(object sender, EventArgs e)
+        {
+            mouse = new SelectMouseTactic();
+            mouseMoveItem.Enabled = true;
+            mouseInfoItem.Enabled = true;
+        }
+
+        private void mouseInfoItem_Click(object sender, EventArgs e)
+        {
+            mouse = new InfoMouseTactic();
+            mouseMoveItem.Enabled = true;
+            mouseSelectItem.Enabled = true;
         }
     }
 }

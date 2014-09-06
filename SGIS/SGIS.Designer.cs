@@ -37,6 +37,10 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shapefileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mouseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mouseMoveItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mouseSelectItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mouseInfoItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.layerList = new System.Windows.Forms.ListBox();
@@ -77,7 +81,8 @@
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileMenu});
+            this.fileMenu,
+            this.mouseToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(721, 24);
@@ -115,6 +120,38 @@
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
+            // mouseToolStripMenuItem
+            // 
+            this.mouseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mouseMoveItem,
+            this.mouseSelectItem,
+            this.mouseInfoItem});
+            this.mouseToolStripMenuItem.Name = "mouseToolStripMenuItem";
+            this.mouseToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
+            this.mouseToolStripMenuItem.Text = "Mouse";
+            // 
+            // mouseMoveItem
+            // 
+            this.mouseMoveItem.Enabled = false;
+            this.mouseMoveItem.Name = "mouseMoveItem";
+            this.mouseMoveItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseMoveItem.Text = "Move";
+            this.mouseMoveItem.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mouseMoveItem_MouseDown);
+            // 
+            // mouseSelectItem
+            // 
+            this.mouseSelectItem.Name = "mouseSelectItem";
+            this.mouseSelectItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseSelectItem.Text = "Select";
+            this.mouseSelectItem.Click += new System.EventHandler(this.mouseSelectItem_Click);
+            // 
+            // mouseInfoItem
+            // 
+            this.mouseInfoItem.Name = "mouseInfoItem";
+            this.mouseInfoItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseInfoItem.Text = "Info";
+            this.mouseInfoItem.Click += new System.EventHandler(this.mouseInfoItem_Click);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -135,7 +172,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.layerList);
             this.splitContainer1.Panel2MinSize = 170;
             this.splitContainer1.Size = new System.Drawing.Size(721, 507);
-            this.splitContainer1.SplitterDistance = 539;
+            this.splitContainer1.SplitterDistance = 536;
             this.splitContainer1.TabIndex = 2;
             // 
             // mapWindow
@@ -143,7 +180,7 @@
             this.mapWindow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapWindow.Location = new System.Drawing.Point(0, 0);
             this.mapWindow.Name = "mapWindow";
-            this.mapWindow.Size = new System.Drawing.Size(537, 505);
+            this.mapWindow.Size = new System.Drawing.Size(534, 505);
             this.mapWindow.TabIndex = 0;
             this.mapWindow.TabStop = false;
             this.mapWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.SGIS_Paint);
@@ -160,7 +197,7 @@
             this.layerList.FormattingEnabled = true;
             this.layerList.Location = new System.Drawing.Point(3, 3);
             this.layerList.Name = "layerList";
-            this.layerList.Size = new System.Drawing.Size(170, 173);
+            this.layerList.Size = new System.Drawing.Size(173, 173);
             this.layerList.TabIndex = 0;
             this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
@@ -206,6 +243,10 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem shapefileMenuItem;
         private System.Windows.Forms.ListBox layerList;
+        private System.Windows.Forms.ToolStripMenuItem mouseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mouseMoveItem;
+        private System.Windows.Forms.ToolStripMenuItem mouseSelectItem;
+        private System.Windows.Forms.ToolStripMenuItem mouseInfoItem;
     }
 }
 

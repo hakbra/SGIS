@@ -17,7 +17,9 @@ namespace SGIS
         public BindingList<Layer> layers = new BindingList<Layer>();
         public ScreenManager screenManager = new ScreenManager();
         MouseTactic mouse = new MoveMouseTactic();
+
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
+        private ContextMenuStrip infoContextMenu = new ContextMenuStrip();
 
         public SGIS()
         {
@@ -37,9 +39,25 @@ namespace SGIS
             layerList.DataSource = layers;
 
             layerListContextMenu.Opening += new CancelEventHandler(layerListContextMenu_Opening);
-            //layerList.ContextMenuStrip = layerListContextMenu;
-            //layerList.SelectedIndexChanged += (o, i) => { this.redraw(); };
-            //layers.ListChanged += (o, i) => { this.redraw(); };
+            infoContextMenu.Opening += new CancelEventHandler(infoContextMenu_Opening);
+        }
+
+        private void infoContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            e.Cancel = false;
+            Layer layer = (Layer) layerList.SelectedItem;
+            if (layer == null || layer.selected.Count != 1)
+                return;
+
+            Feature f = layer.selected.First();
+            DataRow dr = layer.dataTable.Rows[f.id];
+
+            infoContextMenu.Items.Clear();
+            foreach (var column in layer.dataTable.Columns)
+            {
+                string colName = column.ToString();
+                infoContextMenu.Items.Add(colName + ": " + dr[colName]);
+            }
         }
 
         private void layerListContextMenu_Opening(object sender, CancelEventArgs e)
@@ -154,6 +172,7 @@ namespace SGIS
                     ShpReader sr = new ShpReader();
                     Layer l = sr.read(file);
                     layers.Insert(0, l);
+                    layerList.SelectedItem = l;
                     screenManager.RealRect.Set(l.boundingbox);
                     screenManager.Calculate();
                     this.Refresh();
@@ -171,6 +190,11 @@ namespace SGIS
             statusLabel.Text = s;
         }
 
+        public void setCoordText(string s)
+        {
+            coordLabel.Text = s;
+        }
+
         public System.Drawing.Point getMousePos()
         {
             var mouse = new System.Drawing.Point(Cursor.Position.X, Cursor.Position.Y);
@@ -181,6 +205,11 @@ namespace SGIS
         internal PictureBox getMapWindow()
         {
             return mapWindow;
+        }
+
+        internal ContextMenuStrip getInfoMenu()
+        {
+            return infoContextMenu;
         }
 
         internal ListBox getLayerList()
@@ -199,12 +228,18 @@ namespace SGIS
                 if (layerList.SelectedIndex != -1)
                     layerListContextMenu.Show(layerList.PointToScreen(e.Location));
             }
+            Layer l = (Layer)(layerList.SelectedItem);
+            if (l == null || l.selected.Count == 0)
+                SGIS.app.setStatusText("");
+            else
+                SGIS.app.setStatusText(l.selected.Count + " objects");
             redraw();
         }
 
         private void mouseMoveItem_MouseDown(object sender, MouseEventArgs e)
         {
             mouse = new MoveMouseTactic();
+            mouseMoveItem.Enabled = false;
             mouseInfoItem.Enabled = true;
             mouseSelectItem.Enabled = true;
         }
@@ -214,6 +249,7 @@ namespace SGIS
             mouse = new SelectMouseTactic();
             mouseMoveItem.Enabled = true;
             mouseInfoItem.Enabled = true;
+            mouseSelectItem.Enabled = false;
         }
 
         private void mouseInfoItem_Click(object sender, EventArgs e)
@@ -221,6 +257,29 @@ namespace SGIS
             mouse = new InfoMouseTactic();
             mouseMoveItem.Enabled = true;
             mouseSelectItem.Enabled = true;
+            mouseInfoItem.Enabled = false;
+        }
+
+        private void selectAllItem_Click(object sender, EventArgs e)
+        {
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null)
+                return;
+            l.clearSelected();
+            foreach (Feature f in l.features.Values) {
+                l.selected.Add(f);
+                f.selected = true;
+            }
+            SGIS.app.setStatusText(l.features.Count + " objects");
+        }
+
+        private void selectNoneItem_Click(object sender, EventArgs e)
+        {
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null)
+                return;
+            l.clearSelected();
+            SGIS.app.setStatusText("");
         }
     }
 }

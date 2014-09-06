@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -44,7 +43,13 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.layerList = new System.Windows.Forms.ListBox();
-            this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
+            this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.coordLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectNoneItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectByPropertyItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -58,8 +63,11 @@
             // 
             this.statusStrip.BackColor = System.Drawing.SystemColors.ControlLight;
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.progressLabel,
+            this.progressBar,
+            this.toolStripStatusLabel2,
             this.statusLabel,
-            this.progressBar});
+            this.coordLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 531);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(721, 22);
@@ -69,8 +77,7 @@
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(39, 17);
-            this.statusLabel.Text = "Status";
+            this.statusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // progressBar
             // 
@@ -82,7 +89,8 @@
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenu,
-            this.mouseToolStripMenuItem});
+            this.mouseToolStripMenuItem,
+            this.selectToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(721, 24);
@@ -127,8 +135,8 @@
             this.mouseSelectItem,
             this.mouseInfoItem});
             this.mouseToolStripMenuItem.Name = "mouseToolStripMenuItem";
-            this.mouseToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
-            this.mouseToolStripMenuItem.Text = "Mouse";
+            this.mouseToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.mouseToolStripMenuItem.Text = "Pointer";
             // 
             // mouseMoveItem
             // 
@@ -201,6 +209,53 @@
             this.layerList.TabIndex = 0;
             this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
+            // progressLabel
+            // 
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(39, 17);
+            this.progressLabel.Text = "Status";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(565, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            // 
+            // coordLabel
+            // 
+            this.coordLabel.Name = "coordLabel";
+            this.coordLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // selectToolStripMenuItem
+            // 
+            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectAllItem,
+            this.selectNoneItem,
+            this.selectByPropertyItem});
+            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.selectToolStripMenuItem.Text = "Select";
+            // 
+            // selectAllItem
+            // 
+            this.selectAllItem.Name = "selectAllItem";
+            this.selectAllItem.Size = new System.Drawing.Size(152, 22);
+            this.selectAllItem.Text = "All";
+            this.selectAllItem.Click += new System.EventHandler(this.selectAllItem_Click);
+            // 
+            // selectNoneItem
+            // 
+            this.selectNoneItem.Name = "selectNoneItem";
+            this.selectNoneItem.Size = new System.Drawing.Size(152, 22);
+            this.selectNoneItem.Text = "None";
+            this.selectNoneItem.Click += new System.EventHandler(this.selectNoneItem_Click);
+            // 
+            // selectByPropertyItem
+            // 
+            this.selectByPropertyItem.Name = "selectByPropertyItem";
+            this.selectByPropertyItem.Size = new System.Drawing.Size(152, 22);
+            this.selectByPropertyItem.Text = "By property...";
+            // 
             // SGIS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -210,7 +265,6 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
-            this.Menu = this.mainMenu1;
             this.Name = "SGIS";
             this.Text = "SGIS";
             this.Load += new System.EventHandler(this.SGIS_Load);
@@ -238,7 +292,6 @@
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
         private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.MainMenu mainMenu1;
         private System.Windows.Forms.PictureBox mapWindow;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem shapefileMenuItem;
@@ -247,6 +300,13 @@
         private System.Windows.Forms.ToolStripMenuItem mouseMoveItem;
         private System.Windows.Forms.ToolStripMenuItem mouseSelectItem;
         private System.Windows.Forms.ToolStripMenuItem mouseInfoItem;
+        private System.Windows.Forms.ToolStripStatusLabel progressLabel;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel coordLabel;
+        private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllItem;
+        private System.Windows.Forms.ToolStripMenuItem selectNoneItem;
+        private System.Windows.Forms.ToolStripMenuItem selectByPropertyItem;
     }
 }
 

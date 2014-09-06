@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 using GeoAPI.Geometries;
 using System.Data;
+using NetTopologySuite.Utilities;
 
 namespace SGIS
 {
@@ -17,7 +18,7 @@ namespace SGIS
     }
     public class Layer
     {
-        public Dictionary<int, Feature> shapes = new Dictionary<int, Feature>();
+        public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
         public List<Feature> selected = new List<Feature>();
         public System.Drawing.Color color;
         public bool visible;
@@ -56,25 +57,37 @@ namespace SGIS
         }
         public void addFeature(Feature s)
         {
-            shapes.Add(s.id, s);
+            features.Add(s.id, s);
             if (quadTree != null)
                 quadTree.add(s);
         }
 
-        public Feature getClosest(Point p)
+        public Feature getClosest(Point p, double limit)
         {
+            GeometricShapeFactory gsf = new GeometricShapeFactory();
+            gsf.Envelope = new Envelope(p.X - limit, p.X + limit, p.Y - limit, p.Y + limit);
+            IGeometry circle = gsf.CreateCircle();
+            var candidates = getWithin(circle);
+
             double min = 0;
-            Feature g = null;
-            foreach (var pair in shapes)
+            Feature minf = null;
+            foreach (var f in candidates)
             {
-                double dist = pair.Value.geometry.Distance(p);
-                if (g == null || dist < min)
+                double dist = f.geometry.Distance(p);
+                if (minf == null || dist < min)
                 {
-                    g = pair.Value;
+                    minf = f;
                     min = dist;
                 }
             }
-            return g;
+            return minf;
+        }
+
+        public void clearSelected()
+        {
+            foreach (Feature f in selected)
+                f.selected = false;
+            selected.Clear();
         }
 
         public List<Feature> getWithin(IGeometry rect)
@@ -82,7 +95,7 @@ namespace SGIS
             if (quadTree != null)
                 return quadTree.getWithin(rect);
             var ret = new List<Feature>();
-            foreach (var pair in shapes)
+            foreach (var pair in features)
             {
                 if (pair.Value.geometry.Intersects(rect))
                     ret.Add(pair.Value);

@@ -73,7 +73,7 @@ namespace SGIS
         public virtual void render(System.Drawing.Graphics g)
         {
             var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
-            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
+            SGIS.app.setCoordText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
         }
     }
 
@@ -149,9 +149,21 @@ namespace SGIS
                     f.selected = false;
                 l.selected.Clear();
 
-                Feature s = l.getClosest(SGIS.app.screenManager.MapScreenToReal(mouse));
-                if (s != null)
-                    SGIS.app.setStatusText("Id: " + s.id);
+                Feature s = l.getClosest(SGIS.app.screenManager.MapScreenToReal(mouse), 5 / SGIS.app.screenManager.Scale.X);
+                if (s == null)
+                {
+                    SGIS.app.setStatusText("");
+                    return;
+                }
+
+                s.selected = true;
+                l.selected.Add(s);
+
+                SGIS.app.setStatusText("ID: " + s.id);
+                SGIS.app.redraw();
+
+                var menupos = SGIS.app.getMapWindow().PointToScreen(mouse);
+                SGIS.app.getInfoMenu().Show(menupos);
             }
         }
     }

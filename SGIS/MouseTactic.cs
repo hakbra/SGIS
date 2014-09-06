@@ -13,23 +13,14 @@ namespace SGIS
 {
     public abstract class MouseTactic
     {
-        public abstract void MouseDown(MouseEventArgs e);
-        public abstract void MouseUp(MouseEventArgs e);
-        public abstract void MouseMove(MouseEventArgs e);
-        public abstract void MouseWheel(MouseEventArgs e);
-        public abstract void render(System.Drawing.Graphics g);
-    }
+        protected System.Drawing.Point oldMouse;
+        protected System.Drawing.Point mouse;
+        protected System.Drawing.Point rightMouse;
+        protected System.Drawing.Point leftMouse;
+        protected bool leftMouseDown = false;
+        protected bool rightMouseDown = false;
 
-    public class StandardMouseTactic : MouseTactic
-    {
-
-        System.Drawing.Point mouse;
-        System.Drawing.Point rightMouse;
-        System.Drawing.Point leftMouse;
-        bool leftMouseDown = false;
-        bool rightMouseDown = false;
-
-        public override void MouseDown(MouseEventArgs e)
+        public void MouseDown(MouseEventArgs e)
         {
             mouse = SGIS.app.getMousePos();
             if (e.Button == MouseButtons.Left)
@@ -43,9 +34,10 @@ namespace SGIS
                 rightMouse = mouse;
             }
             SGIS.app.getMapWindow().Focus();
+            
+            this.MouseDownImpl(e);
         }
-
-        public override void MouseUp(MouseEventArgs e)
+        public void MouseUp(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -54,6 +46,44 @@ namespace SGIS
             if (e.Button == MouseButtons.Right)
             {
                 rightMouseDown = false;
+            }
+            this.MouseUpImpl(e);
+        }
+        public void MouseMove(MouseEventArgs e)
+        {
+            oldMouse = mouse;
+            mouse = SGIS.app.getMousePos();
+            SGIS.app.redraw();
+            this.MouseMoveImpl(e);
+        }
+        public void MouseWheel(MouseEventArgs e)
+        {
+            this.MouseWheelImpl(e);
+        }
+        public void render(System.Drawing.Graphics g)
+        {
+            var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
+            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
+
+            this.renderImpl(g);
+        }
+
+        public abstract void MouseDownImpl(MouseEventArgs e);
+        public abstract void MouseUpImpl(MouseEventArgs e);
+        public abstract void MouseMoveImpl(MouseEventArgs e);
+        public abstract void MouseWheelImpl(MouseEventArgs e);
+        public abstract void renderImpl(System.Drawing.Graphics g);
+    }
+
+    public class StandardMouseTactic : MouseTactic
+    {
+
+        public override void MouseDownImpl(MouseEventArgs e) { }
+
+        public override void MouseUpImpl(MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
                 Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
                 if (l == null)
                     return;
@@ -82,19 +112,16 @@ namespace SGIS
             }
         }
 
-        public override void MouseMove(MouseEventArgs e)
+        public override void MouseMoveImpl(MouseEventArgs e)
         {
-            var newmouse = SGIS.app.getMousePos();
             if (leftMouseDown)
             {
-                SGIS.app.screenManager.ScrollScreen(new NTSPoint(mouse.X - newmouse.X, mouse.Y - newmouse.Y));
+                SGIS.app.screenManager.ScrollScreen(new NTSPoint(oldMouse.X - mouse.X, oldMouse.Y - mouse.Y));
                 SGIS.app.screenManager.Calculate();
             }
-            SGIS.app.redraw();
-            mouse = newmouse;
         }
 
-        public override void MouseWheel(MouseEventArgs e)
+        public override void MouseWheelImpl(MouseEventArgs e)
         {
             var oldGeoPos = SGIS.app.screenManager.MapScreenToReal(mouse);
             double scale = 1.3;
@@ -113,11 +140,8 @@ namespace SGIS
             SGIS.app.redraw();
         }
 
-        public override void render(Graphics g)
+        public override void renderImpl(Graphics g)
         {
-            var realP = SGIS.app.screenManager.MapScreenToReal(mouse);
-            SGIS.app.setStatusText(String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y));
-
             if (rightMouseDown)
             {
                 Pen pen = new Pen(Color.Black);

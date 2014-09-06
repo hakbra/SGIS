@@ -29,8 +29,11 @@
         private void InitializeComponent()
         {
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.coordLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,16 +43,13 @@
             this.mouseMoveItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mouseSelectItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mouseInfoItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.mapWindow = new System.Windows.Forms.PictureBox();
-            this.layerList = new System.Windows.Forms.ListBox();
-            this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.coordLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectNoneItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectByPropertyItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.mapWindow = new System.Windows.Forms.PictureBox();
+            this.layerList = new System.Windows.Forms.ListBox();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -74,15 +74,32 @@
             this.statusStrip.TabIndex = 0;
             this.statusStrip.Text = "statusStrip1";
             // 
-            // statusLabel
+            // progressLabel
             // 
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(0, 17);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(39, 17);
+            this.progressLabel.Text = "Status";
             // 
             // progressBar
             // 
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(100, 16);
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(565, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // coordLabel
+            // 
+            this.coordLabel.Name = "coordLabel";
+            this.coordLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // menuStrip1
             // 
@@ -142,23 +159,57 @@
             // 
             this.mouseMoveItem.Enabled = false;
             this.mouseMoveItem.Name = "mouseMoveItem";
-            this.mouseMoveItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseMoveItem.Size = new System.Drawing.Size(105, 22);
             this.mouseMoveItem.Text = "Move";
             this.mouseMoveItem.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mouseMoveItem_MouseDown);
             // 
             // mouseSelectItem
             // 
             this.mouseSelectItem.Name = "mouseSelectItem";
-            this.mouseSelectItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseSelectItem.Size = new System.Drawing.Size(105, 22);
             this.mouseSelectItem.Text = "Select";
             this.mouseSelectItem.Click += new System.EventHandler(this.mouseSelectItem_Click);
             // 
             // mouseInfoItem
             // 
             this.mouseInfoItem.Name = "mouseInfoItem";
-            this.mouseInfoItem.Size = new System.Drawing.Size(152, 22);
+            this.mouseInfoItem.Size = new System.Drawing.Size(105, 22);
             this.mouseInfoItem.Text = "Info";
             this.mouseInfoItem.Click += new System.EventHandler(this.mouseInfoItem_Click);
+            // 
+            // selectToolStripMenuItem
+            // 
+            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectAllItem,
+            this.selectNoneItem,
+            this.selectByPropertyItem});
+            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.selectToolStripMenuItem.Text = "Select";
+            // 
+            // selectAllItem
+            // 
+            this.selectAllItem.Enabled = false;
+            this.selectAllItem.Name = "selectAllItem";
+            this.selectAllItem.Size = new System.Drawing.Size(152, 22);
+            this.selectAllItem.Text = "All";
+            this.selectAllItem.Click += new System.EventHandler(this.selectAllItem_Click);
+            // 
+            // selectNoneItem
+            // 
+            this.selectNoneItem.Enabled = false;
+            this.selectNoneItem.Name = "selectNoneItem";
+            this.selectNoneItem.Size = new System.Drawing.Size(152, 22);
+            this.selectNoneItem.Text = "None";
+            this.selectNoneItem.Click += new System.EventHandler(this.selectNoneItem_Click);
+            // 
+            // selectByPropertyItem
+            // 
+            this.selectByPropertyItem.Enabled = false;
+            this.selectByPropertyItem.Name = "selectByPropertyItem";
+            this.selectByPropertyItem.Size = new System.Drawing.Size(152, 22);
+            this.selectByPropertyItem.Text = "By property...";
+            this.selectByPropertyItem.Click += new System.EventHandler(this.selectByPropertyItem_Click);
             // 
             // splitContainer1
             // 
@@ -207,54 +258,8 @@
             this.layerList.Name = "layerList";
             this.layerList.Size = new System.Drawing.Size(173, 173);
             this.layerList.TabIndex = 0;
+            this.layerList.SelectedIndexChanged += new System.EventHandler(this.layerList_SelectedIndexChanged);
             this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
-            // 
-            // progressLabel
-            // 
-            this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(39, 17);
-            this.progressLabel.Text = "Status";
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(565, 17);
-            this.toolStripStatusLabel2.Spring = true;
-            // 
-            // coordLabel
-            // 
-            this.coordLabel.Name = "coordLabel";
-            this.coordLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // selectToolStripMenuItem
-            // 
-            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectAllItem,
-            this.selectNoneItem,
-            this.selectByPropertyItem});
-            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.selectToolStripMenuItem.Text = "Select";
-            // 
-            // selectAllItem
-            // 
-            this.selectAllItem.Name = "selectAllItem";
-            this.selectAllItem.Size = new System.Drawing.Size(152, 22);
-            this.selectAllItem.Text = "All";
-            this.selectAllItem.Click += new System.EventHandler(this.selectAllItem_Click);
-            // 
-            // selectNoneItem
-            // 
-            this.selectNoneItem.Name = "selectNoneItem";
-            this.selectNoneItem.Size = new System.Drawing.Size(152, 22);
-            this.selectNoneItem.Text = "None";
-            this.selectNoneItem.Click += new System.EventHandler(this.selectNoneItem_Click);
-            // 
-            // selectByPropertyItem
-            // 
-            this.selectByPropertyItem.Name = "selectByPropertyItem";
-            this.selectByPropertyItem.Size = new System.Drawing.Size(152, 22);
-            this.selectByPropertyItem.Text = "By property...";
             // 
             // SGIS
             // 

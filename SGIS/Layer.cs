@@ -23,7 +23,7 @@ namespace SGIS
         public System.Drawing.Color color;
         public bool visible;
         ShapeType shapetype;
-        string name;
+        public string name;
         public Envelope boundingbox;
         public DataTable dataTable = null;
         public QuadTree quadTree = null;

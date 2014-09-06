@@ -281,5 +281,28 @@ namespace SGIS
             l.clearSelected();
             SGIS.app.setStatusText("");
         }
+
+        private void selectByPropertyItem_Click(object sender, EventArgs e)
+        {
+            Form sform = new SelectByPropertyForm();
+            sform.Show();
+        }
+
+        private void layerList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null)
+            {
+                selectAllItem.Enabled = false;
+                selectNoneItem.Enabled = false;
+                selectByPropertyItem.Enabled = false;
+            }
+            else
+            {
+                selectAllItem.Enabled = true;
+                selectNoneItem.Enabled = true;
+                selectByPropertyItem.Enabled = l.dataTable != null;
+            }
+        }
     }
 }

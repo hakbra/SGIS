@@ -38,6 +38,7 @@ namespace SGIS
             readHeader();
 
             string name = filename.Split('\\').Last();
+            name = name.Substring(0, name.Length - 4);
 
             if (type == 1)
                 layer = new Layer(name, ShapeType.POINT);

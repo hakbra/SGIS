@@ -40,14 +40,6 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shapefileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mouseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mouseMoveItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mouseSelectItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mouseInfoItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectNoneItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectByPropertyItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -123,9 +115,7 @@
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileMenu,
-            this.mouseToolStripMenuItem,
-            this.selectToolStripMenuItem});
+            this.fileMenu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(721, 24);
@@ -162,72 +152,6 @@
             this.exitMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
-            // 
-            // mouseToolStripMenuItem
-            // 
-            this.mouseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mouseMoveItem,
-            this.mouseSelectItem,
-            this.mouseInfoItem});
-            this.mouseToolStripMenuItem.Name = "mouseToolStripMenuItem";
-            this.mouseToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.mouseToolStripMenuItem.Text = "Pointer";
-            // 
-            // mouseMoveItem
-            // 
-            this.mouseMoveItem.Enabled = false;
-            this.mouseMoveItem.Name = "mouseMoveItem";
-            this.mouseMoveItem.Size = new System.Drawing.Size(105, 22);
-            this.mouseMoveItem.Text = "Move";
-            this.mouseMoveItem.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mouseMoveItem_MouseDown);
-            // 
-            // mouseSelectItem
-            // 
-            this.mouseSelectItem.Name = "mouseSelectItem";
-            this.mouseSelectItem.Size = new System.Drawing.Size(105, 22);
-            this.mouseSelectItem.Text = "Select";
-            this.mouseSelectItem.Click += new System.EventHandler(this.mouseSelectItem_Click);
-            // 
-            // mouseInfoItem
-            // 
-            this.mouseInfoItem.Name = "mouseInfoItem";
-            this.mouseInfoItem.Size = new System.Drawing.Size(105, 22);
-            this.mouseInfoItem.Text = "Info";
-            this.mouseInfoItem.Click += new System.EventHandler(this.mouseInfoItem_Click);
-            // 
-            // selectToolStripMenuItem
-            // 
-            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectAllItem,
-            this.selectNoneItem,
-            this.selectByPropertyItem});
-            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.selectToolStripMenuItem.Text = "Select";
-            // 
-            // selectAllItem
-            // 
-            this.selectAllItem.Enabled = false;
-            this.selectAllItem.Name = "selectAllItem";
-            this.selectAllItem.Size = new System.Drawing.Size(144, 22);
-            this.selectAllItem.Text = "All";
-            this.selectAllItem.Click += new System.EventHandler(this.selectAllItem_Click);
-            // 
-            // selectNoneItem
-            // 
-            this.selectNoneItem.Enabled = false;
-            this.selectNoneItem.Name = "selectNoneItem";
-            this.selectNoneItem.Size = new System.Drawing.Size(144, 22);
-            this.selectNoneItem.Text = "None";
-            this.selectNoneItem.Click += new System.EventHandler(this.selectNoneItem_Click);
-            // 
-            // selectByPropertyItem
-            // 
-            this.selectByPropertyItem.Enabled = false;
-            this.selectByPropertyItem.Name = "selectByPropertyItem";
-            this.selectByPropertyItem.Size = new System.Drawing.Size(144, 22);
-            this.selectByPropertyItem.Text = "By property...";
-            this.selectByPropertyItem.Click += new System.EventHandler(this.selectByPropertyItem_Click);
             // 
             // splitContainer1
             // 
@@ -344,6 +268,7 @@
             this.selectPropButton.AutoSize = true;
             this.selectPropButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectPropButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectPropButton.Enabled = false;
             this.selectPropButton.Location = new System.Drawing.Point(128, 278);
             this.selectPropButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectPropButton.Name = "selectPropButton";
@@ -437,6 +362,8 @@
             this.layerList.Name = "layerList";
             this.layerList.Size = new System.Drawing.Size(179, 186);
             this.layerList.TabIndex = 7;
+            this.layerList.SelectedIndexChanged += new System.EventHandler(this.layerList_SelectedIndexChanged);
+            this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
             // mouseSelectButton
             // 
@@ -550,17 +477,9 @@
         private System.Windows.Forms.PictureBox mapWindow;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem shapefileMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mouseToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mouseMoveItem;
-        private System.Windows.Forms.ToolStripMenuItem mouseSelectItem;
-        private System.Windows.Forms.ToolStripMenuItem mouseInfoItem;
         private System.Windows.Forms.ToolStripStatusLabel progressLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel coordLabel;
-        private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectAllItem;
-        private System.Windows.Forms.ToolStripMenuItem selectNoneItem;
-        private System.Windows.Forms.ToolStripMenuItem selectByPropertyItem;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label layerLabel;

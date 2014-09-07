@@ -21,6 +21,23 @@ namespace SGIS
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
         private ContextMenuStrip infoContextMenu = new ContextMenuStrip();
 
+        public static string ShowDialog(string text, string caption)
+        {
+            Form prompt = new Form();
+            prompt.Width = 500;
+            prompt.Height = 150;
+            prompt.Text = caption;
+            prompt.StartPosition = FormStartPosition.CenterScreen;
+            TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400, Text = text };
+            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70 };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(confirmation);
+            prompt.AcceptButton = confirmation;
+            prompt.ShowDialog();
+            return textBox.Text;
+        }
+
         public SGIS()
         {
             InitializeComponent();
@@ -40,6 +57,9 @@ namespace SGIS
 
             layerListContextMenu.Opening += new CancelEventHandler(layerListContextMenu_Opening);
             infoContextMenu.Opening += new CancelEventHandler(infoContextMenu_Opening);
+
+            toolPanel.RowStyles.Clear();
+            toolPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         }
 
         private void infoContextMenu_Opening(object sender, CancelEventArgs e)
@@ -95,6 +115,11 @@ namespace SGIS
             layerListContextMenu.Items.Add(new ToolStripMenuItem(l.visible ? "Hide" : "Show", null, (o, i) => { l.visible = !l.visible; redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Color...", colorImg, (o, i) => { l.color = chooseColor(l.color); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) => {
+                string newname = ShowDialog(l.Name, "New name");
+                if (newname != "") l.Name = newname;
+                layerList_SelectedIndexChanged(null, null);
+            }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) => { layers.Remove(l); redraw(); }));
         }
 
@@ -294,9 +319,16 @@ namespace SGIS
             lineLabel.Height = 1;
             lineLabel.BorderStyle = BorderStyle.FixedSingle;
 
-            Label label = new Label();
-            label.Text = "Select by property";
-            label.Anchor = AnchorStyles.None;
+            Label expressionLabel = new Label();
+            expressionLabel.Text = "Expression:";
+            expressionLabel.Anchor = AnchorStyles.None;
+            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            Label titleLabel = new Label();
+            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
+            titleLabel.Text = "Select by property";
+            titleLabel.Anchor = AnchorStyles.None;
+            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
 
             TextBox textbox = new TextBox();
             textbox.Anchor = AnchorStyles.None;
@@ -311,12 +343,18 @@ namespace SGIS
             errorLabel.ForeColor = Color.Red;
             errorLabel.Anchor = AnchorStyles.None;
 
+            errorLabel.Width = comboBox.Width;
+            textbox.Width = comboBox.Width;
+            expressionLabel.Width = comboBox.Width;
+            titleLabel.Width = comboBox.Width;
+
             Button selectButton = new Button();
             selectButton.Text = "Select";
             selectButton.Anchor = AnchorStyles.None;
 
-            toolPanel.Controls.Add(label);
+            toolPanel.Controls.Add(titleLabel);
             toolPanel.Controls.Add(lineLabel);
+            toolPanel.Controls.Add(expressionLabel);
             toolPanel.Controls.Add(textbox);
             toolPanel.Controls.Add(comboBox);
             toolPanel.Controls.Add(errorLabel);

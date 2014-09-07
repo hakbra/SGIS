@@ -7,6 +7,8 @@ using NetTopologySuite.Geometries;
 using GeoAPI.Geometries;
 using System.Data;
 using NetTopologySuite.Utilities;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SGIS
 {
@@ -16,14 +18,28 @@ namespace SGIS
         LINE,
         POLYGON
     }
-    public class Layer
+    public class Layer : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
         public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
         public List<Feature> selected = new List<Feature>();
         public System.Drawing.Color color;
         public bool visible;
         ShapeType shapetype;
-        public string name;
+        private string name;
+        public string Name
+        {
+            get { return name; }
+            set { name = value; NotifyPropertyChanged(); }
+        }
         public Envelope boundingbox;
         public DataTable dataTable = null;
         public QuadTree quadTree = null;

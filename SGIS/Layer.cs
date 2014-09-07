@@ -33,7 +33,7 @@ namespace SGIS
         public List<Feature> selected = new List<Feature>();
         public System.Drawing.Color color;
         public bool visible;
-        ShapeType shapetype;
+        public ShapeType shapetype;
         private string name;
         public string Name
         {
@@ -48,6 +48,8 @@ namespace SGIS
             if (boundingbox == null)
                 throw new Exception("Need boundingbox to create quadTree");
             quadTree = new QuadTree(boundingbox.MinX, boundingbox.MaxX, boundingbox.MinY, boundingbox.MaxY);
+            foreach (Feature f in features.Values)
+                quadTree.add(f);
         }
         
         public Layer(string n, ShapeType st)

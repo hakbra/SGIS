@@ -1,6 +1,7 @@
 ﻿using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -430,6 +431,7 @@ namespace SGIS
                 selectInvertButton.Enabled = true;
                 selectPropButton.Enabled = l.dataTable != null;
             }
+            redraw();
         }
 
         private void selectInvertButton_Click(object sender, EventArgs e)
@@ -447,6 +449,212 @@ namespace SGIS
             l.selected = newSelected;
             setStatusText(newSelected.Count + " objects");
             redraw();
+        }
+
+        private void toLayerButton_Click(object sender, EventArgs e)
+        {
+            toolPanel.Controls.Clear();
+
+            Label lineLabel = new Label();
+            lineLabel.Dock = DockStyle.Top;
+            lineLabel.Height = 1;
+            lineLabel.BorderStyle = BorderStyle.FixedSingle;
+
+            Label expressionLabel = new Label();
+            expressionLabel.Text = "Layer name:";
+            expressionLabel.Anchor = AnchorStyles.None;
+            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            Label titleLabel = new Label();
+            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
+            titleLabel.Text = "Export selection";
+            titleLabel.Anchor = AnchorStyles.None;
+            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            TextBox textbox = new TextBox();
+            textbox.Anchor = AnchorStyles.None;
+            Layer cl = (Layer)layerList.SelectedItem;
+            if (cl != null)
+                textbox.Text = cl.Name + "_copy";
+            textbox.Focus();
+            textbox.Select(textbox.Text.Length, 0);
+
+            Label errorLabel = new Label();
+            errorLabel.ForeColor = Color.Red;
+            errorLabel.Anchor = AnchorStyles.None;
+
+            errorLabel.Width = titleLabel.Width;
+            textbox.Width = titleLabel.Width;
+            expressionLabel.Width = titleLabel.Width;
+
+            Button selectButton = new Button();
+            selectButton.Text = "Copy selection";
+            selectButton.Anchor = AnchorStyles.None;
+
+            toolPanel.Controls.Add(titleLabel);
+            toolPanel.Controls.Add(lineLabel);
+            toolPanel.Controls.Add(expressionLabel);
+            toolPanel.Controls.Add(textbox);
+            toolPanel.Controls.Add(errorLabel);
+            toolPanel.Controls.Add(selectButton);
+
+            selectButton.Click += (o, ev) =>
+            {
+                Layer l = (Layer)layerList.SelectedItem;
+                if (l == null)
+                    return;
+                if (textbox.Text.Length == 0)
+                {
+                    errorLabel.Text = "Provide a name";
+                    return;
+                }
+                errorLabel.Text = "";
+
+                Layer newl = new Layer(textbox.Text, l.shapetype);
+                newl.dataTable = l.dataTable;
+                newl.boundingbox = l.boundingbox;
+                newl.createQuadTree();
+                foreach (Feature f in l.selected)
+                    newl.addFeature(new Feature((Geometry)f.geometry.Clone(), f.id));
+                layers.Insert(0, newl);
+                layerList.SelectedItem = newl;
+            };
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null)
+                return;
+
+            var result = MessageBox.Show("Are you sure?", "Delete selection", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                foreach (Feature f in l.selected)
+                    l.features.Remove(f.id);
+                l.clearSelected();
+                l.createQuadTree();
+                redraw();
+            }
+        }
+
+        private void bufferButton_Click(object sender, EventArgs e)
+        {
+            toolPanel.Controls.Clear();
+
+            Label titleLabel = new Label();
+            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
+            titleLabel.Text = "Buffer";
+            titleLabel.Anchor = AnchorStyles.None;
+            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            Label lineLabel = new Label();
+            lineLabel.Dock = DockStyle.Top;
+            lineLabel.Height = 1;
+            lineLabel.BorderStyle = BorderStyle.FixedSingle;
+
+            Layer cl = (Layer)layerList.SelectedItem;
+            Label distanceLabel = new Label();
+            distanceLabel.Text = "Distance:";
+            distanceLabel.Anchor = AnchorStyles.None;
+            distanceLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            TextBox distbox = new TextBox();
+            distbox.Anchor = AnchorStyles.None;
+            distbox.Focus();
+
+            Label expressionLabel = new Label();
+            expressionLabel.Text = "Layer name:";
+            expressionLabel.Anchor = AnchorStyles.None;
+            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            TextBox textbox = new TextBox();
+            textbox.Anchor = AnchorStyles.None;
+            if (cl != null)
+                textbox.Text = cl.Name + "_buffer";
+
+            Label errorLabel = new Label();
+            errorLabel.ForeColor = Color.Red;
+            errorLabel.Anchor = AnchorStyles.None;
+
+            errorLabel.Width = titleLabel.Width;
+            textbox.Width = titleLabel.Width;
+            expressionLabel.Width = titleLabel.Width;
+
+            Button selectButton = new Button();
+            selectButton.Text = "Buffer";
+            selectButton.Anchor = AnchorStyles.None;
+
+            toolPanel.Controls.Add(titleLabel);
+            toolPanel.Controls.Add(lineLabel);
+            toolPanel.Controls.Add(distanceLabel);
+            toolPanel.Controls.Add(distbox);
+            toolPanel.Controls.Add(expressionLabel);
+            toolPanel.Controls.Add(textbox);
+            toolPanel.Controls.Add(errorLabel);
+            toolPanel.Controls.Add(selectButton);
+
+            selectButton.Click += (o, ev) =>
+            {
+                Layer l = (Layer)layerList.SelectedItem;
+                if (l == null)
+                    return;
+                double dist = 0;
+                try
+                {
+                    dist = double.Parse(distbox.Text);
+                }
+                catch (Exception ex)
+                {
+                    errorLabel.Text = "Not a number";
+                    return;
+                }
+                if (textbox.Text.Length == 0)
+                {
+                    errorLabel.Text = "Provide a name";
+                    return;
+                }
+                errorLabel.Text = "";
+
+                Layer newl = new Layer(textbox.Text, ShapeType.POLYGON);
+                newl.dataTable = l.dataTable;
+                newl.boundingbox = l.boundingbox;
+                newl.createQuadTree();
+
+                List<Feature> flist = l.features.Values.ToList();
+                if (l.selected.Count > 0)
+                    flist = l.selected;
+
+                progressLabel.Text = "Buffer";
+                progressLabel.Invalidate();
+                progressBar.Minimum = 0;
+                progressBar.Maximum = flist.Count;
+
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
+                {
+                    for (int i = 0; i < flist.Count; i++)
+                    {
+                        bw.ReportProgress(i);
+                        Feature f = flist[i];
+                        newl.addFeature(new Feature(f.geometry.Buffer(dist), f.id));
+                    }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    progressBar.Value = 0;
+                    progressLabel.Text = "";
+
+                    layers.Insert(0, newl);
+                    layerList.SelectedItem = newl;
+                };
+                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>{
+                    
+                        progressBar.Value = we.ProgressPercentage;
+                };
+                bw.RunWorkerAsync();
+            };
         }
     }
 }

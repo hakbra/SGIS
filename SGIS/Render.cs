@@ -11,7 +11,7 @@ namespace SGIS
 {
     class Render
     {
-        public static void Draw(Geometry ge, Graphics gr, Color c) {
+        public static void Draw(IGeometry ge, Graphics gr, Color c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
             if (ge.GeometryType == "LineString")

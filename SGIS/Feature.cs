@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ namespace SGIS
 {
     public class Feature
     {
-        public Feature(Geometry g, int i)
+        public Feature(IGeometry g, int i)
         {
             geometry = g;
             id = i;
             selected = false;
         }
-        public Geometry geometry;
+        public IGeometry geometry;
         public int id;
         public bool selected;
     }

@@ -58,12 +58,6 @@
     <Compile Include="QuadTree.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="ScreenManager.cs" />
-    <Compile Include="SelectByPropertyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SelectByPropertyForm.Designer.cs">
-      <DependentUpon>SelectByPropertyForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="SGIS.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,9 +69,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShpReader.cs" />
-    <EmbeddedResource Include="SelectByPropertyForm.resx">
-      <DependentUpon>SelectByPropertyForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SGIS.resx">
       <DependentUpon>SGIS.cs</DependentUpon>
     </EmbeddedResource>

@@ -172,7 +172,8 @@ namespace SGIS
                     ShpReader sr = new ShpReader();
                     Layer l = sr.read(file);
                     layers.Insert(0, l);
-                    layerList.SelectedItem = l;
+                    layerList.SelectedIndex = 0;
+                    this.layerList_SelectedIndexChanged(null, null);
                     screenManager.RealRect.Set(l.boundingbox);
                     screenManager.Calculate();
                     this.Refresh();
@@ -236,28 +237,28 @@ namespace SGIS
             redraw();
         }
 
-        private void mouseMoveItem_MouseDown(object sender, MouseEventArgs e)
+        private void mouseMoveItem_MouseDown(object sender, EventArgs e)
         {
             mouse = new MoveMouseTactic();
-            mouseMoveItem.Enabled = false;
-            mouseInfoItem.Enabled = true;
-            mouseSelectItem.Enabled = true;
+            mouseMoveButton.Enabled = false;
+            mouseInfoButton.Enabled = true;
+            mouseSelectButton.Enabled = true;
         }
 
         private void mouseSelectItem_Click(object sender, EventArgs e)
         {
             mouse = new SelectMouseTactic();
-            mouseMoveItem.Enabled = true;
-            mouseInfoItem.Enabled = true;
-            mouseSelectItem.Enabled = false;
+            mouseMoveButton.Enabled = true;
+            mouseInfoButton.Enabled = true;
+            mouseSelectButton.Enabled = false;
         }
 
         private void mouseInfoItem_Click(object sender, EventArgs e)
         {
             mouse = new InfoMouseTactic();
-            mouseMoveItem.Enabled = true;
-            mouseSelectItem.Enabled = true;
-            mouseInfoItem.Enabled = false;
+            mouseMoveButton.Enabled = true;
+            mouseSelectButton.Enabled = true;
+            mouseInfoButton.Enabled = false;
         }
 
         private void selectAllItem_Click(object sender, EventArgs e)
@@ -270,7 +271,8 @@ namespace SGIS
                 l.selected.Add(f);
                 f.selected = true;
             }
-            SGIS.app.setStatusText(l.features.Count + " objects");
+            setStatusText(l.features.Count + " objects");
+            redraw();
         }
 
         private void selectNoneItem_Click(object sender, EventArgs e)
@@ -279,13 +281,98 @@ namespace SGIS
             if (l == null)
                 return;
             l.clearSelected();
-            SGIS.app.setStatusText("");
+            setStatusText("");
+            redraw();
         }
 
         private void selectByPropertyItem_Click(object sender, EventArgs e)
         {
-            Form sform = new SelectByPropertyForm();
-            sform.Show();
+            toolPanel.Controls.Clear();
+
+            Label lineLabel = new Label();
+            lineLabel.Dock = DockStyle.Top;
+            lineLabel.Height = 1;
+            lineLabel.BorderStyle = BorderStyle.FixedSingle;
+
+            Label label = new Label();
+            label.Text = "Select by property";
+            label.Anchor = AnchorStyles.None;
+
+            TextBox textbox = new TextBox();
+            textbox.Anchor = AnchorStyles.None;
+
+            ComboBox comboBox = new ComboBox();
+            comboBox.Items.Add("Column name");
+            comboBox.SelectedIndex = 0;
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox.Anchor = AnchorStyles.None;
+
+            Label errorLabel = new Label();
+            errorLabel.ForeColor = Color.Red;
+            errorLabel.Anchor = AnchorStyles.None;
+
+            Button selectButton = new Button();
+            selectButton.Text = "Select";
+            selectButton.Anchor = AnchorStyles.None;
+
+            toolPanel.Controls.Add(label);
+            toolPanel.Controls.Add(lineLabel);
+            toolPanel.Controls.Add(textbox);
+            toolPanel.Controls.Add(comboBox);
+            toolPanel.Controls.Add(errorLabel);
+            toolPanel.Controls.Add(selectButton);
+
+            comboBox.DropDown += (o, ev) =>
+            {
+                Layer l = (Layer)layerList.SelectedItem;
+                if (l == null)
+                    return;
+                comboBox.Items.Clear();
+                comboBox.Items.Add("Column name");
+                foreach (var column in l.dataTable.Columns)
+                {
+                    string colName = column.ToString();
+                    comboBox.Items.Add(colName);
+                }
+                comboBox.SelectedIndex = 0;
+            };
+            comboBox.SelectedIndexChanged += (o, ev) =>
+            {
+                if (comboBox.SelectedIndex == 0)
+                    return;
+
+                textbox.Text += "[" + comboBox.SelectedItem.ToString() + "] ";
+                comboBox.SelectedIndex = 0;
+                textbox.Focus();
+                textbox.Select(textbox.Text.Length, 0);
+            };
+
+            selectButton.Click += (o, ev) =>
+            {
+                Layer l = (Layer)layerList.SelectedItem;
+                if (l == null || l.dataTable == null)
+                    return;
+                try
+                {
+                    DataRow[] rows = l.dataTable.Select(textbox.Text);
+                    errorLabel.Text = "";
+                    l.clearSelected();
+
+                    foreach (DataRow dr in rows)
+                    {
+                        int id = (int)dr[0];
+                        Feature f = l.features[id];
+                        f.selected = true;
+                        l.selected.Add(f);
+                    }
+                    SGIS.app.redraw();
+                }
+                catch (Exception ex)
+                {
+                    errorLabel.Text = "Error: " + ex.Message;
+                    errorLabel.Width = TextRenderer.MeasureText(errorLabel.Text, errorLabel.Font).Width;
+                }
+            };
         }
 
         private void layerList_SelectedIndexChanged(object sender, EventArgs e)
@@ -293,16 +380,35 @@ namespace SGIS
             Layer l = (Layer)layerList.SelectedItem;
             if (l == null)
             {
-                selectAllItem.Enabled = false;
-                selectNoneItem.Enabled = false;
-                selectByPropertyItem.Enabled = false;
+                selectAllButton.Enabled = false;
+                selectNoneButton.Enabled = false;
+                selectPropButton.Enabled = false;
+                selectInvertButton.Enabled = false;
             }
             else
             {
-                selectAllItem.Enabled = true;
-                selectNoneItem.Enabled = true;
-                selectByPropertyItem.Enabled = l.dataTable != null;
+                selectAllButton.Enabled = true;
+                selectNoneButton.Enabled = true;
+                selectInvertButton.Enabled = true;
+                selectPropButton.Enabled = l.dataTable != null;
             }
+        }
+
+        private void selectInvertButton_Click(object sender, EventArgs e)
+        {
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null)
+                return;
+            List<Feature> newSelected = new List<Feature>();
+            foreach (Feature f in l.features.Values)
+            {
+                f.selected = !f.selected;
+                if (f.selected)
+                    newSelected.Add(f);
+            }
+            l.selected = newSelected;
+            setStatusText(newSelected.Count + " objects");
+            redraw();
         }
     }
 }

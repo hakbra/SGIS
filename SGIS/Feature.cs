@@ -16,8 +16,15 @@ namespace SGIS
             id = i;
             selected = false;
         }
+        public Feature(IGeometry g)
+        {
+            geometry = g;
+            id = -1;
+            selected = false;
+        }
         public IGeometry geometry;
         public int id;
         public bool selected;
+        public QuadTree parent;
     }
 }

@@ -14,7 +14,7 @@ namespace SGIS
         IGeometry gboundary;
         QuadTree[] children = new QuadTree[4];
         bool hasChildren = false;
-        List<Feature> features = new List<Feature>();
+        public List<Feature> features = new List<Feature>();
 
         public QuadTree(double minx, double maxx, double miny, double maxy)
         {
@@ -29,6 +29,7 @@ namespace SGIS
             if (!hasChildren && features.Count < 20)
             {
                 features.Add(f);
+                f.parent = this;
                 return;
             }
 
@@ -44,6 +45,7 @@ namespace SGIS
                 }
             }
             features.Add(f);
+            f.parent = this;
         }
 
         public void split()

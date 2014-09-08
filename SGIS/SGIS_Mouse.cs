@@ -40,6 +40,7 @@ namespace SGIS
             mouseMoveButton.Enabled = false;
             mouseInfoButton.Enabled = true;
             mouseSelectButton.Enabled = true;
+            SGIS.app.getMapWindow().Cursor = Cursors.Hand;
         }
 
         private void mouseSelectItem_Click(object sender, EventArgs e)
@@ -48,6 +49,7 @@ namespace SGIS
             mouseMoveButton.Enabled = true;
             mouseInfoButton.Enabled = true;
             mouseSelectButton.Enabled = false;
+            SGIS.app.getMapWindow().Cursor = Cursors.Cross;
         }
 
         private void mouseInfoItem_Click(object sender, EventArgs e)
@@ -56,6 +58,7 @@ namespace SGIS
             mouseMoveButton.Enabled = true;
             mouseSelectButton.Enabled = true;
             mouseInfoButton.Enabled = false;
+            SGIS.app.getMapWindow().Cursor = Cursors.Help;
         }
 
         private void infoContextMenu_Opening(object sender, CancelEventArgs e)

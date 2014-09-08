@@ -14,6 +14,9 @@ namespace SGIS
         public static void Draw(IGeometry ge, Graphics gr, Color c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
+            if (ge.GeometryType == "MultiPolygon")
+                foreach(IGeometry g in ((IGeometryCollection)ge).Geometries)
+                    drawPolygon((Polygon)g, gr, c);
             if (ge.GeometryType == "LineString")
                 drawLine((LineString)ge, gr, c);
             if (ge.GeometryType == "Point")

@@ -12,6 +12,7 @@ namespace SGIS
     {
         private TableLayoutPanel panel;
         private Label errorLabel;
+        private List<ComboBox> layerSelects = new List<ComboBox>();
 
         public ToolBuilder(TableLayoutPanel p, string title)
         {
@@ -67,6 +68,21 @@ namespace SGIS
                 Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
                 if (l == null)
                     return;
+                foreach (ComboBox cb in layerSelects)
+                {
+                    Layer selectedLayer = (Layer)cb.SelectedItem;
+                    if (selectedLayer == null)
+                    {
+                        setError("Select layer");
+                        return;
+                    }
+                    if (!SGIS.app.layers.Contains(selectedLayer))
+                    {
+                        setError(selectedLayer.Name + " is deleted");
+                        return;
+                    }
+
+                }
                 setError("");
                 action(l);
                 if (errorLabel == null || errorLabel.Text == "")
@@ -123,6 +139,38 @@ namespace SGIS
 
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
             ToolTip1.SetToolTip(errorLabel, s);
+        }
+
+        internal ComboBox addLayerSelect(string p)
+        {
+            addLabel(p);
+
+            ComboBox cb = new ComboBox();
+            cb.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb.Anchor = AnchorStyles.None;
+            foreach (Layer l in SGIS.app.layers)
+                cb.Items.Add(l);
+            if (cb.Items.Count > 0)
+                cb.SelectedIndex = 0;
+            cb.DropDown += (o, e) =>
+            {
+                Layer l = (Layer) cb.SelectedItem;
+                cb.Items.Clear();
+
+                foreach (Layer layer in SGIS.app.layers)
+                {
+                    cb.Items.Add(layer);
+                    if (layer == l)
+                        cb.SelectedItem = l;
+                }
+                if (cb.SelectedIndex == -1 && cb.Items.Count > 0)
+                    cb.SelectedIndex = 0;
+            };
+
+            addControl(cb);
+            layerSelects.Add(cb);
+
+            return cb;
         }
     }
 }

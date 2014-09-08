@@ -44,7 +44,8 @@
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.bufferButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.unionButton = new System.Windows.Forms.Button();
             this.toLayerButton = new System.Windows.Forms.Button();
             this.selectPropButton = new System.Windows.Forms.Button();
             this.selectInvertButton = new System.Windows.Forms.Button();
@@ -59,7 +60,9 @@
             this.toolLabel = new System.Windows.Forms.Label();
             this.pointerLabel = new System.Windows.Forms.Label();
             this.deleteButton = new System.Windows.Forms.Button();
+            this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.diffButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -99,7 +102,7 @@
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(573, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(604, 17);
             this.toolStripStatusLabel2.Spring = true;
             // 
             // statusLabel
@@ -180,6 +183,7 @@
             // 
             // mapWindow
             // 
+            this.mapWindow.Cursor = System.Windows.Forms.Cursors.Hand;
             this.mapWindow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapWindow.Location = new System.Drawing.Point(0, 0);
             this.mapWindow.Name = "mapWindow";
@@ -218,7 +222,9 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Controls.Add(this.bufferButton, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.diffButton, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.unionButton, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectInvertButton, 2, 5);
@@ -233,11 +239,12 @@
             this.tableLayoutPanel1.Controls.Add(this.toolLabel, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.pointerLabel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.deleteButton, 2, 6);
+            this.tableLayoutPanel1.Controls.Add(this.mergeButton, 2, 8);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 9;
+            this.tableLayoutPanel1.RowCount = 10;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -247,19 +254,31 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 364);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 384);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // bufferButton
+            // button1
             // 
-            this.bufferButton.Location = new System.Drawing.Point(0, 344);
-            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
-            this.bufferButton.Name = "bufferButton";
-            this.bufferButton.Size = new System.Drawing.Size(59, 20);
-            this.bufferButton.TabIndex = 22;
-            this.bufferButton.Text = "Buffer";
-            this.bufferButton.UseVisualStyleBackColor = true;
-            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
+            this.button1.Location = new System.Drawing.Point(59, 344);
+            this.button1.Margin = new System.Windows.Forms.Padding(0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 20);
+            this.button1.TabIndex = 23;
+            this.button1.Text = "Buffer";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.bufferButton_Click);
+            // 
+            // unionButton
+            // 
+            this.unionButton.Location = new System.Drawing.Point(0, 344);
+            this.unionButton.Margin = new System.Windows.Forms.Padding(0);
+            this.unionButton.Name = "unionButton";
+            this.unionButton.Size = new System.Drawing.Size(59, 20);
+            this.unionButton.TabIndex = 22;
+            this.unionButton.Text = "Union";
+            this.unionButton.UseVisualStyleBackColor = true;
+            this.unionButton.Click += new System.EventHandler(this.unionButton_Click);
             // 
             // toLayerButton
             // 
@@ -456,6 +475,28 @@
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
+            // mergeButton
+            // 
+            this.mergeButton.Location = new System.Drawing.Point(118, 344);
+            this.mergeButton.Margin = new System.Windows.Forms.Padding(0);
+            this.mergeButton.Name = "mergeButton";
+            this.mergeButton.Size = new System.Drawing.Size(59, 20);
+            this.mergeButton.TabIndex = 24;
+            this.mergeButton.Text = "Merge";
+            this.mergeButton.UseVisualStyleBackColor = true;
+            this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
+            // 
+            // diffButton
+            // 
+            this.diffButton.Location = new System.Drawing.Point(0, 364);
+            this.diffButton.Margin = new System.Windows.Forms.Padding(0);
+            this.diffButton.Name = "diffButton";
+            this.diffButton.Size = new System.Drawing.Size(59, 20);
+            this.diffButton.TabIndex = 25;
+            this.diffButton.Text = "Diff.";
+            this.diffButton.UseVisualStyleBackColor = true;
+            this.diffButton.Click += new System.EventHandler(this.diffButton_Click);
+            // 
             // SGIS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -519,7 +560,10 @@
         private System.Windows.Forms.Label pointerLabel;
         private System.Windows.Forms.TableLayoutPanel toolPanel;
         private System.Windows.Forms.Button deleteButton;
-        private System.Windows.Forms.Button bufferButton;
+        private System.Windows.Forms.Button unionButton;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button mergeButton;
+        private System.Windows.Forms.Button diffButton;
     }
 }
 

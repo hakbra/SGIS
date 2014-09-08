@@ -29,6 +29,7 @@ namespace SGIS
             }
         }
 
+        int maxid = -1;
         public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
         public List<Feature> selected = new List<Feature>();
         public System.Drawing.Color color;
@@ -75,9 +76,20 @@ namespace SGIS
         }
         public void addFeature(Feature s)
         {
+            if (s.id > maxid)
+                maxid = s.id + 1;
+            if (s.id == -1)
+                s.id = maxid++;
             features.Add(s.id, s);
             if (quadTree != null)
                 quadTree.add(s);
+        }
+
+        public void delFeature(Feature f)
+        {
+            features.Remove(f.id);
+            if (f.parent != null)
+                f.parent.features.Remove(f);
         }
 
         public Feature getClosest(Point p, double limit)

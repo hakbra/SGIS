@@ -22,23 +22,6 @@ namespace SGIS
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
         private ContextMenuStrip infoContextMenu = new ContextMenuStrip();
 
-        public static string ShowDialog(string text, string caption)
-        {
-            Form prompt = new Form();
-            prompt.Width = 500;
-            prompt.Height = 150;
-            prompt.Text = caption;
-            prompt.StartPosition = FormStartPosition.CenterScreen;
-            TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400, Text = text };
-            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70 };
-            confirmation.Click += (sender, e) => { prompt.Close(); };
-            prompt.Controls.Add(textBox);
-            prompt.Controls.Add(confirmation);
-            prompt.AcceptButton = confirmation;
-            prompt.ShowDialog();
-            return textBox.Text;
-        }
-
         public SGIS()
         {
             InitializeComponent();
@@ -115,11 +98,22 @@ namespace SGIS
             layerListContextMenu.Items.Add("-");
             layerListContextMenu.Items.Add(new ToolStripMenuItem(l.visible ? "Hide" : "Show", null, (o, i) => { l.visible = !l.visible; redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
-            layerListContextMenu.Items.Add(new ToolStripMenuItem("Color...", colorImg, (o, i) => { l.color = chooseColor(l.color); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Color...", colorImg, (o, i) => {
+                l.color = chooseColor(l.color); redraw();
+            }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) => {
-                string newname = ShowDialog(l.Name, "New name");
-                if (newname != "") l.Name = newname;
-                layerList_SelectedIndexChanged(null, null);
+                ToolBuilder tb = new ToolBuilder(toolPanel, "Rename layer");
+                TextBox name = tb.addTextbox("New name:");
+                Label error = tb.addErrorLabel();
+                Button button = tb.addButton("Rename", (Layer currentLayer) =>
+                {
+                    if (name.Text.Length == 0)
+                    {
+                        tb.setError("Provide name");
+                        return;
+                    }
+                    currentLayer.Name = name.Text;
+                });
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) => { layers.Remove(l); redraw(); }));
         }
@@ -149,9 +143,24 @@ namespace SGIS
                 }
                 //if (l.quadTree != null)
                 //    l.quadTree.render(e.Graphics);
+                renderScale(e.Graphics);
             }
 
             mouse.render(e.Graphics);
+        }
+
+        private void renderScale(Graphics graphics)
+        {
+            double mpp = screenManager.RealRect.Width / screenManager.WindowsRect.Width;
+
+            Pen p = new Pen(Color.Black);
+            System.Drawing.Point start = new System.Drawing.Point(50, this.Height-150);
+            System.Drawing.Point end = new System.Drawing.Point(150, this.Height-150);
+            System.Drawing.Point text = new System.Drawing.Point(170, this.Height-150);
+            graphics.DrawLine(p, start, end);
+
+            Font f = new Font(FontFamily.GenericMonospace, 12);
+            graphics.DrawString(mpp * 100 + " meters", f, new SolidBrush(Color.Black), text);
         }
 
         private void SGIS_MouseWheel(object sender, MouseEventArgs e)
@@ -313,53 +322,44 @@ namespace SGIS
 
         private void selectByPropertyItem_Click(object sender, EventArgs e)
         {
-            toolPanel.Controls.Clear();
-
-            Label lineLabel = new Label();
-            lineLabel.Dock = DockStyle.Top;
-            lineLabel.Height = 1;
-            lineLabel.BorderStyle = BorderStyle.FixedSingle;
-
-            Label expressionLabel = new Label();
-            expressionLabel.Text = "Expression:";
-            expressionLabel.Anchor = AnchorStyles.None;
-            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            Label titleLabel = new Label();
-            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
-            titleLabel.Text = "Select by property";
-            titleLabel.Anchor = AnchorStyles.None;
-            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            TextBox textbox = new TextBox();
-            textbox.Anchor = AnchorStyles.None;
+            ToolBuilder tb = new ToolBuilder(toolPanel, "Select by property");
+            TextBox textbox = tb.addTextbox("Expression:");
 
             ComboBox comboBox = new ComboBox();
             comboBox.Items.Add("Column name");
             comboBox.SelectedIndex = 0;
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.Anchor = AnchorStyles.None;
+            tb.addControl(comboBox);
 
-            Label errorLabel = new Label();
-            errorLabel.ForeColor = Color.Red;
-            errorLabel.Anchor = AnchorStyles.None;
+            Label errorLabel = tb.addErrorLabel();
+            Button selectButton = tb.addButton("Select", (l) =>
+            {
+                if (l.dataTable == null)
+                    return;
+                try
+                {
+                    DataRow[] rows = l.dataTable.Select(textbox.Text);
+                    tb.setError("");
+                    l.clearSelected();
 
-            errorLabel.Width = comboBox.Width;
-            textbox.Width = comboBox.Width;
-            expressionLabel.Width = comboBox.Width;
-            titleLabel.Width = comboBox.Width;
-
-            Button selectButton = new Button();
-            selectButton.Text = "Select";
-            selectButton.Anchor = AnchorStyles.None;
-
-            toolPanel.Controls.Add(titleLabel);
-            toolPanel.Controls.Add(lineLabel);
-            toolPanel.Controls.Add(expressionLabel);
-            toolPanel.Controls.Add(textbox);
-            toolPanel.Controls.Add(comboBox);
-            toolPanel.Controls.Add(errorLabel);
-            toolPanel.Controls.Add(selectButton);
+                    foreach (DataRow dr in rows)
+                    {
+                        int id = (int)dr[0];
+                        Feature f;
+                        if (l.features.TryGetValue(id, out f))
+                        {
+                            f.selected = true;
+                            l.selected.Add(f);
+                        }
+                    }
+                    SGIS.app.redraw();
+                }
+                catch (Exception ex)
+                {
+                    tb.setError(ex.Message);
+                }
+            });
 
             comboBox.DropDown += (o, ev) =>
             {
@@ -384,33 +384,6 @@ namespace SGIS
                 comboBox.SelectedIndex = 0;
                 textbox.Focus();
                 textbox.Select(textbox.Text.Length, 0);
-            };
-
-            selectButton.Click += (o, ev) =>
-            {
-                Layer l = (Layer)layerList.SelectedItem;
-                if (l == null || l.dataTable == null)
-                    return;
-                try
-                {
-                    DataRow[] rows = l.dataTable.Select(textbox.Text);
-                    errorLabel.Text = "";
-                    l.clearSelected();
-
-                    foreach (DataRow dr in rows)
-                    {
-                        int id = (int)dr[0];
-                        Feature f = l.features[id];
-                        f.selected = true;
-                        l.selected.Add(f);
-                    }
-                    SGIS.app.redraw();
-                }
-                catch (Exception ex)
-                {
-                    errorLabel.Text = "Error: " + ex.Message;
-                    errorLabel.Width = TextRenderer.MeasureText(errorLabel.Text, errorLabel.Font).Width;
-                }
             };
         }
 
@@ -453,62 +426,23 @@ namespace SGIS
 
         private void toLayerButton_Click(object sender, EventArgs e)
         {
-            toolPanel.Controls.Clear();
+            ToolBuilder tb = new ToolBuilder(toolPanel, "Export selection");
+            TextBox textbox = tb.addTextbox("Layer name:");
 
-            Label lineLabel = new Label();
-            lineLabel.Dock = DockStyle.Top;
-            lineLabel.Height = 1;
-            lineLabel.BorderStyle = BorderStyle.FixedSingle;
-
-            Label expressionLabel = new Label();
-            expressionLabel.Text = "Layer name:";
-            expressionLabel.Anchor = AnchorStyles.None;
-            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            Label titleLabel = new Label();
-            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
-            titleLabel.Text = "Export selection";
-            titleLabel.Anchor = AnchorStyles.None;
-            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            TextBox textbox = new TextBox();
-            textbox.Anchor = AnchorStyles.None;
             Layer cl = (Layer)layerList.SelectedItem;
             if (cl != null)
                 textbox.Text = cl.Name + "_copy";
             textbox.Focus();
             textbox.Select(textbox.Text.Length, 0);
 
-            Label errorLabel = new Label();
-            errorLabel.ForeColor = Color.Red;
-            errorLabel.Anchor = AnchorStyles.None;
-
-            errorLabel.Width = titleLabel.Width;
-            textbox.Width = titleLabel.Width;
-            expressionLabel.Width = titleLabel.Width;
-
-            Button selectButton = new Button();
-            selectButton.Text = "Copy selection";
-            selectButton.Anchor = AnchorStyles.None;
-
-            toolPanel.Controls.Add(titleLabel);
-            toolPanel.Controls.Add(lineLabel);
-            toolPanel.Controls.Add(expressionLabel);
-            toolPanel.Controls.Add(textbox);
-            toolPanel.Controls.Add(errorLabel);
-            toolPanel.Controls.Add(selectButton);
-
-            selectButton.Click += (o, ev) =>
+            Label errorLabel = tb.addErrorLabel();
+            Button selectButton = tb.addButton("Copy selection", (Layer l) =>
             {
-                Layer l = (Layer)layerList.SelectedItem;
-                if (l == null)
-                    return;
                 if (textbox.Text.Length == 0)
                 {
                     errorLabel.Text = "Provide a name";
                     return;
                 }
-                errorLabel.Text = "";
 
                 Layer newl = new Layer(textbox.Text, l.shapetype);
                 newl.dataTable = l.dataTable;
@@ -518,112 +452,53 @@ namespace SGIS
                     newl.addFeature(new Feature((Geometry)f.geometry.Clone(), f.id));
                 layers.Insert(0, newl);
                 layerList.SelectedItem = newl;
-            };
+            });
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            Layer l = (Layer)layerList.SelectedItem;
-            if (l == null)
-                return;
-
-            var result = MessageBox.Show("Are you sure?", "Delete selection", MessageBoxButtons.YesNo);
-            if (result == System.Windows.Forms.DialogResult.Yes)
+            ToolBuilder tb = new ToolBuilder(toolPanel, "Delete selection");
+            tb.addLabel("Are you sure?");
+            tb.addButton("Yes", (Layer l) =>
             {
                 foreach (Feature f in l.selected)
                     l.features.Remove(f.id);
                 l.clearSelected();
                 l.createQuadTree();
+                setStatusText("0 objects");
                 redraw();
-            }
+            });
+            tb.addButton("No", (l) => { });
         }
 
         private void bufferButton_Click(object sender, EventArgs e)
         {
-            toolPanel.Controls.Clear();
-
-            Label titleLabel = new Label();
-            titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
-            titleLabel.Text = "Buffer";
-            titleLabel.Anchor = AnchorStyles.None;
-            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            Label lineLabel = new Label();
-            lineLabel.Dock = DockStyle.Top;
-            lineLabel.Height = 1;
-            lineLabel.BorderStyle = BorderStyle.FixedSingle;
-
             Layer cl = (Layer)layerList.SelectedItem;
-            Label distanceLabel = new Label();
-            distanceLabel.Text = "Distance:";
-            distanceLabel.Anchor = AnchorStyles.None;
-            distanceLabel.TextAlign = ContentAlignment.MiddleLeft;
+            ToolBuilder tb = new ToolBuilder(toolPanel, "Buffer");
 
-            TextBox distbox = new TextBox();
-            distbox.Anchor = AnchorStyles.None;
-            distbox.Focus();
-
-            Label expressionLabel = new Label();
-            expressionLabel.Text = "Layer name:";
-            expressionLabel.Anchor = AnchorStyles.None;
-            expressionLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            TextBox textbox = new TextBox();
-            textbox.Anchor = AnchorStyles.None;
-            if (cl != null)
-                textbox.Text = cl.Name + "_buffer";
-
-            Label errorLabel = new Label();
-            errorLabel.ForeColor = Color.Red;
-            errorLabel.Anchor = AnchorStyles.None;
-
-            errorLabel.Width = titleLabel.Width;
-            textbox.Width = titleLabel.Width;
-            expressionLabel.Width = titleLabel.Width;
-
-            Button selectButton = new Button();
-            selectButton.Text = "Buffer";
-            selectButton.Anchor = AnchorStyles.None;
-
-            toolPanel.Controls.Add(titleLabel);
-            toolPanel.Controls.Add(lineLabel);
-            toolPanel.Controls.Add(distanceLabel);
-            toolPanel.Controls.Add(distbox);
-            toolPanel.Controls.Add(expressionLabel);
-            toolPanel.Controls.Add(textbox);
-            toolPanel.Controls.Add(errorLabel);
-            toolPanel.Controls.Add(selectButton);
-
-            selectButton.Click += (o, ev) =>
+            TextBox distBox = tb.addTextbox("Distance:");
+            TextBox nameBox = tb.addTextbox("Layer name:", (cl != null) ? cl.Name : "");
+            Label errorLabel = tb.addErrorLabel();
+            Button selectButton = tb.addButton("Buffer",(Layer l) =>
             {
-                Layer l = (Layer)layerList.SelectedItem;
-                if (l == null)
-                    return;
                 double dist = 0;
-                try
+                if (!double.TryParse(distBox.Text, out dist))
                 {
-                    dist = double.Parse(distbox.Text);
-                }
-                catch (Exception ex)
-                {
-                    errorLabel.Text = "Not a number";
+                    tb.setError("Not a number");
                     return;
                 }
-                if (textbox.Text.Length == 0)
+                if (nameBox.Text.Length == 0)
                 {
-                    errorLabel.Text = "Provide a name";
+                    tb.setError("Provide a name");
                     return;
                 }
-                errorLabel.Text = "";
 
-                Layer newl = new Layer(textbox.Text, ShapeType.POLYGON);
+                Layer newl = new Layer(nameBox.Text, ShapeType.POLYGON);
                 newl.dataTable = l.dataTable;
                 newl.boundingbox = l.boundingbox;
                 newl.createQuadTree();
 
                 List<Feature> flist = l.features.Values.ToList();
-                if (l.selected.Count > 0)
-                    flist = l.selected;
 
                 progressLabel.Text = "Buffer";
                 progressLabel.Invalidate();
@@ -654,7 +529,7 @@ namespace SGIS
                         progressBar.Value = we.ProgressPercentage;
                 };
                 bw.RunWorkerAsync();
-            };
+            });
         }
     }
 }

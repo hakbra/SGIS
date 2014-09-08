@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.coordLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,6 +44,7 @@
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.bufferButton = new System.Windows.Forms.Button();
             this.toLayerButton = new System.Windows.Forms.Button();
             this.selectPropButton = new System.Windows.Forms.Button();
             this.selectInvertButton = new System.Windows.Forms.Button();
@@ -59,7 +60,6 @@
             this.pointerLabel = new System.Windows.Forms.Label();
             this.deleteButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.bufferButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -86,21 +86,20 @@
             this.statusStrip.TabIndex = 0;
             this.statusStrip.Text = "statusStrip1";
             // 
-            // progressLabel
-            // 
-            this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(43, 17);
-            this.progressLabel.Text = "dfgdfg";
-            // 
             // progressBar
             // 
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(100, 16);
             // 
+            // progressLabel
+            // 
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(0, 17);
+            // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(565, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(573, 17);
             this.toolStripStatusLabel2.Spring = true;
             // 
             // statusLabel
@@ -250,6 +249,17 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 364);
             this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // bufferButton
+            // 
+            this.bufferButton.Location = new System.Drawing.Point(0, 344);
+            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
+            this.bufferButton.Name = "bufferButton";
+            this.bufferButton.Size = new System.Drawing.Size(59, 20);
+            this.bufferButton.TabIndex = 22;
+            this.bufferButton.Text = "Buffer";
+            this.bufferButton.UseVisualStyleBackColor = true;
+            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
             // 
             // toLayerButton
             // 
@@ -445,17 +455,6 @@
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
-            // 
-            // bufferButton
-            // 
-            this.bufferButton.Location = new System.Drawing.Point(0, 344);
-            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
-            this.bufferButton.Name = "bufferButton";
-            this.bufferButton.Size = new System.Drawing.Size(59, 20);
-            this.bufferButton.TabIndex = 22;
-            this.bufferButton.Text = "Buffer";
-            this.bufferButton.UseVisualStyleBackColor = true;
-            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
             // 
             // SGIS
             // 

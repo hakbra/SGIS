@@ -68,6 +68,21 @@
     <Compile Include="MouseTactic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SGIS_LayerList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SGIS_Menu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SGIS_Mouse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SGIS_Selection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SGIS_Tools.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ShpReader.cs" />
     <Compile Include="ToolBuilder.cs" />
     <EmbeddedResource Include="SGIS.resx">

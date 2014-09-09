@@ -14,16 +14,41 @@ namespace SGIS
         private Label errorLabel;
         private List<ComboBox> layerSelects = new List<ComboBox>();
         public bool autoClose = true;
+        public Action<Layer> resetAction;
 
-        public ToolBuilder(TableLayoutPanel p, string title)
+        public ToolBuilder(TableLayoutPanel p)
         {
             panel = p;
-            panel.Controls.Clear();
+            SGIS.app.layers.ListChanged += reset;
+            SGIS.app.getLayerList().SelectedIndexChanged += reset;
+        }
 
+        public void reset(object sender, EventArgs e){
+            Layer layer = (Layer)SGIS.app.getLayerList().SelectedItem;
+            if (resetAction != null)
+                resetAction(layer);
+        }
+
+        public void reset()
+        {
+            reset(null, null);
+        }
+
+        public void clear()
+        {
+            panel.Controls.Clear();
+            errorLabel = null;
+            layerSelects.Clear();
+            autoClose = true;
+            resetAction = null;
+        }
+
+        public void addHeader(string title)
+        {
+            clear();
             Label titleLabel = new Label();
             titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
             titleLabel.Text = title;
-            titleLabel.Anchor = AnchorStyles.None;
             titleLabel.TextAlign = ContentAlignment.MiddleLeft;
 
             Label lineLabel = new Label();
@@ -43,12 +68,12 @@ namespace SGIS
         {
             Label textboxLabel = new Label();
             textboxLabel.Text = caption;
-            textboxLabel.Anchor = AnchorStyles.None;
             textboxLabel.TextAlign = ContentAlignment.MiddleLeft;
 
             TextBox textbox = new TextBox();
-            textbox.Anchor = AnchorStyles.None;
             textbox.Text = value;
+            textbox.Focus();
+            textbox.Select(textbox.Text.Length, 0);
 
             addControl(textboxLabel);
             addControl(textbox);
@@ -60,7 +85,6 @@ namespace SGIS
         {
             Button button = new Button();
             button.Text = caption;
-            button.Anchor = AnchorStyles.None;
 
             addControl(button);
 
@@ -97,7 +121,6 @@ namespace SGIS
         {
             Button button = new Button();
             button.Text = caption;
-            button.Anchor = AnchorStyles.None;
 
             addControl(button);
 
@@ -106,7 +129,6 @@ namespace SGIS
         public Label addLabel(string text)
         {
             Label label = new Label();
-            label.Anchor = AnchorStyles.None;
             label.Text = text;
 
             addControl(label);
@@ -118,7 +140,6 @@ namespace SGIS
         {
             Label errorLabel = new Label();
             errorLabel.ForeColor = Color.Red;
-            errorLabel.Anchor = AnchorStyles.None;
 
             addControl(errorLabel);
 
@@ -129,6 +150,7 @@ namespace SGIS
         public void addControl(Control c)
         {
             panel.Controls.Add(c);
+            c.Anchor = AnchorStyles.None;
             c.Width = (int) (panel.Width * 0.75);
         }
 
@@ -148,7 +170,6 @@ namespace SGIS
 
             ComboBox cb = new ComboBox();
             cb.DropDownStyle = ComboBoxStyle.DropDownList;
-            cb.Anchor = AnchorStyles.None;
             foreach (Layer l in SGIS.app.layers)
                 cb.Items.Add(l);
             if (cb.Items.Count > 0)

@@ -46,6 +46,7 @@ namespace SGIS
             // Table for tools
             toolPanel.RowStyles.Clear();
             toolPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            toolBuilder = new ToolBuilder(toolPanel);
         }
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
@@ -59,9 +60,9 @@ namespace SGIS
                 foreach (Feature s in visibleFeatures)
                 {
                     if (!s.selected || l != layerList.SelectedItem)
-                        Render.Draw(s.geometry, e.Graphics, l.color);
+                        Render.Draw(s.geometry, e.Graphics, l.style);
                     else if (l == layerList.SelectedItem)
-                        Render.Draw(s.geometry, e.Graphics, Color.DarkCyan);
+                        Render.Draw(s.geometry, e.Graphics, Style.Selected);
                 }
                 //if (l.quadTree != null)
                 //    l.quadTree.render(e.Graphics);

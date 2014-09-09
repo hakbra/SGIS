@@ -11,7 +11,7 @@ namespace SGIS
 {
     class Render
     {
-        public static void Draw(IGeometry ge, Graphics gr, Color c) {
+        public static void Draw(IGeometry ge, Graphics gr, Style c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
             if (ge.GeometryType == "MultiPolygon")
@@ -23,24 +23,22 @@ namespace SGIS
                 drawPoint((NTSPoint)ge, gr, c);
         }
 
-        private static void drawPoint(NTSPoint ge, Graphics gr, Color c)
+        private static void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
-            Brush b = new SolidBrush(c);
             int rad = 5;
             var mid = SGIS.app.screenManager.ScaleAndOffSet(ge);
 
-            gr.FillEllipse(b, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
+            gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
         }
 
-        private static void drawLine(LineString ge, Graphics gr, Color c)
+        private static void drawLine(LineString ge, Graphics gr, Style c)
         {
-            Pen p = new Pen(c);
             var points = ge.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
                 var a = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
                 var b = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i]));
-                gr.DrawLine(p, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
+                gr.DrawLine(c.pen, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
         }
         private static System.Drawing.Drawing2D.GraphicsPath CreatePath(ILineString poly)
@@ -56,20 +54,19 @@ namespace SGIS
             }
             return gp;
         }
-        private static void drawPolygon(Polygon ge, Graphics gr, Color c)
+        private static void drawPolygon(Polygon ge, Graphics gr, Style c)
         {
 
             System.Drawing.Drawing2D.GraphicsPath gp = CreatePath(ge.ExteriorRing);
 
             var hulls = ge.InteriorRings;
             for (int h = 0; h < hulls.Count(); h++)
-            {
                 gp.AddPath(CreatePath(hulls[h]), false);
-            }
-            gp.FillMode = System.Drawing.Drawing2D.FillMode.Alternate;
 
-            Brush b = new SolidBrush(c);
-            gr.FillPath(b, gp);
+            gp.FillMode = System.Drawing.Drawing2D.FillMode.Alternate;
+            gr.FillPath(c.brush, gp);
+
+            gr.DrawPath(c.pen, gp);
         }
     }
 }

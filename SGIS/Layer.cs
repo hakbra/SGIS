@@ -12,6 +12,16 @@ using System.Runtime.CompilerServices;
 
 namespace SGIS
 {
+    public struct Style
+    {
+        public System.Drawing.Pen pen;
+        public System.Drawing.Brush brush;
+        public static Style Selected = new Style()
+        {
+            pen = new System.Drawing.Pen(System.Drawing.Color.DarkCyan),
+            brush = new System.Drawing.SolidBrush(System.Drawing.Color.Cyan)
+        };
+    }
     public enum ShapeType
     {
         EMPTY,
@@ -34,7 +44,7 @@ namespace SGIS
         int maxid = -1;
         public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
         public List<Feature> selected = new List<Feature>();
-        public System.Drawing.Color color;
+        public Style style;
         public bool visible;
         public ShapeType shapetype;
         private string name;
@@ -76,7 +86,11 @@ namespace SGIS
             this.name = n;
             shapetype = ShapeType.EMPTY;
             visible = true;
-            color = System.Drawing.Color.Black;
+            style = new Style()
+            {
+                pen = new System.Drawing.Pen(System.Drawing.Color.Black),
+                brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray)
+            };
         }
 
         public override string ToString()

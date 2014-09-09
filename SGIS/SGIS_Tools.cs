@@ -13,26 +13,27 @@ namespace SGIS
 {
     public partial class SGIS
     {
+        ToolBuilder toolBuilder;
 
         private void bufferButton_Click(object sender, EventArgs e)
         {
-            Layer cl = (Layer)layerList.SelectedItem;
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Buffer");
+            toolBuilder.addHeader("Buffer");
 
-            TextBox distBox = tb.addTextbox("Distance:");
-            TextBox nameBox = tb.addTextbox("Layer name:", (cl != null) ? cl.Name + "_buffer": "");
-            Label errorLabel = tb.addErrorLabel();
-            Button selectButton = tb.addButton("Buffer", (Layer l) =>
+            TextBox distBox = toolBuilder.addTextbox("Distance:");
+            TextBox nameBox = toolBuilder.addTextbox("Layer name:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+
+            Button selectButton = toolBuilder.addButton("Buffer", (Layer l) =>
             {
                 double dist = 0;
                 if (!double.TryParse(distBox.Text, out dist))
                 {
-                    tb.setError("Not a number");
+                    toolBuilder.setError("Not a number");
                     return;
                 }
                 if (nameBox.Text.Length == 0)
                 {
-                    tb.setError("Provide a name");
+                    toolBuilder.setError("Provide a name");
                     return;
                 }
 
@@ -74,26 +75,32 @@ namespace SGIS
                 };
                 bw.RunWorkerAsync();
             });
+
+            toolBuilder.resetAction = (Layer l) =>
+            {
+                nameBox.Text = (l == null) ? "" : l.Name + "_buffer";
+            };
+
+            toolBuilder.reset();
         }
 
         private void unionButton_Click(object sender, EventArgs e)
         {
-            Layer cl = (Layer)layerList.SelectedItem;
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Union");
-            ComboBox layerSelect = tb.addLayerSelect("Union with:");
-            TextBox textbox = tb.addTextbox("New layername:", (cl != null) ? cl.Name + "_union" : "");
-            Label errorLabel = tb.addErrorLabel();
-            Button button = tb.addButton("Union", (Layer l) =>
+            toolBuilder.addHeader("Union");
+            ComboBox layerSelect = toolBuilder.addLayerSelect("Union with:");
+            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button button = toolBuilder.addButton("Union", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
-                    tb.setError("Provide name");
+                    toolBuilder.setError("Provide name");
                     return;
                 }
                 Layer unionLayer = (Layer) layerSelect.SelectedItem;
                 if (l.shapetype != unionLayer.shapetype)
                 {
-                    tb.setError("Incompatible types");
+                    toolBuilder.setError("Incompatible types");
                     return;
                 }
                 Layer newLayer = new Layer(textbox.Text);
@@ -109,19 +116,23 @@ namespace SGIS
                 layers.Insert(0, newLayer);
                 redraw();
             });
+            toolBuilder.resetAction = (Layer l) =>
+            {
+                textbox.Text = (l == null) ? "" : l.Name + "_union";
+            };
+            toolBuilder.reset();
         }
 
         private void mergeButton_Click(object sender, EventArgs e)
         {
-            Layer cl = (Layer)layerList.SelectedItem;
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Merge");
-            TextBox textbox = tb.addTextbox("New layername:", (cl != null) ? cl.Name + "_merge" : "");
-            Label errorLabel = tb.addErrorLabel();
-            Button button = tb.addButton("Merge", (Layer l) =>
+            toolBuilder.addHeader("Merge");
+            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button button = toolBuilder.addButton("Merge", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
-                    tb.setError("Provide name");
+                    toolBuilder.setError("Provide name");
                     return;
                 }
                 Layer copyLayer = new Layer(l.Name);
@@ -157,26 +168,29 @@ namespace SGIS
                 layers.Insert(0, newLayer);
                 redraw();
             });
+            toolBuilder.resetAction = (Layer l) => {
+                textbox.Text = (l == null) ? "" : l.Name + "_merge";
+            };
+            toolBuilder.reset();
         }
 
         private void diffButton_Click(object sender, EventArgs e)
         {
-            Layer cl = (Layer)layerList.SelectedItem;
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Difference");
-            ComboBox layerSelect = tb.addLayerSelect("Subtract:");
-            TextBox textbox = tb.addTextbox("New layername:", (cl != null) ? cl.Name + "_diff" : "");
-            Label errorLabel = tb.addErrorLabel();
-            Button button = tb.addButton("Subtract", (Layer l) =>
+            toolBuilder.addHeader("Difference");
+            ComboBox layerSelect = toolBuilder.addLayerSelect("Subtract:");
+            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button button = toolBuilder.addButton("Subtract", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
-                    tb.setError("Provide name");
+                    toolBuilder.setError("Provide name");
                     return;
                 }
                 Layer unionLayer = (Layer)layerSelect.SelectedItem;
                 if (l.shapetype != unionLayer.shapetype)
                 {
-                    tb.setError("Incompatible types");
+                    toolBuilder.setError("Incompatible types");
                     return;
                 }
                 Layer newLayer = new Layer(textbox.Text);
@@ -196,20 +210,24 @@ namespace SGIS
                 layers.Insert(0, newLayer);
                 redraw();
             });
+            toolBuilder.resetAction += (Layer l) =>
+            {
+                textbox.Text = (l == null) ? "" : l.Name + "_diff";
+            };
+            toolBuilder.reset();
         }
 
         private void intersectButton_Click(object sender, EventArgs e)
         {
-            Layer cl = (Layer)layerList.SelectedItem;
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Intersect");
-            ComboBox layerSelect = tb.addLayerSelect("Intersect with:");
-            TextBox textbox = tb.addTextbox("New layername:", (cl != null) ? cl.Name + "_intersect" : "");
-            Label errorLabel = tb.addErrorLabel();
-            Button button = tb.addButton("Intersect", (Layer l) =>
+            toolBuilder.addHeader("Intersect");
+            ComboBox layerSelect = toolBuilder.addLayerSelect("Intersect with:");
+            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button button = toolBuilder.addButton("Intersect", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
-                    tb.setError("Provide name");
+                    toolBuilder.setError("Provide name");
                     return;
                 }
                 Layer intersectLayer = (Layer)layerSelect.SelectedItem;
@@ -227,6 +245,11 @@ namespace SGIS
                 layers.Insert(0, newLayer);
                 redraw();
             });
+            toolBuilder.resetAction += (Layer l) =>
+            {
+                textbox.Text = (l == null) ? "" : l.Name + "_intersect";
+            };
+            toolBuilder.reset();
         }
     }
 }

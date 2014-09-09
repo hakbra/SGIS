@@ -18,9 +18,9 @@ namespace SGIS
             e.Cancel = false;
             Layer l = (Layer)layerList.SelectedItem;
             Bitmap colorImg = new Bitmap(20, 20);
-            for (int x = 0; x < 20; x++)
-                for (int y = 0; y < 20; y++)
-                    colorImg.SetPixel(x, y, l.color);
+            var graphics = Graphics.FromImage(colorImg);
+            graphics.FillRectangle(l.style.brush, new Rectangle(0, 0, 20, 20));
+            graphics.DrawRectangle(l.style.pen, new Rectangle(0, 0, 20, 20));
 
             layerListContextMenu.Items.Clear();
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) =>
@@ -48,26 +48,41 @@ namespace SGIS
             layerListContextMenu.Items.Add("-");
             layerListContextMenu.Items.Add(new ToolStripMenuItem(l.visible ? "Hide" : "Show", null, (o, i) => { l.visible = !l.visible; redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
-            layerListContextMenu.Items.Add(new ToolStripMenuItem("Color...", colorImg, (o, i) =>
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Style", colorImg, (o, i) =>
             {
-                l.color = chooseColor(l.color); redraw();
+                l.style.pen = new Pen(chooseColor(l.style.pen.Color)); redraw();
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) =>
             {
-                ToolBuilder tb = new ToolBuilder(toolPanel, "Rename layer");
-                TextBox name = tb.addTextbox("New name:");
-                Label error = tb.addErrorLabel();
-                Button button = tb.addButton("Rename", (Layer currentLayer) =>
+                toolBuilder.addHeader("Rename layer");
+                TextBox name = toolBuilder.addTextbox("New name:");
+                Label error = toolBuilder.addErrorLabel();
+                Button button = toolBuilder.addButton("Rename", (Layer currentLayer) =>
                 {
                     if (name.Text.Length == 0)
                     {
-                        tb.setError("Provide name");
+                        toolBuilder.setError("Provide name");
                         return;
                     }
                     currentLayer.Name = name.Text;
                 });
+                toolBuilder.reset();
             }));
-            layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) => { layers.Remove(l); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) =>
+            {
+                toolBuilder.addHeader("Delete layer");
+                toolBuilder.addLabel("Are you sure?");
+                toolBuilder.addButton("Yes", (Layer il) =>
+                {
+                    SGIS.app.layers.Remove(il);
+                    redraw();
+                });
+                toolBuilder.addButton("No", (il) => { });
+                toolBuilder.resetAction = (Layer il) =>
+                {
+                    toolBuilder.clear();
+                };
+            }));
         }
 
         internal ListBox getLayerList()

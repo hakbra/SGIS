@@ -55,19 +55,18 @@ namespace SGIS
 
         private void selectByPropertyItem_Click(object sender, EventArgs e)
         {
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Select by property");
-            TextBox textbox = tb.addTextbox("Expression:");
+            toolBuilder.addHeader("Select by property");
+            TextBox textbox = toolBuilder.addTextbox("Expression:");
 
             ComboBox comboBox = new ComboBox();
             comboBox.Items.Add("Column name");
             comboBox.SelectedIndex = 0;
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox.Anchor = AnchorStyles.None;
-            tb.addControl(comboBox);
-            tb.autoClose = false;
+            toolBuilder.addControl(comboBox);
+            toolBuilder.autoClose = false;
 
-            Label errorLabel = tb.addErrorLabel();
-            Button selectButton = tb.addButton("Select", (l) =>
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button selectButton = toolBuilder.addButton("Select", (l) =>
             {
                 if (l.dataTable == null)
                     return;
@@ -90,7 +89,7 @@ namespace SGIS
                 }
                 catch (Exception ex)
                 {
-                    tb.setError(ex.Message);
+                    toolBuilder.setError(ex.Message);
                 }
             });
 
@@ -118,21 +117,15 @@ namespace SGIS
                 textbox.Focus();
                 textbox.Select(textbox.Text.Length, 0);
             };
+            toolBuilder.reset();
         }
 
         private void toLayerButton_Click(object sender, EventArgs e)
         {
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Export selection");
-            TextBox textbox = tb.addTextbox("Layer name:");
-
-            Layer cl = (Layer)layerList.SelectedItem;
-            if (cl != null)
-                textbox.Text = cl.Name + "_copy";
-            textbox.Focus();
-            textbox.Select(textbox.Text.Length, 0);
-
-            Label errorLabel = tb.addErrorLabel();
-            Button selectButton = tb.addButton("Copy selection", (Layer l) =>
+            toolBuilder.addHeader("Export selection");
+            TextBox textbox = toolBuilder.addTextbox("Layer name:");
+            Label errorLabel = toolBuilder.addErrorLabel();
+            Button selectButton = toolBuilder.addButton("Copy selection", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
@@ -149,13 +142,18 @@ namespace SGIS
                 layers.Insert(0, newl);
                 layerList.SelectedItem = newl;
             });
+            toolBuilder.resetAction = (Layer l) =>
+            {
+                textbox.Text = (l == null) ? "" : l.Name + "_copy";
+            };
+            toolBuilder.reset();
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            ToolBuilder tb = new ToolBuilder(toolPanel, "Delete selection");
-            tb.addLabel("Are you sure?");
-            tb.addButton("Yes", (Layer l) =>
+            toolBuilder.addHeader("Delete selection");
+            toolBuilder.addLabel("Are you sure?");
+            toolBuilder.addButton("Yes", (Layer l) =>
             {
                 foreach (Feature f in l.selected)
                     l.features.Remove(f.id);
@@ -164,7 +162,11 @@ namespace SGIS
                 setStatusText("0 objects");
                 redraw();
             });
-            tb.addButton("No", (l) => { });
+            toolBuilder.addButton("No", (l) => { });
+            toolBuilder.resetAction += (Layer l) =>
+            {
+                toolBuilder.clear();
+            };
         }
     }
 }

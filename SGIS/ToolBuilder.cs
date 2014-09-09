@@ -13,6 +13,7 @@ namespace SGIS
         private TableLayoutPanel panel;
         private Label errorLabel;
         private List<ComboBox> layerSelects = new List<ComboBox>();
+        public bool autoClose = true;
 
         public ToolBuilder(TableLayoutPanel p, string title)
         {
@@ -85,7 +86,7 @@ namespace SGIS
                 }
                 setError("");
                 action(l);
-                if (errorLabel == null || errorLabel.Text == "")
+                if ((errorLabel == null || errorLabel.Text == "") && autoClose)
                     panel.Controls.Clear();
             };
 

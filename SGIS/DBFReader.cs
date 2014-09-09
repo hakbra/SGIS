@@ -102,6 +102,9 @@ namespace SGIS
                     case 'L':
                         col = new DataColumn(field.fieldName, typeof(bool));
                         break;
+                    case 'F':
+                        col = new DataColumn(field.fieldName, typeof(float));
+                        break;
                     default:
                         throw new Exception("Unknown fieldType");
                 }
@@ -160,6 +163,19 @@ namespace SGIS
                                 }
                             }
                             catch (Exception e){
+                                string error = e.Message;
+                                Console.WriteLine(error);
+                            }
+                            break;
+                        case 'F':
+                            string strfloat = Encoding.ASCII.GetString(recReader.ReadBytes(fieldLen));
+                            try
+                            {
+                                float num = float.Parse(strfloat);
+                                row[field.fieldName] = num;
+                            }
+                            catch (Exception e)
+                            {
                                 string error = e.Message;
                                 Console.WriteLine(error);
                             }

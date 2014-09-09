@@ -69,7 +69,7 @@ namespace SGIS
                 return;
 
             Feature f = layer.selected.First();
-            DataRow dr = layer.dataTable.Rows[f.id];
+            DataRow dr = layer.dataTable.Rows[f.id-1];
 
             infoContextMenu.Items.Clear();
             foreach (var column in layer.dataTable.Columns)

@@ -64,6 +64,7 @@ namespace SGIS
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.Anchor = AnchorStyles.None;
             tb.addControl(comboBox);
+            tb.autoClose = false;
 
             Label errorLabel = tb.addErrorLabel();
             Button selectButton = tb.addButton("Select", (l) =>
@@ -73,7 +74,6 @@ namespace SGIS
                 try
                 {
                     DataRow[] rows = l.dataTable.Select(textbox.Text);
-                    tb.setError("");
                     l.clearSelected();
 
                     foreach (DataRow dr in rows)

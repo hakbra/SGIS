@@ -82,6 +82,7 @@ namespace SGIS
 
             char endchar = br.ReadChar();
 
+            dt.Columns.Add(new DataColumn("internal_id", typeof(Int32)));
             DataColumn col = null;
             foreach (FieldDescriptor field in fields)
             {
@@ -127,6 +128,7 @@ namespace SGIS
 
                 // Loop through each field in a record
                 DataRow row = dt.NewRow();
+                row["internal_id"] = counter+1;
                 foreach (FieldDescriptor field in fields)
                 {
                     int fieldLen = field.fieldLen;

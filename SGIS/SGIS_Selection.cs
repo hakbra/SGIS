@@ -77,7 +77,7 @@ namespace SGIS
 
                     foreach (DataRow dr in rows)
                     {
-                        int id = (int)dr[0];
+                        int id = (int)dr["internal_id"];
                         Feature f;
                         if (l.features.TryGetValue(id, out f))
                         {
@@ -85,6 +85,7 @@ namespace SGIS
                             l.selected.Add(f);
                         }
                     }
+                    SGIS.app.setStatusText(l.selected.Count + " objects");
                     SGIS.app.redraw();
                 }
                 catch (Exception ex)

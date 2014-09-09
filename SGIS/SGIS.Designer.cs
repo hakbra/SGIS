@@ -44,6 +44,8 @@
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.intersectButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.unionButton = new System.Windows.Forms.Button();
             this.toLayerButton = new System.Windows.Forms.Button();
@@ -62,7 +64,6 @@
             this.deleteButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.diffButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -222,9 +223,10 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Controls.Add(this.diffButton, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.button2, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.intersectButton, 1, 9);
             this.tableLayoutPanel1.Controls.Add(this.button1, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.unionButton, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.unionButton, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectInvertButton, 2, 5);
@@ -258,9 +260,31 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 384);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(0, 364);
+            this.button2.Margin = new System.Windows.Forms.Padding(0);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(59, 20);
+            this.button2.TabIndex = 26;
+            this.button2.Text = "Diff.";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.diffButton_Click);
+            // 
+            // intersectButton
+            // 
+            this.intersectButton.Location = new System.Drawing.Point(59, 364);
+            this.intersectButton.Margin = new System.Windows.Forms.Padding(0);
+            this.intersectButton.Name = "intersectButton";
+            this.intersectButton.Size = new System.Drawing.Size(59, 20);
+            this.intersectButton.TabIndex = 25;
+            this.intersectButton.Text = "Intersect";
+            this.intersectButton.UseVisualStyleBackColor = true;
+            this.intersectButton.Click += new System.EventHandler(this.intersectButton_Click);
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(59, 344);
+            this.button1.Location = new System.Drawing.Point(0, 344);
             this.button1.Margin = new System.Windows.Forms.Padding(0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(59, 20);
@@ -271,7 +295,7 @@
             // 
             // unionButton
             // 
-            this.unionButton.Location = new System.Drawing.Point(0, 344);
+            this.unionButton.Location = new System.Drawing.Point(59, 344);
             this.unionButton.Margin = new System.Windows.Forms.Padding(0);
             this.unionButton.Name = "unionButton";
             this.unionButton.Size = new System.Drawing.Size(59, 20);
@@ -486,17 +510,6 @@
             this.mergeButton.UseVisualStyleBackColor = true;
             this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
             // 
-            // diffButton
-            // 
-            this.diffButton.Location = new System.Drawing.Point(0, 364);
-            this.diffButton.Margin = new System.Windows.Forms.Padding(0);
-            this.diffButton.Name = "diffButton";
-            this.diffButton.Size = new System.Drawing.Size(59, 20);
-            this.diffButton.TabIndex = 25;
-            this.diffButton.Text = "Diff.";
-            this.diffButton.UseVisualStyleBackColor = true;
-            this.diffButton.Click += new System.EventHandler(this.diffButton_Click);
-            // 
             // SGIS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -563,7 +576,8 @@
         private System.Windows.Forms.Button unionButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button mergeButton;
-        private System.Windows.Forms.Button diffButton;
+        private System.Windows.Forms.Button intersectButton;
+        private System.Windows.Forms.Button button2;
     }
 }
 

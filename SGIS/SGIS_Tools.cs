@@ -1,4 +1,5 @@
 ﻿using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace SGIS
             ToolBuilder tb = new ToolBuilder(toolPanel, "Buffer");
 
             TextBox distBox = tb.addTextbox("Distance:");
-            TextBox nameBox = tb.addTextbox("Layer name:", (cl != null) ? cl.Name : "");
+            TextBox nameBox = tb.addTextbox("Layer name:", (cl != null) ? cl.Name + "_buffer": "");
             Label errorLabel = tb.addErrorLabel();
             Button selectButton = tb.addButton("Buffer", (Layer l) =>
             {
@@ -35,7 +36,7 @@ namespace SGIS
                     return;
                 }
 
-                Layer newl = new Layer(nameBox.Text, ShapeType.POLYGON);
+                Layer newl = new Layer(nameBox.Text);
                 newl.dataTable = l.dataTable;
                 newl.boundingbox = l.boundingbox;
                 newl.createQuadTree();
@@ -95,7 +96,7 @@ namespace SGIS
                     tb.setError("Incompatible types");
                     return;
                 }
-                Layer newLayer = new Layer(textbox.Text, l.shapetype);
+                Layer newLayer = new Layer(textbox.Text);
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.boundingbox.ExpandToInclude(unionLayer.boundingbox);
                 newLayer.createQuadTree();
@@ -123,23 +124,30 @@ namespace SGIS
                     tb.setError("Provide name");
                     return;
                 }
-                Layer newLayer = new Layer(textbox.Text, l.shapetype);
+                Layer copyLayer = new Layer(l.Name);
+                copyLayer.boundingbox = new Envelope(l.boundingbox);
+                copyLayer.createQuadTree();
+
+                foreach (Feature f in l.features.Values)
+                    copyLayer.addFeature(new Feature((IGeometry)f.geometry.Clone(), f.id));
+
+                Layer newLayer = new Layer(textbox.Text);
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.createQuadTree();
 
-                while (l.features.Values.Count > 0)
+                while (copyLayer.features.Values.Count > 0)
                 {
-                    Feature f = l.features.Values.First();
-                    l.delFeature(f);
+                    Feature f = copyLayer.features.Values.First();
+                    copyLayer.delFeature(f);
                     f.id = -1;
                     while (true)
                     {
-                        var intersects = l.getWithin(f.geometry);
+                        var intersects = copyLayer.getWithin(f.geometry);
                         if (intersects.Count == 0)
                             break;
                         foreach (Feature intersect in intersects)
                         {
-                            l.delFeature(intersect);
+                            copyLayer.delFeature(intersect);
                             f = new Feature(f.geometry.Union(intersect.geometry));
                         }
                     }
@@ -171,7 +179,7 @@ namespace SGIS
                     tb.setError("Incompatible types");
                     return;
                 }
-                Layer newLayer = new Layer(textbox.Text, l.shapetype);
+                Layer newLayer = new Layer(textbox.Text);
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.createQuadTree();
 
@@ -183,6 +191,37 @@ namespace SGIS
                         newf.geometry = newf.geometry.Difference(intersect.geometry);
                     
                     newLayer.addFeature(newf);
+                }
+
+                layers.Insert(0, newLayer);
+                redraw();
+            });
+        }
+
+        private void intersectButton_Click(object sender, EventArgs e)
+        {
+            Layer cl = (Layer)layerList.SelectedItem;
+            ToolBuilder tb = new ToolBuilder(toolPanel, "Intersect");
+            ComboBox layerSelect = tb.addLayerSelect("Intersect with:");
+            TextBox textbox = tb.addTextbox("New layername:", (cl != null) ? cl.Name + "_intersect" : "");
+            Label errorLabel = tb.addErrorLabel();
+            Button button = tb.addButton("Intersect", (Layer l) =>
+            {
+                if (textbox.Text.Length == 0)
+                {
+                    tb.setError("Provide name");
+                    return;
+                }
+                Layer intersectLayer = (Layer)layerSelect.SelectedItem;
+                Layer newLayer = new Layer(textbox.Text);
+                newLayer.boundingbox = new Envelope(l.boundingbox);
+                newLayer.createQuadTree();
+
+                foreach (Feature f in l.features.Values)
+                {
+                    var intersections = intersectLayer.getWithin(f.geometry);
+                    foreach (Feature intersect in intersections)
+                        newLayer.addFeature(new Feature(f.geometry.Intersection(intersect.geometry)));
                 }
 
                 layers.Insert(0, newLayer);

@@ -140,7 +140,7 @@ namespace SGIS
                     return;
                 }
 
-                Layer newl = new Layer(textbox.Text, l.shapetype);
+                Layer newl = new Layer(textbox.Text);
                 newl.dataTable = l.dataTable;
                 newl.boundingbox = l.boundingbox;
                 newl.createQuadTree();

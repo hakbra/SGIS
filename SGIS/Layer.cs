@@ -14,9 +14,11 @@ namespace SGIS
 {
     public enum ShapeType
     {
+        EMPTY,
         POINT,
         LINE,
-        POLYGON
+        POLYGON,
+        UNKNOWN
     }
     public class Layer : INotifyPropertyChanged
     {
@@ -44,6 +46,22 @@ namespace SGIS
         public Envelope boundingbox;
         public DataTable dataTable = null;
         public QuadTree quadTree = null;
+
+        public ShapeType convert(string s)
+        {
+            switch (s)
+            {
+                case "Polygon":
+                case "MultiPolygon":
+                    return ShapeType.POLYGON;
+                case "LineString":
+                    return ShapeType.LINE;
+                case "Point":
+                    return ShapeType.POINT;
+            }
+            return ShapeType.UNKNOWN;
+        }
+
         public void createQuadTree()
         {
             if (boundingbox == null)
@@ -53,10 +71,10 @@ namespace SGIS
                 quadTree.add(f);
         }
         
-        public Layer(string n, ShapeType st)
+        public Layer(string n)
         {
             this.name = n;
-            shapetype = st;
+            shapetype = ShapeType.EMPTY;
             visible = true;
             color = System.Drawing.Color.Black;
         }
@@ -65,6 +83,8 @@ namespace SGIS
         {
             switch (shapetype)
             {
+                case ShapeType.EMPTY:
+                    return "E: " + name;
                 case ShapeType.POINT:
                     return "P: " + name;
                 case ShapeType.LINE:
@@ -76,6 +96,11 @@ namespace SGIS
         }
         public void addFeature(Feature s)
         {
+            if (shapetype == ShapeType.EMPTY)
+                shapetype = convert(s.geometry.GeometryType);
+            else if (shapetype != convert(s.geometry.GeometryType))
+                throw new Exception("Wring shapetype in layer " + name);
+
             if (s.id > maxid)
                 maxid = s.id + 1;
             if (s.id == -1)

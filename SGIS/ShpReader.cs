@@ -40,14 +40,7 @@ namespace SGIS
             string name = filename.Split('\\').Last();
             name = name.Substring(0, name.Length - 4);
 
-            if (type == 1)
-                layer = new Layer(name, ShapeType.POINT);
-            else if (type == 3)
-                layer = new Layer(name, ShapeType.LINE);
-            else if (type == 5)
-                layer = new Layer(name, ShapeType.POLYGON);
-            else
-                throw new Exception("Uh oh");
+            layer = new Layer(name);
 
             layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
             layer.createQuadTree();

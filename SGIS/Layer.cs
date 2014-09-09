@@ -15,7 +15,7 @@ namespace SGIS
     public struct Style
     {
         public System.Drawing.Pen pen;
-        public System.Drawing.Brush brush;
+        public System.Drawing.SolidBrush brush;
         public static Style Selected = new Style()
         {
             pen = new System.Drawing.Pen(System.Drawing.Color.DarkCyan),

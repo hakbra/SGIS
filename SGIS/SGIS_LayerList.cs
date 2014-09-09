@@ -50,7 +50,70 @@ namespace SGIS
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Style", colorImg, (o, i) =>
             {
-                l.style.pen = new Pen(chooseColor(l.style.pen.Color)); redraw();
+                toolBuilder.addHeader("Style layer");
+
+                Label fcolorLabel = toolBuilder.addLabel("Fill color:");
+                Button fcolor = toolBuilder.addButton("");
+                fcolor.Click += (o2, e2) =>
+                {
+                    ColorDialog cd = new ColorDialog();
+                    if (cd.ShowDialog() == DialogResult.OK)
+                    {
+                        Layer cl = (Layer)layerList.SelectedItem;
+                        fcolor.BackColor = cd.Color;
+                        if (cl != null)
+                        {
+                            cl.style.brush = new SolidBrush(cd.Color);
+                            redraw();
+                        }
+                    }
+                };
+
+                Label lcolorLabel = toolBuilder.addLabel("Line color:");
+                Button lcolor = toolBuilder.addButton("");
+                lcolor.Click += (o2, e2) =>
+                {
+                    ColorDialog cd = new ColorDialog();
+                    if (cd.ShowDialog() == DialogResult.OK)
+                    {
+                        Layer cl = (Layer)layerList.SelectedItem;
+                        lcolor.BackColor = cd.Color;
+                        if (cl != null)
+                        {
+                            cl.style.pen.Color = cd.Color;
+                            redraw();
+                        }
+                    }
+                };
+
+                TextBox alphaText = toolBuilder.addTextbox("Opacity 1-255:");
+                alphaText.TextChanged += (o2, e2) =>
+                {
+                    Layer cl = (Layer)layerList.SelectedItem;
+                    int alpha;
+                    if (cl != null && int.TryParse(alphaText.Text, out alpha))
+                    {
+                        if (alpha >= 0 && alpha <= 255)
+                        {
+                            Color c = cl.style.brush.Color;
+                            c = Color.FromArgb(alpha, c);
+                            cl.style.brush = new SolidBrush(c);
+                            redraw();
+                        }
+                    }
+                };
+
+                toolBuilder.resetAction = (Layer il) =>
+                {
+                    if (l != null)
+                    {
+                        fcolor.BackColor = il.style.brush.Color;
+                        lcolor.BackColor = il.style.pen.Color;
+                        alphaText.Text = il.style.brush.Color.A.ToString();
+                    }
+
+                };
+                toolBuilder.reset();
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) =>
             {

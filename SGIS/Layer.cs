@@ -66,6 +66,7 @@ namespace SGIS
                 case "MultiPolygon":
                     return ShapeType.POLYGON;
                 case "LineString":
+                case "MultiLineString":
                     return ShapeType.LINE;
                 case "Point":
                     return ShapeType.POINT;

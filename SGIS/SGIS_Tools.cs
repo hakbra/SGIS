@@ -4,6 +4,7 @@ using NetTopologySuite.Operation.Union;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -235,11 +236,29 @@ namespace SGIS
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.createQuadTree();
 
+                DataTable a = l.dataTable.Clone();
+                newLayer.dataTable = intersectLayer.dataTable.Clone();
+                newLayer.dataTable.Merge(a, true, MissingSchemaAction.Add);
+
                 foreach (Feature f in l.features.Values)
                 {
                     var intersections = intersectLayer.getWithin(f.geometry);
                     foreach (Feature intersect in intersections)
-                        newLayer.addFeature(new Feature(f.geometry.Intersection(intersect.geometry)));
+                    {
+                        DataRow arow = l.getRow(f);
+                        DataRow brow = intersectLayer.getRow(intersect);
+
+                        Feature result = new Feature(f.geometry.Intersection(intersect.geometry));
+                        int id = newLayer.addFeature(result);
+
+                        DataRow dr = newLayer.dataTable.NewRow();
+                        foreach (DataColumn dc in arow.Table.Columns)
+                            dr[dc.ColumnName] = arow[dc.ColumnName];
+                        foreach (DataColumn dc in brow.Table.Columns)
+                            dr[dc.ColumnName] = brow[dc.ColumnName];
+                        dr["sgis_id"] = id;
+                        newLayer.dataTable.Rows.Add(dr);
+                    }
                 }
 
                 layers.Insert(0, newLayer);

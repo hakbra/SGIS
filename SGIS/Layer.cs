@@ -41,7 +41,7 @@ namespace SGIS
             }
         }
 
-        int maxid = -1;
+        int maxid = 1;
         public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
         public List<Feature> selected = new List<Feature>();
         public Style style;
@@ -109,12 +109,12 @@ namespace SGIS
             }
             return name;
         }
-        public void addFeature(Feature s)
+        public int addFeature(Feature s)
         {
             if (shapetype == ShapeType.EMPTY)
                 shapetype = convert(s.geometry.GeometryType);
             else if (shapetype != convert(s.geometry.GeometryType))
-                throw new Exception("Wring shapetype in layer " + name);
+                throw new Exception("Wrong shapetype in layer " + name);
 
             if (s.id > maxid)
                 maxid = s.id + 1;
@@ -123,6 +123,7 @@ namespace SGIS
             features.Add(s.id, s);
             if (quadTree != null)
                 quadTree.add(s);
+            return s.id;
         }
 
         public void delFeature(Feature f)
@@ -171,6 +172,12 @@ namespace SGIS
                     ret.Add(pair.Value);
             }
             return ret;
+        }
+        public DataRow getRow(Feature f)
+        {
+            if (dataTable == null)
+                return null;
+            return dataTable.Rows[f.id - 1];
         }
     }
 }

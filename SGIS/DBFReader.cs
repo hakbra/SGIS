@@ -82,7 +82,9 @@ namespace SGIS
 
             char endchar = br.ReadChar();
 
-            dt.Columns.Add(new DataColumn("sgis_id", typeof(Int32)));
+            DataColumn pk = new DataColumn("sgis_id", typeof(Int32));
+            dt.Columns.Add(pk);
+            dt.PrimaryKey = new DataColumn[]{pk};
             DataColumn col = null;
             foreach (FieldDescriptor field in fields)
             {

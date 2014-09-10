@@ -106,7 +106,7 @@ namespace SGIS
                         col = new DataColumn(field.fieldName, typeof(bool));
                         break;
                     case 'F':
-                        col = new DataColumn(field.fieldName, typeof(float));
+                        col = new DataColumn(field.fieldName, typeof(double));
                         break;
                     default:
                         throw new Exception("Unknown fieldType");
@@ -175,7 +175,7 @@ namespace SGIS
                             string strfloat = Encoding.ASCII.GetString(recReader.ReadBytes(fieldLen));
                             try
                             {
-                                float num = float.Parse(strfloat);
+                                double num = double.Parse(strfloat, CultureInfo.InvariantCulture);
                                 row[field.fieldName] = num;
                             }
                             catch (Exception e)

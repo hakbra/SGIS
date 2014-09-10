@@ -46,7 +46,7 @@ namespace SGIS
         public List<Feature> selected = new List<Feature>();
         public Style style;
         public bool visible;
-        public ShapeType shapetype;
+        public ShapeType shapetype = ShapeType.EMPTY;
         private string name;
         public string Name
         {

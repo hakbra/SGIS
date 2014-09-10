@@ -72,12 +72,25 @@ namespace SGIS
             DataRow dr = layer.dataTable.Rows[f.id-1];
 
             infoContextMenu.Items.Clear();
-            foreach (var column in layer.dataTable.Columns)
+            foreach (DataColumn column in layer.dataTable.Columns)
             {
                 string colName = column.ToString();
                 if (colName == "sgis_id")
                     continue;
-                infoContextMenu.Items.Add(colName + ": " + dr[colName]);
+                infoContextMenu.Items.Add(colName + ": " + dr[colName], null, (o, e2) =>
+                {
+                    var rows = layer.dataTable.Select("[" + colName + "] = '" + dr[colName] + "'");
+                    layer.clearSelected();
+                    foreach(var row in rows){
+                        Feature selectedFeature;
+                        if (layer.features.TryGetValue((int)row["sgis_id"], out selectedFeature))
+                        {
+                            selectedFeature.selected = true;
+                            layer.selected.Add(selectedFeature);
+                        }
+                    }
+                    redraw();
+                });
             }
         }
     }

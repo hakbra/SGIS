@@ -46,7 +46,6 @@ namespace SGIS
                 List<Feature> flist = l.features.Values.ToList();
 
                 progressLabel.Text = "Buffer";
-                progressLabel.Invalidate();
                 progressBar.Minimum = 0;
                 progressBar.Maximum = flist.Count;
 
@@ -147,27 +146,49 @@ namespace SGIS
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.createQuadTree();
 
-                while (copyLayer.features.Values.Count > 0)
+                int numFeatures = copyLayer.features.Values.Count;
+                progressLabel.Text = "Merging";
+                progressBar.Minimum = 0;
+                progressBar.Maximum = numFeatures;
+                
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    Feature f = copyLayer.features.Values.First();
-                    copyLayer.delFeature(f);
-                    f.id = -1;
-                    while (true)
+                    while (copyLayer.features.Values.Count > 0)
                     {
-                        var intersects = copyLayer.getWithin(f.geometry);
-                        if (intersects.Count == 0)
-                            break;
-                        foreach (Feature intersect in intersects)
+                        Feature f = copyLayer.features.Values.First();
+                        copyLayer.delFeature(f);
+                        f.id = -1;
+                        while (true)
                         {
-                            copyLayer.delFeature(intersect);
-                            f = new Feature(f.geometry.Union(intersect.geometry));
+                            var intersects = copyLayer.getWithin(f.geometry);
+                            if (intersects.Count == 0)
+                                break;
+                            foreach (Feature intersect in intersects)
+                            {
+                                copyLayer.delFeature(intersect);
+                                bw.ReportProgress(numFeatures - copyLayer.features.Values.Count);
+                                f = new Feature(f.geometry.Union(intersect.geometry));
+                            }
                         }
+                        newLayer.addFeature(f);
                     }
-                    newLayer.addFeature(f);
-                }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    progressBar.Value = 0;
+                    progressLabel.Text = "";
 
-                layers.Insert(0, newLayer);
-                redraw();
+                    layers.Insert(0, newLayer);
+                    redraw();
+                };
+                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
+                {
+
+                    progressBar.Value = we.ProgressPercentage;
+                };
+                bw.RunWorkerAsync();
             });
             toolBuilder.resetAction = (Layer l) => {
                 textbox.Text = (l == null) ? "" : l.Name + "_merge";
@@ -197,19 +218,40 @@ namespace SGIS
                 Layer newLayer = new Layer(textbox.Text);
                 newLayer.boundingbox = new Envelope(l.boundingbox);
                 newLayer.createQuadTree();
+                
+                progressLabel.Text = "Subtracting";
+                progressBar.Minimum = 0;
+                progressBar.Maximum = l.features.Values.Count;
 
-                foreach (Feature f in l.features.Values)
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    Feature newf = new Feature((IGeometry)f.geometry.Clone(), f.id);
-                    var intersects = unionLayer.getWithin(f.geometry);
-                    foreach (Feature intersect in intersects)
-                        newf.geometry = newf.geometry.Difference(intersect.geometry);
-                    
-                    newLayer.addFeature(newf);
-                }
+                    for (int i = 0; i < l.features.Count; i++ )
+                    {
+                        Feature f = l.features.Values.ElementAt(i);
+                        bw.ReportProgress(i);
+                        Feature newf = new Feature((IGeometry)f.geometry.Clone(), f.id);
+                        var intersects = unionLayer.getWithin(f.geometry);
+                        foreach (Feature intersect in intersects)
+                            newf.geometry = newf.geometry.Difference(intersect.geometry);
 
-                layers.Insert(0, newLayer);
-                redraw();
+                        newLayer.addFeature(newf);
+                    }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    progressBar.Value = 0;
+                    progressLabel.Text = "";
+
+                    layers.Insert(0, newLayer);
+                    redraw();
+                };
+                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
+                {
+                    progressBar.Value = we.ProgressPercentage;
+                };
+                bw.RunWorkerAsync();
             });
             toolBuilder.resetAction += (Layer l) =>
             {
@@ -240,33 +282,106 @@ namespace SGIS
                 newLayer.dataTable = intersectLayer.dataTable.Clone();
                 newLayer.dataTable.Merge(a, true, MissingSchemaAction.Add);
 
-                foreach (Feature f in l.features.Values)
+                progressLabel.Text = "Intersection";
+                progressBar.Minimum = 0;
+                progressBar.Maximum = l.features.Values.Count;
+
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    var intersections = intersectLayer.getWithin(f.geometry);
-                    foreach (Feature intersect in intersections)
+                    for (int i = 0; i < l.features.Count; i++ )
                     {
-                        DataRow arow = l.getRow(f);
-                        DataRow brow = intersectLayer.getRow(intersect);
+                        Feature f = l.features.Values.ElementAt(i);
+                        bw.ReportProgress(i);
+                        var intersections = intersectLayer.getWithin(f.geometry);
+                        foreach (Feature intersect in intersections)
+                        {
+                            DataRow arow = l.getRow(f);
+                            DataRow brow = intersectLayer.getRow(intersect);
 
-                        Feature result = new Feature(f.geometry.Intersection(intersect.geometry));
-                        int id = newLayer.addFeature(result);
+                            Feature result = new Feature(f.geometry.Intersection(intersect.geometry));
+                            int id = newLayer.addFeature(result);
 
-                        DataRow dr = newLayer.dataTable.NewRow();
-                        foreach (DataColumn dc in arow.Table.Columns)
-                            dr[dc.ColumnName] = arow[dc.ColumnName];
-                        foreach (DataColumn dc in brow.Table.Columns)
-                            dr[dc.ColumnName] = brow[dc.ColumnName];
-                        dr["sgis_id"] = id;
-                        newLayer.dataTable.Rows.Add(dr);
+                            DataRow dr = newLayer.dataTable.NewRow();
+                            foreach (DataColumn dc in arow.Table.Columns)
+                                dr[dc.ColumnName] = arow[dc.ColumnName];
+                            foreach (DataColumn dc in brow.Table.Columns)
+                                dr[dc.ColumnName] = brow[dc.ColumnName];
+                            dr["sgis_id"] = id;
+                            newLayer.dataTable.Rows.Add(dr);
+                        }
                     }
-                }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    progressBar.Value = 0;
+                    progressLabel.Text = "";
 
-                layers.Insert(0, newLayer);
-                redraw();
+                    layers.Insert(0, newLayer);
+                    redraw();
+                };
+                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
+                {
+                    progressBar.Value = we.ProgressPercentage;
+                };
+                bw.RunWorkerAsync();
             });
             toolBuilder.resetAction += (Layer l) =>
             {
                 textbox.Text = (l == null) ? "" : l.Name + "_intersect";
+            };
+            toolBuilder.reset();
+        }
+
+        private void measureButton_Click(object sender, EventArgs e)
+        {
+            toolBuilder.addHeader("Measurements");
+            Label countLabel = toolBuilder.addLabel("");
+            Label lengthLabel = toolBuilder.addLabel("");
+            Label areaLabel = toolBuilder.addLabel("");
+
+            toolBuilder.resetAction += (Layer l) =>
+            {
+                string plural = "";
+                if (l != null && l.features.Count > 0)
+                    plural = "s";
+
+                if (l == null || l.shapetype == ShapeType.EMPTY)
+                {
+                    countLabel.Text = "No feature"+plural;
+                    lengthLabel.Text = "Length: N/A";
+                    areaLabel.Text = "Area: N/A";
+                }
+                else if (l.shapetype == ShapeType.POINT)
+                {
+                    countLabel.Text = l.features.Count + " points";
+                    lengthLabel.Text = "Length: N/A";
+                    areaLabel.Text = "Area: N/A";
+                }
+                else if (l.shapetype == ShapeType.LINE)
+                {
+                    countLabel.Text = l.features.Count + " feature" + plural;
+                    double length = 0;
+                    foreach (Feature f in l.features.Values)
+                        length += f.geometry.Length;
+                    lengthLabel.Text = "Length: "+(int)length+"m";
+                    areaLabel.Text = "Area: N/A";
+                }
+                else if (l.shapetype == ShapeType.POLYGON)
+                {
+                    countLabel.Text = l.features.Count + " feature" + plural;
+                    double circum = 0;
+                    double area = 0;
+                    foreach (Feature f in l.features.Values)
+                    {
+                        circum += f.geometry.Length;
+                        area += f.geometry.Area;
+                    }
+                    lengthLabel.Text = "Circ: " + (int)circum+"m";
+                    areaLabel.Text = "Area: " + Math.Round(area)+"m^2";
+                }
+
             };
             toolBuilder.reset();
         }

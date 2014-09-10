@@ -64,6 +64,7 @@
             this.deleteButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.measureButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -223,6 +224,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.Controls.Add(this.measureButton, 2, 9);
             this.tableLayoutPanel1.Controls.Add(this.button2, 0, 9);
             this.tableLayoutPanel1.Controls.Add(this.intersectButton, 1, 9);
             this.tableLayoutPanel1.Controls.Add(this.button1, 0, 8);
@@ -510,6 +512,17 @@
             this.mergeButton.UseVisualStyleBackColor = true;
             this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
             // 
+            // measureButton
+            // 
+            this.measureButton.Location = new System.Drawing.Point(118, 364);
+            this.measureButton.Margin = new System.Windows.Forms.Padding(0);
+            this.measureButton.Name = "measureButton";
+            this.measureButton.Size = new System.Drawing.Size(59, 20);
+            this.measureButton.TabIndex = 27;
+            this.measureButton.Text = "Measure";
+            this.measureButton.UseVisualStyleBackColor = true;
+            this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
+            // 
             // SGIS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -578,6 +591,7 @@
         private System.Windows.Forms.Button mergeButton;
         private System.Windows.Forms.Button intersectButton;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button measureButton;
     }
 }
 

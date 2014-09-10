@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
+using System.Data;
 
 namespace SGIS
 {
@@ -30,17 +31,25 @@ namespace SGIS
 
         public Layer read(string filename)
         {
+            string name = filename.Split('\\').Last();
+            name = name.Substring(0, name.Length - 4);
+
+            layer = new Layer(name);
+
+            string prjName = filename.Substring(0, filename.Length - 3) + "prj";
+            if (File.Exists(prjName))
+                layer.projection = PrjReader.read(prjName);
+
+            string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
+            if (File.Exists(dbfName))
+                layer.dataTable = DBFReader.read(dbfName);
+
             FileStream f = File.Open(filename, FileMode.Open);
             br = new BinaryReaderExtension(f);
             pos = 0;
             length = (int)br.BaseStream.Length;
 
             readHeader();
-
-            string name = filename.Split('\\').Last();
-            name = name.Substring(0, name.Length - 4);
-
-            layer = new Layer(name);
 
             layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
             layer.createQuadTree();
@@ -50,11 +59,6 @@ namespace SGIS
                 readShape();
 
             br.Close();
-
-
-            string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
-            if (File.Exists(dbfName))
-                layer.dataTable = DBFReader.read(dbfName);
 
             return layer;
         }
@@ -77,7 +81,10 @@ namespace SGIS
                 g = readPolygon();
 
             if (g != null)
-                layer.addFeature(new Feature(g, id));
+            {
+                Feature f = new Feature(g, id);
+                layer.addFeature(f);
+            }
         }
 
         private LineString readPolyline()
@@ -142,18 +149,36 @@ namespace SGIS
             Coordinate p = new Coordinate();
             p.X = br.ReadDouble();
             p.Y = br.ReadDouble();
+            p = transformCoordinate(p);
             pos += 16;
             return p;
+        }
+
+        private Coordinate transformCoordinate(Coordinate c)
+        {
+            if (SGIS.app.SRS != null && layer.projection != null && SGIS.app.SRS != layer.projection)
+            {
+                double[] x = new double[1] { c.X };
+                double[] y = new double[1] { c.Y };
+                double[] z = new double[1] { 0 };
+
+                layer.projection.Transform(SGIS.app.SRS, 1, 1, x, y, z);
+                c.X = x[0];
+                c.Y = y[0];
+            }
+            return c;
         }
 
         private void readHeader()
         {
             br.BaseStream.Seek(32, SeekOrigin.Begin);
             type = br.ReadInt32();
-            minx = br.ReadDouble();
-            miny = br.ReadDouble();
-            maxx = br.ReadDouble();
-            maxy = br.ReadDouble();
+            var min = readCoordinate();
+            var max = readCoordinate();
+            minx = min.X;
+            miny = min.Y;
+            maxx = max.X;
+            maxy = max.Y;
             br.BaseStream.Seek(100, SeekOrigin.Begin);
         }
     }

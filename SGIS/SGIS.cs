@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Geometries;
+using Proj4CSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ namespace SGIS
         public static SGIS app;
         public BindingList<Layer> layers = new BindingList<Layer>();
         public ScreenManager screenManager = new ScreenManager();
+        public IProjection SRS { set; get; }
 
         public SGIS()
         {
@@ -47,6 +49,8 @@ namespace SGIS
             toolPanel.RowStyles.Clear();
             toolPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             toolBuilder = new ToolBuilder(toolPanel);
+
+            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactory("+proj = utm + zone = 33 + datum = WGS84 + units = m + no_defs");
         }
 
         private void SGIS_Paint(object sender, PaintEventArgs e)

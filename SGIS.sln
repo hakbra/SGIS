@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGIS", "SGIS\SGIS.csproj", "{D180D9E7-E2D6-448A-BDA0-D934F521F445}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proj4CSharp", "C:\Users\Hakon\Documents\Skole\Progr Geom\Proj4CSharp\Proj4CSharp.csproj", "{092DCD6E-9F52-4392-B8B6-45B647CD6C83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,12 @@ Global
 		{D180D9E7-E2D6-448A-BDA0-D934F521F445}.Evaluation|Any CPU.Build.0 = Release|Any CPU
 		{D180D9E7-E2D6-448A-BDA0-D934F521F445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D180D9E7-E2D6-448A-BDA0-D934F521F445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Evaluation|Any CPU.ActiveCfg = Release|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Evaluation|Any CPU.Build.0 = Release|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{092DCD6E-9F52-4392-B8B6-45B647CD6C83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

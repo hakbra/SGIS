@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="DBFReader.cs" />
     <Compile Include="Feature.cs" />
+    <Compile Include="PrjReader.cs" />
     <Compile Include="QuadTree.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="ScreenManager.cs" />
@@ -111,7 +112,17 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\Hakon\Documents\Skole\Progr Geom\Proj4CSharp\Proj4CSharp.csproj">
+      <Project>{092dcd6e-9f52-4392-b8b6-45b647cd6c83}</Project>
+      <Name>Proj4CSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

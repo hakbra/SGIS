@@ -56,6 +56,7 @@ namespace SGIS
         public Envelope boundingbox;
         public DataTable dataTable = null;
         public QuadTree quadTree = null;
+        public Proj4CSharp.IProjection projection { get; set; }
 
         public ShapeType convert(string s)
         {

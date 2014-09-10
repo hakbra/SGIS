@@ -77,7 +77,7 @@ namespace SGIS
 
                     foreach (DataRow dr in rows)
                     {
-                        int id = (int)dr["internal_id"];
+                        int id = (int)dr["sgis_id"];
                         Feature f;
                         if (l.features.TryGetValue(id, out f))
                         {

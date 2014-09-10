@@ -75,6 +75,8 @@ namespace SGIS
             foreach (var column in layer.dataTable.Columns)
             {
                 string colName = column.ToString();
+                if (colName == "sgis_id")
+                    continue;
                 infoContextMenu.Items.Add(colName + ": " + dr[colName]);
             }
         }

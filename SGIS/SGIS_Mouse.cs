@@ -40,7 +40,7 @@ namespace SGIS
             mouseMoveButton.Enabled = false;
             mouseInfoButton.Enabled = true;
             mouseSelectButton.Enabled = true;
-            SGIS.app.getMapWindow().Cursor = Cursors.Hand;
+            SGIS.App.MapWindow.Cursor = Cursors.Hand;
         }
 
         private void mouseSelectItem_Click(object sender, EventArgs e)
@@ -49,7 +49,7 @@ namespace SGIS
             mouseMoveButton.Enabled = true;
             mouseInfoButton.Enabled = true;
             mouseSelectButton.Enabled = false;
-            SGIS.app.getMapWindow().Cursor = Cursors.Cross;
+            SGIS.App.MapWindow.Cursor = Cursors.Cross;
         }
 
         private void mouseInfoItem_Click(object sender, EventArgs e)
@@ -58,36 +58,37 @@ namespace SGIS
             mouseMoveButton.Enabled = true;
             mouseSelectButton.Enabled = true;
             mouseInfoButton.Enabled = false;
-            SGIS.app.getMapWindow().Cursor = Cursors.Help;
+            SGIS.App.MapWindow.Cursor = Cursors.Help;
         }
 
         private void infoContextMenu_Opening(object sender, CancelEventArgs e)
         {
             e.Cancel = false;
             Layer layer = (Layer)layerList.SelectedItem;
-            if (layer == null || layer.selected.Count != 1)
+            if (layer == null || layer.Selected.Count != 1)
                 return;
 
-            Feature f = layer.selected.First();
-            DataRow dr = layer.dataTable.Rows[f.id-1];
+            Feature f = layer.Selected.First();
+            DataRow dr = layer.DataTable.Rows[f.ID-1];
 
             infoContextMenu.Items.Clear();
-            foreach (DataColumn column in layer.dataTable.Columns)
+            foreach (DataColumn column in layer.DataTable.Columns)
             {
                 string colName = column.ToString();
                 if (colName == "sgis_id")
                     continue;
                 infoContextMenu.Items.Add(colName + ": " + dr[colName], null, (o, e2) =>
                 {
-                    var rows = layer.dataTable.Select("[" + colName + "] = '" + dr[colName] + "'");
+                    var rows = layer.DataTable.Select("[" + colName + "] = '" + dr[colName] + "'");
                     layer.clearSelected();
                     foreach(var row in rows){
                         Feature selectedFeature;
-                        if (layer.features.TryGetValue((int)row["sgis_id"], out selectedFeature))
+                        if (layer.Features.TryGetValue((int)row["sgis_id"], out selectedFeature))
                         {
-                            selectedFeature.selected = true;
-                            layer.selected.Add(selectedFeature);
+                            selectedFeature.Selected = true;
+                            layer.Selected.Add(selectedFeature);
                         }
+                        StatusText = layer.Selected.Count + " objects";
                     }
                     redraw();
                 });

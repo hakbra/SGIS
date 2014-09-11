@@ -19,35 +19,35 @@ namespace SGIS
             Layer l = (Layer)layerList.SelectedItem;
             Bitmap colorImg = new Bitmap(20, 20);
             var graphics = Graphics.FromImage(colorImg);
-            graphics.FillRectangle(l.style.brush, new Rectangle(0, 0, 20, 20));
-            graphics.DrawRectangle(l.style.pen, new Rectangle(0, 0, 20, 20));
+            graphics.FillRectangle(l.Style.brush, new Rectangle(0, 0, 20, 20));
+            graphics.DrawRectangle(l.Style.pen, new Rectangle(0, 0, 20, 20));
 
             layerListContextMenu.Items.Clear();
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) =>
             {
                 Layer selected = (Layer)layerList.SelectedItem;
-                int index = layers.IndexOf(l);
+                int index = Layers.IndexOf(l);
                 if (index == 0)
                     return;
-                layers.Remove(l);
-                layers.Insert(index - 1, l);
+                Layers.Remove(l);
+                Layers.Insert(index - 1, l);
                 layerList.SelectedItem = selected;
                 redraw();
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Down", null, (o, i) =>
             {
                 Layer selected = (Layer)layerList.SelectedItem;
-                int index = layers.IndexOf(l);
-                if (index == layers.Count - 1)
+                int index = Layers.IndexOf(l);
+                if (index == Layers.Count - 1)
                     return;
-                layers.Remove(l);
-                layers.Insert(index + 1, l);
+                Layers.Remove(l);
+                Layers.Insert(index + 1, l);
                 layerList.SelectedItem = selected;
                 redraw();
             }));
             layerListContextMenu.Items.Add("-");
-            layerListContextMenu.Items.Add(new ToolStripMenuItem(l.visible ? "Hide" : "Show", null, (o, i) => { l.visible = !l.visible; redraw(); }));
-            layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { screenManager.RealRect.Set(l.boundingbox); screenManager.Calculate(); redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem(l.Visible ? "Hide" : "Show", null, (o, i) => { l.Visible = !l.Visible; redraw(); }));
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { ScreenManager.RealRect.Set(l.Boundingbox); ScreenManager.Calculate(); redraw(); }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Style", colorImg, (o, i) =>
             {
                 toolBuilder.addHeader("Style layer");
@@ -63,7 +63,7 @@ namespace SGIS
                         fcolor.BackColor = cd.Color;
                         if (cl != null)
                         {
-                            cl.style.brush = new SolidBrush(cd.Color);
+                            cl.Style.brush = new SolidBrush(cd.Color);
                             redraw();
                         }
                     }
@@ -80,7 +80,7 @@ namespace SGIS
                         lcolor.BackColor = cd.Color;
                         if (cl != null)
                         {
-                            cl.style.pen.Color = cd.Color;
+                            cl.Style.pen.Color = cd.Color;
                             redraw();
                         }
                     }
@@ -95,9 +95,9 @@ namespace SGIS
                     {
                         if (alpha >= 0 && alpha <= 255)
                         {
-                            Color c = cl.style.brush.Color;
+                            Color c = cl.Style.brush.Color;
                             c = Color.FromArgb(alpha, c);
-                            cl.style.brush = new SolidBrush(c);
+                            cl.Style.brush = new SolidBrush(c);
                             redraw();
                         }
                     }
@@ -107,9 +107,9 @@ namespace SGIS
                 {
                     if (l != null)
                     {
-                        fcolor.BackColor = il.style.brush.Color;
-                        lcolor.BackColor = il.style.pen.Color;
-                        alphaText.Text = il.style.brush.Color.A.ToString();
+                        fcolor.BackColor = il.Style.brush.Color;
+                        lcolor.BackColor = il.Style.pen.Color;
+                        alphaText.Text = il.Style.brush.Color.A.ToString();
                     }
 
                 };
@@ -137,7 +137,7 @@ namespace SGIS
                 toolBuilder.addLabel("Are you sure?");
                 toolBuilder.addButton("Yes", (Layer il) =>
                 {
-                    SGIS.app.layers.Remove(il);
+                    SGIS.App.Layers.Remove(il);
                     redraw();
                 });
                 toolBuilder.addButton("No", (il) => { });
@@ -165,30 +165,15 @@ namespace SGIS
                     layerListContextMenu.Show(layerList.PointToScreen(e.Location));
             }
             Layer l = (Layer)(layerList.SelectedItem);
-            if (l == null || l.selected.Count == 0)
-                SGIS.app.setStatusText("");
+            if (l == null || l.Selected.Count == 0)
+                SGIS.App.StatusText = ("");
             else
-                SGIS.app.setStatusText(l.selected.Count + " objects");
+                SGIS.App.StatusText = (l.Selected.Count + " objects");
             redraw();
         }
 
         private void layerList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Layer l = (Layer)layerList.SelectedItem;
-            if (l == null)
-            {
-                selectAllButton.Enabled = false;
-                selectNoneButton.Enabled = false;
-                selectPropButton.Enabled = false;
-                selectInvertButton.Enabled = false;
-            }
-            else
-            {
-                selectAllButton.Enabled = true;
-                selectNoneButton.Enabled = true;
-                selectInvertButton.Enabled = true;
-                selectPropButton.Enabled = l.dataTable != null;
-            }
             redraw();
         }
     }

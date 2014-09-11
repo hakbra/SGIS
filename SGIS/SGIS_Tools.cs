@@ -2,11 +2,13 @@
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,25 +41,43 @@ namespace SGIS
                 }
 
                 Layer newl = new Layer(nameBox.Text);
-                newl.dataTable = l.dataTable;
-                newl.boundingbox = l.boundingbox;
+                newl.DataTable = l.DataTable;
+                newl.Boundingbox = l.Boundingbox;
                 newl.createQuadTree();
 
-                List<Feature> flist = l.features.Values.ToList();
+                List<Feature> flist = l.Features.Values.ToList();
 
-                progressLabel.Text = "Buffer";
+                progressLabel.Text = "Buffering";
                 progressBar.Minimum = 0;
                 progressBar.Maximum = flist.Count;
+                ConcurrentBag<Feature> newFeatures = new ConcurrentBag<Feature>();
 
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    for (int i = 0; i < flist.Count; i++)
+                    using (var finished = new CountdownEvent(1))
                     {
-                        bw.ReportProgress(i);
-                        Feature f = flist[i];
-                        newl.addFeature(new Feature(f.geometry.Buffer(dist), f.id));
+                        for (int i = 0; i < flist.Count; i++)
+                        {
+                            finished.AddCount();
+                            Feature capture = flist[i];
+                            ThreadPool.QueueUserWorkItem((state) =>
+                            {
+                                Feature f = capture;
+                                newFeatures.Add(new Feature(f.Geometry.Buffer(dist), f.ID));
+                                bw.ReportProgress(i);
+                                finished.Signal();
+                            }, null);
+                        }
+                        finished.Signal();
+                        finished.Wait();
+                    }
+                    bw.ReportProgress(-1);
+                    foreach(Feature f in newFeatures)
+                    {
+                        newl.addFeature(f);
+                        bw.ReportProgress(1);
                     }
                 };
                 bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
@@ -65,13 +85,17 @@ namespace SGIS
                     progressBar.Value = 0;
                     progressLabel.Text = "";
 
-                    layers.Insert(0, newl);
+                    Layers.Insert(0, newl);
                     layerList.SelectedItem = newl;
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
                 {
-
-                    progressBar.Value = we.ProgressPercentage;
+                    if (we.ProgressPercentage == -1){
+                        progressBar.Value = 0;
+                        progressLabel.Text = "Creating spatial index";
+                    }
+                    else
+                        progressBar.Value += 1;
                 };
                 bw.RunWorkerAsync();
             });
@@ -104,16 +128,16 @@ namespace SGIS
                     return;
                 }
                 Layer newLayer = new Layer(textbox.Text);
-                newLayer.boundingbox = new Envelope(l.boundingbox);
-                newLayer.boundingbox.ExpandToInclude(unionLayer.boundingbox);
+                newLayer.Boundingbox = new Envelope(l.Boundingbox);
+                newLayer.Boundingbox.ExpandToInclude(unionLayer.Boundingbox);
                 newLayer.createQuadTree();
 
-                foreach (Feature f in l.features.Values)
-                    newLayer.addFeature(new Feature((IGeometry)f.geometry.Clone()));
-                foreach (Feature f in unionLayer.features.Values)
-                    newLayer.addFeature(new Feature((IGeometry)f.geometry.Clone()));
+                foreach (Feature f in l.Features.Values)
+                    newLayer.addFeature(new Feature((IGeometry)f.Geometry.Clone()));
+                foreach (Feature f in unionLayer.Features.Values)
+                    newLayer.addFeature(new Feature((IGeometry)f.Geometry.Clone()));
 
-                layers.Insert(0, newLayer);
+                Layers.Insert(0, newLayer);
                 redraw();
             });
             toolBuilder.resetAction = (Layer l) =>
@@ -136,17 +160,17 @@ namespace SGIS
                     return;
                 }
                 Layer copyLayer = new Layer(l.Name);
-                copyLayer.boundingbox = new Envelope(l.boundingbox);
+                copyLayer.Boundingbox = new Envelope(l.Boundingbox);
                 copyLayer.createQuadTree();
 
-                foreach (Feature f in l.features.Values)
-                    copyLayer.addFeature(new Feature((IGeometry)f.geometry.Clone(), f.id));
+                foreach (Feature f in l.Features.Values)
+                    copyLayer.addFeature(new Feature((IGeometry)f.Geometry.Clone(), f.ID));
 
                 Layer newLayer = new Layer(textbox.Text);
-                newLayer.boundingbox = new Envelope(l.boundingbox);
+                newLayer.Boundingbox = new Envelope(l.Boundingbox);
                 newLayer.createQuadTree();
 
-                int numFeatures = copyLayer.features.Values.Count;
+                int numFeatures = copyLayer.Features.Values.Count;
                 progressLabel.Text = "Merging";
                 progressBar.Minimum = 0;
                 progressBar.Maximum = numFeatures;
@@ -155,21 +179,21 @@ namespace SGIS
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    while (copyLayer.features.Values.Count > 0)
+                    while (copyLayer.Features.Values.Count > 0)
                     {
-                        Feature f = copyLayer.features.Values.First();
+                        Feature f = copyLayer.Features.Values.First();
                         copyLayer.delFeature(f);
-                        f.id = -1;
+                        f.ID = -1;
                         while (true)
                         {
-                            var intersects = copyLayer.getWithin(f.geometry);
+                            var intersects = copyLayer.getWithin(f.Geometry);
                             if (intersects.Count == 0)
                                 break;
                             foreach (Feature intersect in intersects)
                             {
                                 copyLayer.delFeature(intersect);
-                                bw.ReportProgress(numFeatures - copyLayer.features.Values.Count);
-                                f = new Feature(f.geometry.Union(intersect.geometry));
+                                bw.ReportProgress(numFeatures - copyLayer.Features.Values.Count);
+                                f = new Feature(f.Geometry.Union(intersect.Geometry));
                             }
                         }
                         newLayer.addFeature(f);
@@ -180,7 +204,7 @@ namespace SGIS
                     progressBar.Value = 0;
                     progressLabel.Text = "";
 
-                    layers.Insert(0, newLayer);
+                    Layers.Insert(0, newLayer);
                     redraw();
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
@@ -216,25 +240,25 @@ namespace SGIS
                     return;
                 }
                 Layer newLayer = new Layer(textbox.Text);
-                newLayer.boundingbox = new Envelope(l.boundingbox);
+                newLayer.Boundingbox = new Envelope(l.Boundingbox);
                 newLayer.createQuadTree();
                 
                 progressLabel.Text = "Subtracting";
                 progressBar.Minimum = 0;
-                progressBar.Maximum = l.features.Values.Count;
+                progressBar.Maximum = l.Features.Values.Count;
 
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    for (int i = 0; i < l.features.Count; i++ )
+                    for (int i = 0; i < l.Features.Count; i++ )
                     {
-                        Feature f = l.features.Values.ElementAt(i);
+                        Feature f = l.Features.Values.ElementAt(i);
                         bw.ReportProgress(i);
-                        Feature newf = new Feature((IGeometry)f.geometry.Clone(), f.id);
-                        var intersects = unionLayer.getWithin(f.geometry);
+                        Feature newf = new Feature((IGeometry)f.Geometry.Clone(), f.ID);
+                        var intersects = unionLayer.getWithin(f.Geometry);
                         foreach (Feature intersect in intersects)
-                            newf.geometry = newf.geometry.Difference(intersect.geometry);
+                            newf.Geometry = newf.Geometry.Difference(intersect.Geometry);
 
                         newLayer.addFeature(newf);
                     }
@@ -244,7 +268,7 @@ namespace SGIS
                     progressBar.Value = 0;
                     progressLabel.Text = "";
 
-                    layers.Insert(0, newLayer);
+                    Layers.Insert(0, newLayer);
                     redraw();
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
@@ -275,41 +299,41 @@ namespace SGIS
                 }
                 Layer intersectLayer = (Layer)layerSelect.SelectedItem;
                 Layer newLayer = new Layer(textbox.Text);
-                newLayer.boundingbox = new Envelope(l.boundingbox);
+                newLayer.Boundingbox = new Envelope(l.Boundingbox);
                 newLayer.createQuadTree();
 
-                DataTable a = l.dataTable.Clone();
-                newLayer.dataTable = intersectLayer.dataTable.Clone();
-                newLayer.dataTable.Merge(a, true, MissingSchemaAction.Add);
+                DataTable a = l.DataTable.Clone();
+                newLayer.DataTable = intersectLayer.DataTable.Clone();
+                newLayer.DataTable.Merge(a, true, MissingSchemaAction.Add);
 
                 progressLabel.Text = "Intersection";
                 progressBar.Minimum = 0;
-                progressBar.Maximum = l.features.Values.Count;
+                progressBar.Maximum = l.Features.Values.Count;
 
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    for (int i = 0; i < l.features.Count; i++ )
+                    for (int i = 0; i < l.Features.Count; i++ )
                     {
-                        Feature f = l.features.Values.ElementAt(i);
+                        Feature f = l.Features.Values.ElementAt(i);
                         bw.ReportProgress(i);
-                        var intersections = intersectLayer.getWithin(f.geometry);
+                        var intersections = intersectLayer.getWithin(f.Geometry);
                         foreach (Feature intersect in intersections)
                         {
                             DataRow arow = l.getRow(f);
                             DataRow brow = intersectLayer.getRow(intersect);
 
-                            Feature result = new Feature(f.geometry.Intersection(intersect.geometry));
+                            Feature result = new Feature(f.Geometry.Intersection(intersect.Geometry));
                             int id = newLayer.addFeature(result);
 
-                            DataRow dr = newLayer.dataTable.NewRow();
+                            DataRow dr = newLayer.DataTable.NewRow();
                             foreach (DataColumn dc in arow.Table.Columns)
                                 dr[dc.ColumnName] = arow[dc.ColumnName];
                             foreach (DataColumn dc in brow.Table.Columns)
                                 dr[dc.ColumnName] = brow[dc.ColumnName];
                             dr["sgis_id"] = id;
-                            newLayer.dataTable.Rows.Add(dr);
+                            newLayer.DataTable.Rows.Add(dr);
                         }
                     }
                 };
@@ -318,7 +342,7 @@ namespace SGIS
                     progressBar.Value = 0;
                     progressLabel.Text = "";
 
-                    layers.Insert(0, newLayer);
+                    Layers.Insert(0, newLayer);
                     redraw();
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
@@ -344,7 +368,7 @@ namespace SGIS
             toolBuilder.resetAction += (Layer l) =>
             {
                 string plural = "";
-                if (l != null && l.features.Count > 0)
+                if (l != null && l.Features.Count > 0)
                     plural = "s";
 
                 if (l == null || l.shapetype == ShapeType.EMPTY)
@@ -355,28 +379,28 @@ namespace SGIS
                 }
                 else if (l.shapetype == ShapeType.POINT)
                 {
-                    countLabel.Text = l.features.Count + " points";
+                    countLabel.Text = l.Features.Count + " points";
                     lengthLabel.Text = "Length: N/A";
                     areaLabel.Text = "Area: N/A";
                 }
                 else if (l.shapetype == ShapeType.LINE)
                 {
-                    countLabel.Text = l.features.Count + " feature" + plural;
+                    countLabel.Text = l.Features.Count + " feature" + plural;
                     double length = 0;
-                    foreach (Feature f in l.features.Values)
-                        length += f.geometry.Length;
+                    foreach (Feature f in l.Features.Values)
+                        length += f.Geometry.Length;
                     lengthLabel.Text = "Length: "+(int)length+"m";
                     areaLabel.Text = "Area: N/A";
                 }
                 else if (l.shapetype == ShapeType.POLYGON)
                 {
-                    countLabel.Text = l.features.Count + " feature" + plural;
+                    countLabel.Text = l.Features.Count + " feature" + plural;
                     double circum = 0;
                     double area = 0;
-                    foreach (Feature f in l.features.Values)
+                    foreach (Feature f in l.Features.Values)
                     {
-                        circum += f.geometry.Length;
-                        area += f.geometry.Area;
+                        circum += f.Geometry.Length;
+                        area += f.Geometry.Area;
                     }
                     lengthLabel.Text = "Circ: " + (int)circum+"m";
                     areaLabel.Text = "Area: " + Math.Round(area)+"m^2";

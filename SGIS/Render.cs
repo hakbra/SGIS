@@ -26,7 +26,7 @@ namespace SGIS
         private static void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
             int rad = 5;
-            var mid = SGIS.app.screenManager.ScaleAndOffSet(ge);
+            var mid = SGIS.App.ScreenManager.ScaleAndOffSet(ge);
 
             gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
         }
@@ -36,8 +36,8 @@ namespace SGIS
             var points = ge.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i]));
                 gr.DrawLine(c.pen, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
         }
@@ -48,8 +48,8 @@ namespace SGIS
             var points = poly.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = SGIS.app.screenManager.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i]));
                 gp.AddLine((int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
             return gp;

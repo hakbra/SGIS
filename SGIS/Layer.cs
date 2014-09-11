@@ -33,30 +33,38 @@ namespace SGIS
     public class Layer : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        int maxid = 1;
-        public Dictionary<int, Feature> features = new Dictionary<int, Feature>();
-        public List<Feature> selected = new List<Feature>();
-        public Style style;
-        public bool visible;
-        public ShapeType shapetype = ShapeType.EMPTY;
+        private int maxid = 1;
+        public Dictionary<int, Feature> Features {get;private set;}
+        public List<Feature> Selected { get; set; }
+        public Style Style;
+        public bool Visible {get;set;}
+        public ShapeType shapetype { get; private set; }
+        public Envelope Boundingbox { get; set; }
+        public DataTable DataTable { get; set; }
+        public QuadTree QuadTree = null;
+        public Proj4CSharp.IProjection Projection { get; set; }
         private string name;
         public string Name
         {
             get { return name; }
             set { name = value; NotifyPropertyChanged(); }
         }
-        public Envelope boundingbox;
-        public DataTable dataTable = null;
-        public QuadTree quadTree = null;
-        public Proj4CSharp.IProjection projection { get; set; }
+
+        public Layer(string n)
+        {
+            name = n;
+            shapetype = ShapeType.EMPTY;
+            Visible = true;
+            Features = new Dictionary<int, Feature>();
+            Selected = new List<Feature>();
+            shapetype = ShapeType.EMPTY;
+
+            Style = new Style()
+            {
+                pen = new System.Drawing.Pen(System.Drawing.Color.Black),
+                brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray)
+            };
+        }
 
         public ShapeType convert(string s)
         {
@@ -74,25 +82,24 @@ namespace SGIS
             return ShapeType.UNKNOWN;
         }
 
+        public void calculateBoundingBox()
+        {
+            Envelope bb = new Envelope();
+            foreach (Feature f in Features.Values)
+            {
+                Envelope bbg = f.Geometry.EnvelopeInternal;
+                bb.ExpandToInclude(bbg);
+            }
+            Boundingbox = bb;
+        }
+
         public void createQuadTree()
         {
-            if (boundingbox == null)
+            if (Boundingbox == null)
                 throw new Exception("Need boundingbox to create quadTree");
-            quadTree = new QuadTree(boundingbox.MinX, boundingbox.MaxX, boundingbox.MinY, boundingbox.MaxY);
-            foreach (Feature f in features.Values)
-                quadTree.add(f);
-        }
-        
-        public Layer(string n)
-        {
-            this.name = n;
-            shapetype = ShapeType.EMPTY;
-            visible = true;
-            style = new Style()
-            {
-                pen = new System.Drawing.Pen(System.Drawing.Color.Black),
-                brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray)
-            };
+            QuadTree = new QuadTree(Boundingbox.MinX, Boundingbox.MaxX, Boundingbox.MinY, Boundingbox.MaxY);
+            foreach (Feature f in Features.Values)
+                QuadTree.add(f);
         }
 
         public override string ToString()
@@ -113,25 +120,25 @@ namespace SGIS
         public int addFeature(Feature s)
         {
             if (shapetype == ShapeType.EMPTY)
-                shapetype = convert(s.geometry.GeometryType);
-            else if (shapetype != convert(s.geometry.GeometryType))
+                shapetype = convert(s.Geometry.GeometryType);
+            else if (shapetype != convert(s.Geometry.GeometryType))
                 throw new Exception("Wrong shapetype in layer " + name);
 
-            if (s.id > maxid)
-                maxid = s.id + 1;
-            if (s.id == -1)
-                s.id = maxid++;
-            features.Add(s.id, s);
-            if (quadTree != null)
-                quadTree.add(s);
-            return s.id;
+            if (s.ID > maxid)
+                maxid = s.ID + 1;
+            if (s.ID == -1)
+                s.ID = maxid++;
+            Features.Add(s.ID, s);
+            if (QuadTree != null)
+                QuadTree.add(s);
+            return s.ID;
         }
 
         public void delFeature(Feature f)
         {
-            features.Remove(f.id);
-            if (f.parent != null)
-                f.parent.features.Remove(f);
+            Features.Remove(f.ID);
+            if (f.Parent != null)
+                f.Parent.remove(f);
         }
 
         public Feature getClosest(Point p, double limit)
@@ -145,7 +152,7 @@ namespace SGIS
             Feature minf = null;
             foreach (var f in candidates)
             {
-                double dist = f.geometry.Distance(p);
+                double dist = f.Geometry.Distance(p);
                 if (minf == null || dist < min)
                 {
                     minf = f;
@@ -157,28 +164,34 @@ namespace SGIS
 
         public void clearSelected()
         {
-            foreach (Feature f in selected)
-                f.selected = false;
-            selected.Clear();
+            foreach (Feature f in Selected)
+                f.Selected = false;
+            Selected.Clear();
         }
 
         public List<Feature> getWithin(IGeometry rect)
         {
-            if (quadTree != null)
-                return quadTree.getWithin(rect);
+            if (QuadTree != null)
+                return QuadTree.getWithin(rect);
             var ret = new List<Feature>();
-            foreach (var pair in features)
+            foreach (var pair in Features)
             {
-                if (pair.Value.geometry.Intersects(rect))
+                if (pair.Value.Geometry.Intersects(rect))
                     ret.Add(pair.Value);
             }
             return ret;
         }
         public DataRow getRow(Feature f)
         {
-            if (dataTable == null)
+            if (DataTable == null)
                 return null;
-            return dataTable.Rows[f.id - 1];
+            return DataTable.Rows[f.ID - 1];
+        }
+
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

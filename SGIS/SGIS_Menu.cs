@@ -23,13 +23,12 @@ namespace SGIS
             {
                 foreach (String file in openFileDialog1.FileNames)
                 {
-                    ShpReader sr = new ShpReader();
-                    Layer l = sr.read(file);
-                    layers.Insert(0, l);
+                    Layer l = ShpReader.read(file);
+                    Layers.Insert(0, l);
                     layerList.SelectedIndex = 0;
                     this.layerList_SelectedIndexChanged(null, null);
-                    screenManager.RealRect.Set(l.boundingbox);
-                    screenManager.Calculate();
+                    ScreenManager.RealRect.Set(l.Boundingbox);
+                    ScreenManager.Calculate();
                     this.Refresh();
                 }
             }

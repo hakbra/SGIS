@@ -19,12 +19,12 @@ namespace SGIS
         public ToolBuilder(TableLayoutPanel p)
         {
             panel = p;
-            SGIS.app.layers.ListChanged += reset;
-            SGIS.app.getLayerList().SelectedIndexChanged += reset;
+            SGIS.App.Layers.ListChanged += reset;
+            SGIS.App.getLayerList().SelectedIndexChanged += reset;
         }
 
         public void reset(object sender, EventArgs e){
-            Layer layer = (Layer)SGIS.app.getLayerList().SelectedItem;
+            Layer layer = (Layer)SGIS.App.getLayerList().SelectedItem;
             if (resetAction != null)
                 resetAction(layer);
         }
@@ -90,7 +90,7 @@ namespace SGIS
 
             button.Click += (o, e) =>
             {
-                Layer l = (Layer)SGIS.app.getLayerList().SelectedItem;
+                Layer l = (Layer)SGIS.App.getLayerList().SelectedItem;
                 if (l == null)
                     return;
                 foreach (ComboBox cb in layerSelects)
@@ -101,7 +101,7 @@ namespace SGIS
                         setError("Select layer");
                         return;
                     }
-                    if (!SGIS.app.layers.Contains(selectedLayer))
+                    if (!SGIS.App.Layers.Contains(selectedLayer))
                     {
                         setError(selectedLayer.Name + " is deleted");
                         return;
@@ -170,7 +170,7 @@ namespace SGIS
 
             ComboBox cb = new ComboBox();
             cb.DropDownStyle = ComboBoxStyle.DropDownList;
-            foreach (Layer l in SGIS.app.layers)
+            foreach (Layer l in SGIS.App.Layers)
                 cb.Items.Add(l);
             if (cb.Items.Count > 0)
                 cb.SelectedIndex = 0;
@@ -179,7 +179,7 @@ namespace SGIS
                 Layer l = (Layer) cb.SelectedItem;
                 cb.Items.Clear();
 
-                foreach (Layer layer in SGIS.app.layers)
+                foreach (Layer layer in SGIS.App.Layers)
                 {
                     cb.Items.Add(layer);
                     if (layer == l)

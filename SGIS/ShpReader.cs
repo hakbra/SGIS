@@ -29,7 +29,11 @@ namespace SGIS
         public double minx, miny, maxx, maxy;
         Layer layer;
 
-        public Layer read(string filename)
+        public static Layer read(string filename){
+            ShpReader shpr = new ShpReader();
+            return shpr.readImpl(filename);
+        }
+        public Layer readImpl(string filename)
         {
             string name = filename.Split('\\').Last();
             name = name.Substring(0, name.Length - 4);
@@ -38,11 +42,11 @@ namespace SGIS
 
             string prjName = filename.Substring(0, filename.Length - 3) + "prj";
             if (File.Exists(prjName))
-                layer.projection = PrjReader.read(prjName);
+                layer.Projection = PrjReader.read(prjName);
 
             string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
             if (File.Exists(dbfName))
-                layer.dataTable = DBFReader.read(dbfName);
+                layer.DataTable = DBFReader.read(dbfName);
 
             FileStream f = File.Open(filename, FileMode.Open);
             br = new BinaryReaderExtension(f);
@@ -51,7 +55,7 @@ namespace SGIS
 
             readHeader();
 
-            layer.boundingbox = new Envelope(minx, maxx, miny, maxy);
+            layer.Boundingbox = new Envelope(minx, maxx, miny, maxy);
             layer.createQuadTree();
 
             pos = 100;
@@ -156,13 +160,13 @@ namespace SGIS
 
         private Coordinate transformCoordinate(Coordinate c)
         {
-            if (SGIS.app.SRS != null && layer.projection != null && SGIS.app.SRS != layer.projection)
+            if (SGIS.App.SRS != null && layer.Projection != null && SGIS.App.SRS != layer.Projection)
             {
                 double[] x = new double[1] { c.X };
                 double[] y = new double[1] { c.Y };
                 double[] z = new double[1] { 0 };
 
-                layer.projection.Transform(SGIS.app.SRS, 1, 1, x, y, z);
+                layer.Projection.Transform(SGIS.App.SRS, 1, 1, x, y, z);
                 c.X = x[0];
                 c.Y = y[0];
             }

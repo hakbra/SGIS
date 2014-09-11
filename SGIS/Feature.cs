@@ -13,19 +13,19 @@ namespace SGIS
     {
         public Feature(IGeometry g, int i)
         {
-            geometry = g;
-            id = i;
-            selected = false;
+            Geometry = g;
+            ID = i;
+            Selected = false;
         }
         public Feature(IGeometry g)
         {
-            geometry = g;
-            id = -1;
-            selected = false;
+            Geometry = g;
+            ID = -1;
+            Selected = false;
         }
-        public IGeometry geometry;
-        public int id;
-        public bool selected;
-        public QuadTree parent;
+        public IGeometry Geometry;
+        public int ID;
+        public bool Selected;
+        public QuadTree Parent;
     }
 }

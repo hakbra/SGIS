@@ -10,11 +10,11 @@ namespace SGIS
 {
     public class QuadTree
     {
-        Envelope boundary;
-        IGeometry gboundary;
-        QuadTree[] children = new QuadTree[4];
-        bool hasChildren = false;
-        public List<Feature> features = new List<Feature>();
+        private Envelope boundary;
+        private IGeometry gboundary;
+        private QuadTree[] children = new QuadTree[4];
+        private bool hasChildren = false;
+        private List<Feature> features = new List<Feature>();
 
         public QuadTree(double minx, double maxx, double miny, double maxy)
         {
@@ -29,7 +29,7 @@ namespace SGIS
             if (!hasChildren && features.Count < 20)
             {
                 features.Add(f);
-                f.parent = this;
+                f.Parent = this;
                 return;
             }
 
@@ -38,14 +38,14 @@ namespace SGIS
 
             foreach (QuadTree qt in children)
             {
-                if (qt.gboundary.Contains(f.geometry))
+                if (qt.gboundary.Contains(f.Geometry))
                 {
                     qt.add(f);
                     return;
                 }
             }
             features.Add(f);
-            f.parent = this;
+            f.Parent = this;
         }
 
         public void split()
@@ -58,10 +58,10 @@ namespace SGIS
 
             List<Feature> newfeatures = new List<Feature>();
             foreach (Feature f in features)
-            {
+            { 
                 bool added = false;
                 foreach (QuadTree qt in children) {
-                    if (qt.gboundary.Contains(f.geometry))
+                    if (qt.gboundary.Contains(f.Geometry))
                     {
                         qt.add(f);
                         added = true;
@@ -78,8 +78,8 @@ namespace SGIS
         {
             System.Drawing.Pen p = new System.Drawing.Pen(System.Drawing.Color.Black);
 
-            var min = SGIS.app.screenManager.MapRealToScreen(new Point(boundary.MinX, boundary.MinY));
-            var max = SGIS.app.screenManager.MapRealToScreen(new Point(boundary.MaxX, boundary.MaxY));
+            var min = SGIS.App.ScreenManager.MapRealToScreen(new Point(boundary.MinX, boundary.MinY));
+            var max = SGIS.App.ScreenManager.MapRealToScreen(new Point(boundary.MaxX, boundary.MaxY));
 
             g.DrawRectangle(p, (float)min.X, (float)max.Y, (float)(max.X - min.X), (float)(min.Y - max.Y));
 
@@ -100,7 +100,7 @@ namespace SGIS
                 foreach (QuadTree qt in children)
                     retfeatures.AddRange(qt.getWithin(rect));
             foreach (Feature f in features)
-                if (rect.Intersects(f.geometry))
+                if (rect.Intersects(f.Geometry))
                     retfeatures.Add(f);
             return retfeatures;
         }
@@ -112,6 +112,11 @@ namespace SGIS
                 foreach (QuadTree qt in children)
                     retfeatures.AddRange(qt.getAll());
             return retfeatures;
+        }
+
+        public void remove(Feature f)
+        {
+            features.Remove(f);
         }
     }
 }

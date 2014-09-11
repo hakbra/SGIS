@@ -44,6 +44,7 @@
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.measureButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.intersectButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -64,7 +65,6 @@
             this.deleteButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.measureButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -262,6 +262,17 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 384);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // measureButton
+            // 
+            this.measureButton.Location = new System.Drawing.Point(118, 364);
+            this.measureButton.Margin = new System.Windows.Forms.Padding(0);
+            this.measureButton.Name = "measureButton";
+            this.measureButton.Size = new System.Drawing.Size(59, 20);
+            this.measureButton.TabIndex = 27;
+            this.measureButton.Text = "Measure";
+            this.measureButton.UseVisualStyleBackColor = true;
+            this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(0, 364);
@@ -324,7 +335,6 @@
             this.selectPropButton.AutoSize = true;
             this.selectPropButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectPropButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectPropButton.Enabled = false;
             this.selectPropButton.Location = new System.Drawing.Point(0, 301);
             this.selectPropButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectPropButton.Name = "selectPropButton";
@@ -339,7 +349,6 @@
             this.selectInvertButton.AutoSize = true;
             this.selectInvertButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectInvertButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectInvertButton.Enabled = false;
             this.selectInvertButton.Location = new System.Drawing.Point(118, 278);
             this.selectInvertButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectInvertButton.Name = "selectInvertButton";
@@ -354,7 +363,6 @@
             this.selectNoneButton.AutoSize = true;
             this.selectNoneButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectNoneButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectNoneButton.Enabled = false;
             this.selectNoneButton.Location = new System.Drawing.Point(59, 278);
             this.selectNoneButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectNoneButton.Name = "selectNoneButton";
@@ -369,7 +377,6 @@
             this.selectAllButton.AutoSize = true;
             this.selectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectAllButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectAllButton.Enabled = false;
             this.selectAllButton.Location = new System.Drawing.Point(0, 278);
             this.selectAllButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectAllButton.Name = "selectAllButton";
@@ -511,17 +518,6 @@
             this.mergeButton.Text = "Merge";
             this.mergeButton.UseVisualStyleBackColor = true;
             this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
-            // 
-            // measureButton
-            // 
-            this.measureButton.Location = new System.Drawing.Point(118, 364);
-            this.measureButton.Margin = new System.Windows.Forms.Padding(0);
-            this.measureButton.Name = "measureButton";
-            this.measureButton.Size = new System.Drawing.Size(59, 20);
-            this.measureButton.TabIndex = 27;
-            this.measureButton.Text = "Measure";
-            this.measureButton.UseVisualStyleBackColor = true;
-            this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
             // 
             // SGIS
             // 

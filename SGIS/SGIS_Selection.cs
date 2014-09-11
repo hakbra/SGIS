@@ -17,14 +17,14 @@ namespace SGIS
             if (l == null)
                 return;
             List<Feature> newSelected = new List<Feature>();
-            foreach (Feature f in l.features.Values)
+            foreach (Feature f in l.Features.Values)
             {
-                f.selected = !f.selected;
-                if (f.selected)
+                f.Selected = !f.Selected;
+                if (f.Selected)
                     newSelected.Add(f);
             }
-            l.selected = newSelected;
-            setStatusText(newSelected.Count + " objects");
+            l.Selected = newSelected;
+            StatusText = (newSelected.Count + " objects");
             redraw();
         }
 
@@ -34,12 +34,12 @@ namespace SGIS
             if (l == null)
                 return;
             l.clearSelected();
-            foreach (Feature f in l.features.Values)
+            foreach (Feature f in l.Features.Values)
             {
-                l.selected.Add(f);
-                f.selected = true;
+                l.Selected.Add(f);
+                f.Selected = true;
             }
-            setStatusText(l.features.Count + " objects");
+            StatusText = (l.Features.Count + " objects");
             redraw();
         }
 
@@ -49,7 +49,7 @@ namespace SGIS
             if (l == null)
                 return;
             l.clearSelected();
-            setStatusText("");
+            StatusText = ("");
             redraw();
         }
 
@@ -68,25 +68,25 @@ namespace SGIS
             Label errorLabel = toolBuilder.addErrorLabel();
             Button selectButton = toolBuilder.addButton("Select", (l) =>
             {
-                if (l.dataTable == null)
+                if (l.DataTable == null)
                     return;
                 try
                 {
-                    DataRow[] rows = l.dataTable.Select(textbox.Text);
+                    DataRow[] rows = l.DataTable.Select(textbox.Text);
                     l.clearSelected();
 
                     foreach (DataRow dr in rows)
                     {
                         int id = (int)dr["sgis_id"];
                         Feature f;
-                        if (l.features.TryGetValue(id, out f))
+                        if (l.Features.TryGetValue(id, out f))
                         {
-                            f.selected = true;
-                            l.selected.Add(f);
+                            f.Selected = true;
+                            l.Selected.Add(f);
                         }
                     }
-                    SGIS.app.setStatusText(l.selected.Count + " objects");
-                    SGIS.app.redraw();
+                    SGIS.App.StatusText = l.Selected.Count + " objects";
+                    SGIS.App.redraw();
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +101,7 @@ namespace SGIS
                     return;
                 comboBox.Items.Clear();
                 comboBox.Items.Add("Column name");
-                foreach (var column in l.dataTable.Columns)
+                foreach (var column in l.DataTable.Columns)
                 {
                     string colName = column.ToString();
                     comboBox.Items.Add(colName);
@@ -135,12 +135,12 @@ namespace SGIS
                 }
 
                 Layer newl = new Layer(textbox.Text);
-                newl.dataTable = l.dataTable;
-                newl.boundingbox = l.boundingbox;
+                newl.DataTable = l.DataTable;
+                newl.Boundingbox = l.Boundingbox;
                 newl.createQuadTree();
-                foreach (Feature f in l.selected)
-                    newl.addFeature(new Feature((Geometry)f.geometry.Clone(), f.id));
-                layers.Insert(0, newl);
+                foreach (Feature f in l.Selected)
+                    newl.addFeature(new Feature((Geometry)f.Geometry.Clone(), f.ID));
+                Layers.Insert(0, newl);
                 layerList.SelectedItem = newl;
             });
             toolBuilder.resetAction = (Layer l) =>
@@ -156,11 +156,12 @@ namespace SGIS
             toolBuilder.addLabel("Are you sure?");
             toolBuilder.addButton("Yes", (Layer l) =>
             {
-                foreach (Feature f in l.selected)
-                    l.features.Remove(f.id);
+                foreach (Feature f in l.Selected)
+                    l.Features.Remove(f.ID);
                 l.clearSelected();
+                l.calculateBoundingBox();
                 l.createQuadTree();
-                setStatusText("0 objects");
+                StatusText = "0 objects";
                 redraw();
             });
             toolBuilder.addButton("No", (l) => { });

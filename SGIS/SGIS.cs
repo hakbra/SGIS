@@ -15,29 +15,33 @@ namespace SGIS
 {
     public partial class SGIS : Form
     {
-        public static SGIS app;
-        public BindingList<Layer> layers = new BindingList<Layer>();
-        public ScreenManager screenManager = new ScreenManager();
-        public IProjection SRS { set; get; }
+        public static SGIS App { get; private set; }
+        public BindingList<Layer> Layers {get;private set;}
+        public ScreenManager ScreenManager {get;private set;}
+        public IProjection SRS { get; private set; }
 
         public SGIS()
         {
             InitializeComponent();
+
+            Layers = new BindingList<Layer>();
+            ScreenManager = new ScreenManager();
+            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactory("+proj = utm + zone = 33 + datum = WGS84 + units = m + no_defs");
         }
 
         private void SGIS_Load(object sender, EventArgs e)
         {
-            app = this;
+            App = this;
 
             this.MouseWheel += new MouseEventHandler(SGIS_MouseWheel);
 
             // Screenmanager for converting between screenspace and real world
-            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
-            screenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
-            screenManager.Calculate();
+            ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
+            ScreenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
+            ScreenManager.Calculate();
 
             // List of layers
-            layerList.DataSource = layers;
+            layerList.DataSource = Layers;
 
             // Context menu for layer list
             layerListContextMenu.Opening += new CancelEventHandler(layerListContextMenu_Opening);
@@ -49,27 +53,25 @@ namespace SGIS
             toolPanel.RowStyles.Clear();
             toolPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             toolBuilder = new ToolBuilder(toolPanel);
-
-            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactory("+proj = utm + zone = 33 + datum = WGS84 + units = m + no_defs");
         }
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
         {
-            var boundary = screenManager.MapScreenToReal(screenManager.WindowsRect);
-            foreach (Layer l in layers.Reverse())
+            var boundary = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
+            foreach (Layer l in Layers.Reverse())
             {
-                if (!l.visible)
+                if (!l.Visible)
                     continue;
                 var visibleFeatures = l.getWithin(boundary);
                 foreach (Feature s in visibleFeatures)
                 {
-                    if (!s.selected || l != layerList.SelectedItem)
-                        Render.Draw(s.geometry, e.Graphics, l.style);
+                    if (!s.Selected || l != layerList.SelectedItem)
+                        Render.Draw(s.Geometry, e.Graphics, l.Style);
                     else if (l == layerList.SelectedItem)
-                        Render.Draw(s.geometry, e.Graphics, Style.Selected);
+                        Render.Draw(s.Geometry, e.Graphics, Style.Selected);
                 }
-                //if (l.quadTree != null)
-                //    l.quadTree.render(e.Graphics);
+                //if (l.QuadTree != null)
+                //    l.QuadTree.render(e.Graphics);
                 renderScale(e.Graphics);
             }
 
@@ -78,7 +80,7 @@ namespace SGIS
 
         private void renderScale(Graphics graphics)
         {
-            double mpp = 1/screenManager.Scale.X;
+            double mpp = 1/ScreenManager.Scale.X;
             double meters = mpp * 100;
             string meterstr = meters.ToString("N0");
             if (meters < 10)
@@ -96,43 +98,27 @@ namespace SGIS
 
         private void SGIS_Resize(object sender, EventArgs e)
         {
-            screenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
-            screenManager.Calculate();
+            ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
+            ScreenManager.Calculate();
             this.Refresh();
         }
 
         // Getters and convenience functions
-        public void redraw()
-        {
-            mapWindow.Refresh();
-        }
 
-        public void setStatusText(string s)
-        {
-            statusLabel.Text = s;
-        }
+        public string StatusText{ set { statusLabel.Text = value; } }
+        public string CoordText { set { coordLabel.Text = value;  } }
 
-        public void setCoordText(string s)
+        public new System.Drawing.Point MousePosition
         {
-            coordLabel.Text = s;
+            get
+            {
+                var mouse = new System.Drawing.Point(Cursor.Position.X, Cursor.Position.Y);
+                mouse = mapWindow.PointToClient(mouse);
+                return mouse;
+            }
         }
-
-        public System.Drawing.Point getMousePos()
-        {
-            var mouse = new System.Drawing.Point(Cursor.Position.X, Cursor.Position.Y);
-            mouse = mapWindow.PointToClient(mouse);
-            return mouse;
-        }
-
-        internal PictureBox getMapWindow()
-        {
-            return mapWindow;
-        }
-
-        internal ContextMenuStrip getInfoMenu()
-        {
-            return infoContextMenu;
-        }
+        public PictureBox MapWindow { get { return mapWindow; } }
+        public ContextMenuStrip InfoMenu { get { return infoContextMenu; } }
 
         private Color chooseColor(Color c)
         {
@@ -140,6 +126,11 @@ namespace SGIS
             if (cd.ShowDialog() == DialogResult.OK)
                 return cd.Color;
             return c;
+        }
+
+        public void redraw()
+        {
+            mapWindow.Refresh();
         }
     }
 }

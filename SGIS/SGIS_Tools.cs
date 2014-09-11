@@ -179,23 +179,63 @@ namespace SGIS
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    while (copyLayer.Features.Values.Count > 0)
+                    ConcurrentBag<Feature> newFeatures = new ConcurrentBag<Feature>();
+                    var finished = new CountdownEvent(1);
+                    Object _lock = new object();
+                    var merge = new WaitCallback((state) =>
                     {
-                        Feature f = copyLayer.Features.Values.First();
-                        copyLayer.delFeature(f);
-                        f.ID = -1;
+                        Random rnd = new Random();
                         while (true)
                         {
-                            var intersects = copyLayer.getWithin(f.Geometry);
-                            if (intersects.Count == 0)
-                                break;
-                            foreach (Feature intersect in intersects)
+                            Feature f;
+                            lock (_lock)
                             {
-                                copyLayer.delFeature(intersect);
-                                bw.ReportProgress(numFeatures - copyLayer.Features.Values.Count);
-                                f = new Feature(f.Geometry.Union(intersect.Geometry));
+                                if (copyLayer.Features.Count == 0)
+                                    break;
+                                int index = rnd.Next(copyLayer.Features.Count);
+                                f = copyLayer.Features[copyLayer.Features.Keys.ToList()[index]];
+                                copyLayer.delFeature(f);
                             }
+                            f.ID = -1;
+                            while (true)
+                            {
+                                List<Feature> intersects;
+                                lock (_lock)
+                                {
+                                    intersects = copyLayer.getWithin(f.Geometry);
+                                    foreach (Feature intersect in intersects)
+                                        copyLayer.delFeature(intersect);
+                                }
+                                if (intersects.Count == 0)
+                                    break;
+                                foreach (Feature intersect in intersects)
+                                {
+                                    f = new Feature(f.Geometry.Union(intersect.Geometry));
+                                    bw.ReportProgress(1);
+                                }
+                            }
+                            newFeatures.Add(f);
                         }
+                        finished.Signal();
+                    });
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        finished.AddCount();
+                        ThreadPool.QueueUserWorkItem(merge);
+                    }
+                    finished.Signal();
+                    finished.Wait();
+
+                    bw.ReportProgress(-newFeatures.Count);
+                    foreach (Feature f in newFeatures)
+                        copyLayer.addFeature(f);
+                    newFeatures = new ConcurrentBag<Feature>();
+                    finished = new CountdownEvent(1);
+                    merge(false);
+
+                    foreach (Feature f in newFeatures)
+                    {
                         newLayer.addFeature(f);
                     }
                 };
@@ -209,8 +249,14 @@ namespace SGIS
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
                 {
-
-                    progressBar.Value = we.ProgressPercentage;
+                    if (we.ProgressPercentage < 0)
+                    {
+                        progressBar.Value = 0;
+                        progressBar.Maximum = -we.ProgressPercentage;
+                        progressLabel.Text = "Merging - Second pass";
+                    }
+                    else
+                        progressBar.Value += we.ProgressPercentage;
                 };
                 bw.RunWorkerAsync();
             });
@@ -251,16 +297,34 @@ namespace SGIS
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    for (int i = 0; i < l.Features.Count; i++ )
+                    ConcurrentBag<Feature> newFeatures = new ConcurrentBag<Feature>();
+                    using (var finished = new CountdownEvent(1))
                     {
-                        Feature f = l.Features.Values.ElementAt(i);
-                        bw.ReportProgress(i);
-                        Feature newf = new Feature((IGeometry)f.Geometry.Clone(), f.ID);
-                        var intersects = unionLayer.getWithin(f.Geometry);
-                        foreach (Feature intersect in intersects)
-                            newf.Geometry = newf.Geometry.Difference(intersect.Geometry);
+                        foreach (Feature f in l.Features.Values)
+                        {
+                            finished.AddCount();
+                            Feature capt = f;
+                            ThreadPool.QueueUserWorkItem((state) =>
+                            {
+                                Feature newf = new Feature((IGeometry)capt.Geometry.Clone(), capt.ID);
+                                var intersects = unionLayer.getWithin(capt.Geometry);
+                                foreach (Feature intersect in intersects)
+                                    newf.Geometry = newf.Geometry.Difference(intersect.Geometry);
 
-                        newLayer.addFeature(newf);
+                                if (!newf.Geometry.IsEmpty)
+                                    newFeatures.Add(newf);
+                                bw.ReportProgress(1);
+                                finished.Signal();
+                            }, null);
+                        }
+                        finished.Signal();
+                        finished.Wait();
+                    }
+                    bw.ReportProgress(-newFeatures.Count);
+                    foreach (Feature f in newFeatures)
+                    {
+                        newLayer.addFeature(f);
+                        bw.ReportProgress(1);
                     }
                 };
                 bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
@@ -273,7 +337,14 @@ namespace SGIS
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
                 {
-                    progressBar.Value = we.ProgressPercentage;
+                    if (we.ProgressPercentage < 0)
+                    {
+                        progressBar.Value = 0;
+                        progressBar.Maximum = -we.ProgressPercentage;
+                        progressLabel.Text = "Creating spatial index";
+                    }
+                    else
+                        progressBar.Value += we.ProgressPercentage;
                 };
                 bw.RunWorkerAsync();
             });

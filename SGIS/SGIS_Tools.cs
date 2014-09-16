@@ -373,9 +373,20 @@ namespace SGIS
                 newLayer.Boundingbox = new Envelope(l.Boundingbox);
                 newLayer.createQuadTree();
 
-                DataTable a = l.DataTable.Clone();
-                newLayer.DataTable = intersectLayer.DataTable.Clone();
-                newLayer.DataTable.Merge(a, true, MissingSchemaAction.Add);
+                if (l.DataTable != null && intersectLayer.DataTable != null)
+                {
+                    DataTable a = l.DataTable.Clone();
+                    newLayer.DataTable = intersectLayer.DataTable.Clone();
+                    newLayer.DataTable.Merge(a, true, MissingSchemaAction.Add);
+                } 
+                else if (l.DataTable != null && intersectLayer.DataTable == null)
+                {
+                    newLayer.DataTable = l.DataTable.Clone();
+                }
+                else if (l.DataTable == null && intersectLayer.DataTable != null)
+                {
+                    newLayer.DataTable = intersectLayer.DataTable.Clone();
+                }
 
                 progressLabel.Text = "Intersection";
                 progressBar.Minimum = 0;
@@ -398,13 +409,18 @@ namespace SGIS
                             Feature result = new Feature(f.Geometry.Intersection(intersect.Geometry));
                             int id = newLayer.addFeature(result);
 
-                            DataRow dr = newLayer.DataTable.NewRow();
-                            foreach (DataColumn dc in arow.Table.Columns)
-                                dr[dc.ColumnName] = arow[dc.ColumnName];
-                            foreach (DataColumn dc in brow.Table.Columns)
-                                dr[dc.ColumnName] = brow[dc.ColumnName];
-                            dr["sgis_id"] = id;
-                            newLayer.DataTable.Rows.Add(dr);
+                            if (newLayer.DataTable != null)
+                            {
+                                DataRow dr = newLayer.DataTable.NewRow();
+                                if (arow != null)
+                                    foreach (DataColumn dc in arow.Table.Columns)
+                                        dr[dc.ColumnName] = arow[dc.ColumnName];
+                                if (brow != null)
+                                    foreach (DataColumn dc in brow.Table.Columns)
+                                        dr[dc.ColumnName] = brow[dc.ColumnName];
+                                dr["sgis_id"] = id;
+                                newLayer.DataTable.Rows.Add(dr);
+                            }
                         }
                     }
                 };

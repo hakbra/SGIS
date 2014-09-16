@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,16 +22,38 @@ namespace SGIS
             openFileDialog1.Multiselect = true;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                foreach (String file in openFileDialog1.FileNames)
+                progressBar.Minimum = 0;
+                progressBar.Maximum = openFileDialog1.FileNames.Count();
+                progressBar.Value = 0;
+
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    Layer l = ShpReader.read(file);
-                    Layers.Insert(0, l);
-                    layerList.SelectedIndex = 0;
-                    this.layerList_SelectedIndexChanged(null, null);
-                    ScreenManager.RealRect.Set(l.Boundingbox);
+                    foreach (String file in openFileDialog1.FileNames)
+                    {
+                        bw.ReportProgress(0, file.Split('\\').Last());
+                        Layer l = ShpReader.read(file);
+                        bw.ReportProgress(1);
+                        Layers.Insert(0, l);
+                        ScreenManager.RealRect.Set(l.Boundingbox);
+                    }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    progressBar.Value = 0;
+                    progressLabel.Text = "";
+
                     ScreenManager.Calculate();
-                    this.Refresh();
-                }
+                    layerList.SelectedIndex = 0;
+                };
+                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
+                {
+                    progressBar.Value += we.ProgressPercentage;
+                    if (we.ProgressPercentage == 0)
+                        progressLabel.Text = "Reading " + (string)we.UserState;
+                };
+                bw.RunWorkerAsync();
             }
         }
     }

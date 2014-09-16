@@ -69,9 +69,14 @@ namespace SGIS
                 return;
 
             Feature f = layer.Selected.First();
-            DataRow dr = layer.DataTable.Rows[f.ID-1];
+            DataRow dr = layer.getRow(f);
 
             infoContextMenu.Items.Clear();
+            if (dr == null)
+            {
+                infoContextMenu.Items.Add("No data");
+                return;
+            }
             foreach (DataColumn column in layer.DataTable.Columns)
             {
                 string colName = column.ToString();

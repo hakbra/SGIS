@@ -50,7 +50,7 @@ namespace SGIS
         {
             oldMouse = mouse;
             mouse = SGIS.App.MousePosition;
-            SGIS.App.redraw();
+            updateLabel();
         }
         public virtual void MouseWheel(MouseEventArgs e)
         {
@@ -72,6 +72,10 @@ namespace SGIS
         }
         public virtual void render(System.Drawing.Graphics g)
         {
+        }
+
+        public virtual void updateLabel()
+        {
             var realP = SGIS.App.ScreenManager.MapScreenToReal(mouse);
             SGIS.App.CoordText = String.Format("Coords: [{0:F3}, {1:F3}]", realP.X, realP.Y);
         }
@@ -87,12 +91,20 @@ namespace SGIS
             {
                 SGIS.App.ScreenManager.ScrollScreen(new NTSPoint(oldMouse.X - mouse.X, oldMouse.Y - mouse.Y));
                 SGIS.App.ScreenManager.Calculate();
+                SGIS.App.redraw();
             }
         }
     }
 
     public class SelectMouseTactic : MouseTactic
     {
+        public override void MouseMove(MouseEventArgs e)
+        {
+            base.MouseMove(e);
+
+            if (leftMouseDown)
+                SGIS.App.redraw();
+        }
         public override void MouseUp(MouseEventArgs e)
         {
             base.MouseUp(e);
@@ -115,6 +127,7 @@ namespace SGIS
                     l.Selected.Add(f);
                 }
             }
+            SGIS.App.redraw();
         }
 
         public override void render(Graphics g)
@@ -153,6 +166,7 @@ namespace SGIS
                 if (s == null)
                 {
                     SGIS.App.StatusText = ("");
+                    SGIS.App.redraw();
                     return;
                 }
 

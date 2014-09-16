@@ -18,6 +18,50 @@ namespace SGIS
     {
         ToolBuilder toolBuilder;
 
+        private void delButton_Click(object sender, EventArgs e)
+        {
+            if (layerList.Items.Count == 0)
+                return;
+            toolBuilder.addHeader("Delete layer");
+            toolBuilder.addLabel("Are you sure?");
+            toolBuilder.addButton("Yes", (Layer il) =>
+            {
+                SGIS.App.Layers.Remove(il);
+                redraw();
+            });
+            toolBuilder.addButton("No", (il) => { });
+            toolBuilder.resetAction = (Layer il) =>
+            {
+                toolBuilder.clear();
+            };
+        }
+
+        private void upButton_Click(object sender, EventArgs e)
+        {
+            Layer selected = (Layer)layerList.SelectedItem;
+            if (selected == null)
+                return;
+            int index = Layers.IndexOf(selected);
+            if (index == 0)
+                return;
+            Layers.Remove(selected);
+            Layers.Insert(index - 1, selected);
+            layerList.SelectedItem = selected;
+            redraw();
+        }
+
+        private void downButton_Click(object sender, EventArgs e)
+        {
+            Layer selected = (Layer)layerList.SelectedItem;
+            int index = Layers.IndexOf(selected);
+            if (index == Layers.Count - 1)
+                return;
+            Layers.Remove(selected);
+            Layers.Insert(index + 1, selected);
+            layerList.SelectedItem = selected;
+            redraw();
+        }
+
         private void bufferButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Buffer");

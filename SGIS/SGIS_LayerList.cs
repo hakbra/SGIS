@@ -25,25 +25,11 @@ namespace SGIS
             layerListContextMenu.Items.Clear();
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) =>
             {
-                Layer selected = (Layer)layerList.SelectedItem;
-                int index = Layers.IndexOf(l);
-                if (index == 0)
-                    return;
-                Layers.Remove(l);
-                Layers.Insert(index - 1, l);
-                layerList.SelectedItem = selected;
-                redraw();
+                upButton_Click(o, i);
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Down", null, (o, i) =>
             {
-                Layer selected = (Layer)layerList.SelectedItem;
-                int index = Layers.IndexOf(l);
-                if (index == Layers.Count - 1)
-                    return;
-                Layers.Remove(l);
-                Layers.Insert(index + 1, l);
-                layerList.SelectedItem = selected;
-                redraw();
+                downButton_Click(o, i);
             }));
             layerListContextMenu.Items.Add("-");
             layerListContextMenu.Items.Add(new ToolStripMenuItem(l.Visible ? "Hide" : "Show", null, (o, i) => { l.Visible = !l.Visible; redraw(); }));
@@ -133,18 +119,7 @@ namespace SGIS
             }));
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) =>
             {
-                toolBuilder.addHeader("Delete layer");
-                toolBuilder.addLabel("Are you sure?");
-                toolBuilder.addButton("Yes", (Layer il) =>
-                {
-                    SGIS.App.Layers.Remove(il);
-                    redraw();
-                });
-                toolBuilder.addButton("No", (il) => { });
-                toolBuilder.resetAction = (Layer il) =>
-                {
-                    toolBuilder.clear();
-                };
+                delButton_Click(o, i);
             }));
         }
 

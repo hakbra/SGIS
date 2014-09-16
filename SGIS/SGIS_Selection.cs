@@ -24,7 +24,7 @@ namespace SGIS
                     newSelected.Add(f);
             }
             l.Selected = newSelected;
-            StatusText = (newSelected.Count + " objects");
+            fireSelectionChanged();
             redraw();
         }
 
@@ -85,7 +85,7 @@ namespace SGIS
                             l.Selected.Add(f);
                         }
                     }
-                    SGIS.App.StatusText = l.Selected.Count + " objects";
+                    SGIS.App.fireSelectionChanged();
                     SGIS.App.redraw();
                 }
                 catch (Exception ex)
@@ -161,7 +161,7 @@ namespace SGIS
                 l.clearSelected();
                 l.calculateBoundingBox();
                 l.createQuadTree();
-                StatusText = "0 objects";
+                fireSelectionChanged();
                 redraw();
             });
             toolBuilder.addButton("No", (l) => { });

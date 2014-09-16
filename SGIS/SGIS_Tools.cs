@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -492,53 +493,120 @@ namespace SGIS
         private void measureButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Measurements");
+            Label selectedLabel = toolBuilder.addLabel("Selected:");
+            selectedLabel.Font = new Font(selectedLabel.Font, FontStyle.Underline);
+            Label selCountLabel = toolBuilder.addLabel("");
+            Label selLengthLabel = toolBuilder.addLabel("");
+            Label selAreaLabel = toolBuilder.addLabel("");
+            Label totalLabel = toolBuilder.addLabel("Total:");
+            totalLabel.Font = new Font(selectedLabel.Font, FontStyle.Underline);
             Label countLabel = toolBuilder.addLabel("");
             Label lengthLabel = toolBuilder.addLabel("");
             Label areaLabel = toolBuilder.addLabel("");
 
+            selCountLabel.Height = selLengthLabel.Height = selAreaLabel.Height = (int)(selAreaLabel.Height * 0.7);
+            selAreaLabel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            countLabel.Height = lengthLabel.Height = areaLabel.Height = (int)(areaLabel.Height * 0.7);
+
             toolBuilder.resetAction += (Layer l) =>
             {
-                string plural = "";
-                if (l != null && l.Features.Count > 0)
-                    plural = "s";
+                {   // Selected measurements
+                    string plural = "";
+                    if (l != null && l.Selected.Count > 0)
+                        plural = "s";
 
-                if (l == null || l.shapetype == ShapeType.EMPTY)
-                {
-                    countLabel.Text = "No feature"+plural;
-                    lengthLabel.Text = "Length: N/A";
-                    areaLabel.Text = "Area: N/A";
-                }
-                else if (l.shapetype == ShapeType.POINT)
-                {
-                    countLabel.Text = l.Features.Count + " points";
-                    lengthLabel.Text = "Length: N/A";
-                    areaLabel.Text = "Area: N/A";
-                }
-                else if (l.shapetype == ShapeType.LINE)
-                {
-                    countLabel.Text = l.Features.Count + " feature" + plural;
-                    double length = 0;
-                    foreach (Feature f in l.Features.Values)
-                        length += f.Geometry.Length;
-                    lengthLabel.Text = "Length: "+(int)length+"m";
-                    areaLabel.Text = "Area: N/A";
-                }
-                else if (l.shapetype == ShapeType.POLYGON)
-                {
-                    countLabel.Text = l.Features.Count + " feature" + plural;
-                    double circum = 0;
-                    double area = 0;
-                    foreach (Feature f in l.Features.Values)
+                    if (l == null || l.shapetype == ShapeType.EMPTY)
                     {
-                        circum += f.Geometry.Length;
-                        area += f.Geometry.Area;
+                        selCountLabel.Text = "No feature" + plural;
+                        selLengthLabel.Text = "Length: N/A";
+                        selAreaLabel.Text = "Area: N/A";
                     }
-                    lengthLabel.Text = "Circ: " + (int)circum+"m";
-                    areaLabel.Text = "Area: " + Math.Round(area)+"m^2";
+                    else if (l.shapetype == ShapeType.POINT)
+                    {
+                        selCountLabel.Text = l.Selected.Count + " points";
+                        selLengthLabel.Text = "Length: N/A";
+                        selAreaLabel.Text = "Area: N/A";
+                    }
+                    else if (l.shapetype == ShapeType.LINE)
+                    {
+                        selCountLabel.Text = l.Selected.Count + " feature" + plural;
+                        double length = 0;
+                        foreach (Feature f in l.Selected)
+                            length += f.Geometry.Length;
+                        selLengthLabel.Text = "Length: " + formatLength(length);
+                        selAreaLabel.Text = "Area: N/A";
+                    }
+                    else if (l.shapetype == ShapeType.POLYGON)
+                    {
+                        selCountLabel.Text = l.Selected.Count + " feature" + plural;
+                        double circum = 0;
+                        double area = 0;
+                        foreach (Feature f in l.Selected)
+                        {
+                            circum += f.Geometry.Length;
+                            area += f.Geometry.Area;
+                        }
+                        selLengthLabel.Text = "Circ: " + formatLength(circum);
+                        selAreaLabel.Text = "Area: " + formatArea(area);
+                    }
                 }
+                {   // Total measurements
+                    string plural = "";
+                    if (l != null && l.Features.Count > 0)
+                        plural = "s";
 
+                    if (l == null || l.shapetype == ShapeType.EMPTY)
+                    {
+                        countLabel.Text = "No feature" + plural;
+                        lengthLabel.Text = "Length: N/A";
+                        areaLabel.Text = "Area: N/A";
+                    }
+                    else if (l.shapetype == ShapeType.POINT)
+                    {
+                        countLabel.Text = l.Features.Count + " points";
+                        lengthLabel.Text = "Length: N/A";
+                        areaLabel.Text = "Area: N/A";
+                    }
+                    else if (l.shapetype == ShapeType.LINE)
+                    {
+                        countLabel.Text = l.Features.Count + " feature" + plural;
+                        double length = 0;
+                        foreach (Feature f in l.Features.Values)
+                            length += f.Geometry.Length;
+                        lengthLabel.Text = "Length: " + formatLength(length);
+                        areaLabel.Text = "Area: N/A";
+                    }
+                    else if (l.shapetype == ShapeType.POLYGON)
+                    {
+                        countLabel.Text = l.Features.Count + " feature" + plural;
+                        double circum = 0;
+                        double area = 0;
+                        foreach (Feature f in l.Features.Values)
+                        {
+                            circum += f.Geometry.Length;
+                            area += f.Geometry.Area;
+                        }
+                        lengthLabel.Text = "Circ: " + formatLength(circum);
+                        areaLabel.Text = "Area: " + formatArea(area);
+                    }
+                }
             };
             toolBuilder.reset();
+        }
+
+        private string formatLength(double meters)
+        {
+            if (meters < 1000)
+                return meters.ToString("N1") + " m";
+            meters /= 1000;
+            return meters.ToString("N1") + " km";
+        }
+        private string formatArea(double sqmeters)
+        {
+            if (sqmeters < 100000)
+                return sqmeters.ToString("N1") + " m^2";
+            sqmeters /= 1000000;
+            return sqmeters.ToString("N1") + " km^2";
         }
     }
 }

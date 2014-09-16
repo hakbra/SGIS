@@ -20,6 +20,7 @@ namespace SGIS
         {
             panel = p;
             SGIS.App.Layers.ListChanged += reset;
+            SGIS.App.SelectionChanged += reset;
             SGIS.App.getLayerList().SelectedIndexChanged += reset;
         }
 

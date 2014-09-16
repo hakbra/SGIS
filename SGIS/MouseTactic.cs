@@ -120,12 +120,14 @@ namespace SGIS
                 l.Selected.Clear();
 
                 List<Feature> s = l.getWithin(SGIS.App.ScreenManager.MapScreenToReal(new Envelope(mouse.X, leftMouse.X, mouse.Y, leftMouse.Y)));
-                SGIS.App.StatusText = (s.Count + " objects");
+                
                 foreach (Feature f in s)
                 {
                     f.Selected = true;
                     l.Selected.Add(f);
                 }
+
+                SGIS.App.fireSelectionChanged();
             }
             SGIS.App.redraw();
         }
@@ -163,17 +165,13 @@ namespace SGIS
                 l.Selected.Clear();
 
                 Feature s = l.getClosest(SGIS.App.ScreenManager.MapScreenToReal(mouse), 5 / SGIS.App.ScreenManager.Scale.X);
-                if (s == null)
+                if (s != null)
                 {
-                    SGIS.App.StatusText = ("");
-                    SGIS.App.redraw();
-                    return;
+                    s.Selected = true;
+                    l.Selected.Add(s);
                 }
 
-                s.Selected = true;
-                l.Selected.Add(s);
-
-                SGIS.App.StatusText = ("ID: " + s.ID);
+                SGIS.App.fireSelectionChanged();
                 SGIS.App.redraw();
 
                 var menupos = SGIS.App.MapWindow.PointToScreen(mouse);

@@ -11,6 +11,10 @@ namespace SGIS
 {
     public partial class SGIS
     {
+
+        public delegate void SelectionChangedHandler();
+        public event SelectionChangedHandler SelectionChanged;
+
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
 
         private void layerListContextMenu_Opening(object sender, CancelEventArgs e)
@@ -139,17 +143,27 @@ namespace SGIS
                 if (layerList.SelectedIndex != -1)
                     layerListContextMenu.Show(layerList.PointToScreen(e.Location));
             }
-            Layer l = (Layer)(layerList.SelectedItem);
-            if (l == null || l.Selected.Count == 0)
-                SGIS.App.StatusText = ("");
-            else
-                SGIS.App.StatusText = (l.Selected.Count + " objects");
+            fireSelectionChanged();
             redraw();
         }
 
         private void layerList_SelectedIndexChanged(object sender, EventArgs e)
         {
             redraw();
+        }
+
+        public void fireSelectionChanged()
+        {
+            SelectionChanged();
+        }
+
+        private void selectionChangedHandler()
+        {
+            Layer l = (Layer)(layerList.SelectedItem);
+            if (l == null || l.Selected.Count == 0)
+                SGIS.App.StatusText = ("");
+            else
+                SGIS.App.StatusText = (l.Selected.Count + " objects");
         }
     }
 }

@@ -27,6 +27,7 @@ namespace SGIS
             Layers = new BindingList<Layer>();
             ScreenManager = new ScreenManager();
             SRS = Proj4CSharp.Proj4CSharp.ProjectionFactory("+proj = utm + zone = 33 + datum = WGS84 + units = m + no_defs");
+            SelectionChanged += selectionChangedHandler;
         }
 
         private void SGIS_Load(object sender, EventArgs e)

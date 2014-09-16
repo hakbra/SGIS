@@ -93,7 +93,7 @@ namespace SGIS
                             selectedFeature.Selected = true;
                             layer.Selected.Add(selectedFeature);
                         }
-                        StatusText = layer.Selected.Count + " objects";
+                        SGIS.App.fireSelectionChanged();
                     }
                     redraw();
                 });

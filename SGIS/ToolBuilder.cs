@@ -110,7 +110,14 @@ namespace SGIS
 
                 }
                 setError("");
-                action(l);
+                try
+                {
+                    action(l);
+                }
+                catch (NetTopologySuite.Geometries.TopologyException ex)
+                {
+                    MessageBox.Show(ex.Message, "Topology Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 if ((errorLabel == null || errorLabel.Text == "") && autoClose)
                     panel.Controls.Clear();
             };

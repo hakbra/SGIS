@@ -169,13 +169,13 @@ namespace SGIS
                 {
                     s.Selected = true;
                     l.Selected.Add(s);
+
+                    var menupos = SGIS.App.MapWindow.PointToScreen(mouse);
+                    SGIS.App.InfoMenu.Show(menupos);
                 }
 
                 SGIS.App.fireSelectionChanged();
                 SGIS.App.redraw();
-
-                var menupos = SGIS.App.MapWindow.PointToScreen(mouse);
-                SGIS.App.InfoMenu.Show(menupos);
             }
         }
     }

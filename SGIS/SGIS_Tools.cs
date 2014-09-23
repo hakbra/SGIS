@@ -331,6 +331,7 @@ namespace SGIS
                     return;
                 }
                 Layer newLayer = new Layer(textbox.Text);
+                newLayer.DataTable = l.DataTable;
                 newLayer.Boundingbox = new Envelope(l.Boundingbox);
                 newLayer.createQuadTree();
                 

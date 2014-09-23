@@ -82,7 +82,7 @@ namespace SGIS
                 string colName = column.ToString();
                 if (colName == "sgis_id")
                     continue;
-                infoContextMenu.Items.Add(colName + ": " + dr[colName], null, (o, e2) =>
+                infoContextMenu.Items.Add(colName + ": " + dr[colName].ToString().Trim(), null, (o, e2) =>
                 {
                     var rows = layer.DataTable.Select("[" + colName + "] = '" + dr[colName] + "'");
                     layer.clearSelected();

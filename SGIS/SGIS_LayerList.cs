@@ -137,19 +137,18 @@ namespace SGIS
 
             if (e.Button == MouseButtons.Right)
             {
+                var oldIndex = layerList.SelectedIndex;
                 var index = layerList.IndexFromPoint(e.Location);
-                if (index != -1)
+                if (index != -1 && oldIndex != index)
                     layerList.SelectedIndex = index;
                 if (layerList.SelectedIndex != -1)
                     layerListContextMenu.Show(layerList.PointToScreen(e.Location));
             }
-            fireSelectionChanged();
-            redraw();
         }
 
         private void layerList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            redraw();
+           redraw();
         }
 
         public void fireSelectionChanged()

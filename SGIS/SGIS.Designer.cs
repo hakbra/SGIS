@@ -234,11 +234,11 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.Controls.Add(this.layerButtonPanel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.measureButton, 2, 9);
-            this.tableLayoutPanel1.Controls.Add(this.button2, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.intersectButton, 1, 9);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.unionButton, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.measureButton, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.button2, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.intersectButton, 2, 9);
+            this.tableLayoutPanel1.Controls.Add(this.button1, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.unionButton, 2, 8);
             this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectInvertButton, 2, 5);
@@ -253,7 +253,7 @@
             this.tableLayoutPanel1.Controls.Add(this.toolLabel, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.pointerLabel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.deleteButton, 2, 6);
-            this.tableLayoutPanel1.Controls.Add(this.mergeButton, 2, 8);
+            this.tableLayoutPanel1.Controls.Add(this.mergeButton, 0, 9);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -376,10 +376,10 @@
             // measureButton
             // 
             this.measureButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.measureButton.Location = new System.Drawing.Point(118, 390);
+            this.measureButton.Location = new System.Drawing.Point(0, 370);
             this.measureButton.Margin = new System.Windows.Forms.Padding(0);
             this.measureButton.Name = "measureButton";
-            this.measureButton.Size = new System.Drawing.Size(61, 20);
+            this.measureButton.Size = new System.Drawing.Size(59, 20);
             this.measureButton.TabIndex = 27;
             this.measureButton.Text = "Measure";
             this.measureButton.UseVisualStyleBackColor = true;
@@ -388,7 +388,7 @@
             // button2
             // 
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Location = new System.Drawing.Point(0, 390);
+            this.button2.Location = new System.Drawing.Point(59, 390);
             this.button2.Margin = new System.Windows.Forms.Padding(0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(59, 20);
@@ -400,10 +400,10 @@
             // intersectButton
             // 
             this.intersectButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.intersectButton.Location = new System.Drawing.Point(59, 390);
+            this.intersectButton.Location = new System.Drawing.Point(118, 390);
             this.intersectButton.Margin = new System.Windows.Forms.Padding(0);
             this.intersectButton.Name = "intersectButton";
-            this.intersectButton.Size = new System.Drawing.Size(59, 20);
+            this.intersectButton.Size = new System.Drawing.Size(61, 20);
             this.intersectButton.TabIndex = 25;
             this.intersectButton.Text = "Intersect";
             this.intersectButton.UseVisualStyleBackColor = true;
@@ -412,7 +412,7 @@
             // button1
             // 
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(0, 370);
+            this.button1.Location = new System.Drawing.Point(59, 370);
             this.button1.Margin = new System.Windows.Forms.Padding(0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(59, 20);
@@ -424,10 +424,10 @@
             // unionButton
             // 
             this.unionButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.unionButton.Location = new System.Drawing.Point(59, 370);
+            this.unionButton.Location = new System.Drawing.Point(118, 370);
             this.unionButton.Margin = new System.Windows.Forms.Padding(0);
             this.unionButton.Name = "unionButton";
-            this.unionButton.Size = new System.Drawing.Size(59, 20);
+            this.unionButton.Size = new System.Drawing.Size(61, 20);
             this.unionButton.TabIndex = 22;
             this.unionButton.Text = "Union";
             this.unionButton.UseVisualStyleBackColor = true;
@@ -628,10 +628,10 @@
             // mergeButton
             // 
             this.mergeButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mergeButton.Location = new System.Drawing.Point(118, 370);
+            this.mergeButton.Location = new System.Drawing.Point(0, 390);
             this.mergeButton.Margin = new System.Windows.Forms.Padding(0);
             this.mergeButton.Name = "mergeButton";
-            this.mergeButton.Size = new System.Drawing.Size(61, 20);
+            this.mergeButton.Size = new System.Drawing.Size(59, 20);
             this.mergeButton.TabIndex = 24;
             this.mergeButton.Text = "Merge";
             this.mergeButton.UseVisualStyleBackColor = true;

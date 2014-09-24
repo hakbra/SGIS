@@ -130,7 +130,7 @@ namespace SGIS
             return new Point(Offset.X + (float)pt.X / Scale.X,
 					           Offset.Y + (float)pt.Y / Scale.Y);
         }
-        public IGeometry MapScreenToReal(Envelope e)
+        public IGeometry MapScreenToRealGeometry(Envelope e)
         {
             var min = MapScreenToReal(new System.Drawing.Point((int)e.MinX, (int)e.MinY));
             var max = MapScreenToReal(new System.Drawing.Point((int)e.MaxX, (int)e.MaxY));
@@ -138,6 +138,13 @@ namespace SGIS
 
             OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
             return fact.ToGeometry(re);
+        }
+        public Envelope MapScreenToReal(Envelope e)
+        {
+            var min = MapScreenToReal(new System.Drawing.Point((int)e.MinX, (int)e.MinY));
+            var max = MapScreenToReal(new System.Drawing.Point((int)e.MaxX, (int)e.MaxY));
+            var re = new Envelope(min.X, max.X, min.Y, max.Y);
+            return re;
         }
 
         /// <summary>
@@ -149,6 +156,12 @@ namespace SGIS
 	        return new Point(   (int)((pt.X - Offset.X) * Scale.X),
 				              (int)((pt.Y - Offset.Y) * Scale.Y)   );
 
+        }
+        public System.Drawing.Rectangle MapRealToScreen(Envelope e)
+        {
+            var min = MapRealToScreen(new Point(e.MinX,e.MinY));
+            var max = MapRealToScreen(new Point(e.MaxX,e.MaxY));
+            return new System.Drawing.Rectangle((int)min.X, (int)max.Y, (int)(max.X - min.X), (int)(min.Y - max.Y));
         }
 
         public Point ScaleAndOffSet(Point pt)

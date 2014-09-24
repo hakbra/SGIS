@@ -475,6 +475,8 @@ namespace SGIS
                     progressBar.Value = 0;
                     progressLabel.Text = "";
 
+                    newLayer.calculateBoundingBox();
+                    newLayer.createQuadTree();
                     Layers.Insert(0, newLayer);
                     redraw();
                 };

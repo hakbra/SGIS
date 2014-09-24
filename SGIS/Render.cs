@@ -11,7 +11,26 @@ namespace SGIS
 {
     class Render
     {
-        public static void Draw(IGeometry ge, Graphics gr, Style c) {
+        NTSPoint offset;
+        NTSPoint scale;
+
+        public Render(NTSPoint s, NTSPoint o)
+        {
+            offset = (NTSPoint) o.Clone();
+            scale = (NTSPoint) s.Clone();
+        }
+
+        public NTSPoint ScaleAndOffSet(NTSPoint pt)
+        {
+            NTSPoint p = new NTSPoint(0, 0);
+            p.X = pt.X - offset.X;
+            p.Y = pt.Y - offset.Y;
+            p.X *= scale.X;
+            p.Y *= scale.Y;
+            return p;
+        }
+
+        public  void Draw(IGeometry ge, Graphics gr, Style c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
             if (ge.GeometryType == "MultiPolygon" || ge.GeometryType == "MultiLineString")
@@ -23,7 +42,7 @@ namespace SGIS
                 drawPoint((NTSPoint)ge, gr, c);
         }
 
-        private static void drawPoint(NTSPoint ge, Graphics gr, Style c)
+        private  void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
             int rad = 5;
             var mid = SGIS.App.ScreenManager.ScaleAndOffSet(ge);
@@ -31,30 +50,30 @@ namespace SGIS
             gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
         }
 
-        private static void drawLine(LineString ge, Graphics gr, Style c)
+        private  void drawLine(LineString ge, Graphics gr, Style c)
         {
             var points = ge.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = ScaleAndOffSet(new NTSPoint(points[i]));
                 gr.DrawLine(c.pen, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
         }
-        private static System.Drawing.Drawing2D.GraphicsPath CreatePath(ILineString poly)
+        private  System.Drawing.Drawing2D.GraphicsPath CreatePath(ILineString poly)
         {
             System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath();
 
             var points = poly.Coordinates;
             for (int i = 1; i < points.Count(); i++)
             {
-                var a = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i - 1]));
-                var b = SGIS.App.ScreenManager.ScaleAndOffSet(new NTSPoint(points[i]));
+                var a = ScaleAndOffSet(new NTSPoint(points[i - 1]));
+                var b = ScaleAndOffSet(new NTSPoint(points[i]));
                 gp.AddLine((int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
             return gp;
         }
-        private static void drawPolygon(Polygon ge, Graphics gr, Style c)
+        private  void drawPolygon(Polygon ge, Graphics gr, Style c)
         {
 
             System.Drawing.Drawing2D.GraphicsPath gp = CreatePath(ge.ExteriorRing);

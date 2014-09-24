@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 using Proj4CSharp;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,10 @@ namespace SGIS
         public BindingList<Layer> Layers {get;private set;}
         public ScreenManager ScreenManager {get;private set;}
         public IProjection SRS { get; private set; }
+        private Bitmap map;
+        private Envelope mapRect;
+        private bool mapDirty;
+        BackgroundWorker bw = new BackgroundWorker();
 
         public SGIS()
         {
@@ -40,6 +45,10 @@ namespace SGIS
             ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             ScreenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
             ScreenManager.Calculate();
+            
+            map = new Bitmap(mapWindow.Width, mapWindow.Height);
+            mapRect = ScreenManager.RealRect.Clone();
+            mapDirty = true;
 
             // List of layers
             layerList.DataSource = Layers;
@@ -58,24 +67,63 @@ namespace SGIS
 
         private void SGIS_Paint(object sender, PaintEventArgs e)
         {
-            var boundary = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
-            foreach (Layer l in Layers.Reverse())
+            if (mapDirty)
             {
-                if (!l.Visible)
-                    continue;
-                var visibleFeatures = l.getWithin(boundary);
-                foreach (Feature s in visibleFeatures)
+                mapDirty = false;
+                Bitmap mapTemp = new Bitmap(mapWindow.Width, mapWindow.Height);
+                var mapRectTemp = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
+
+                if (bw.IsBusy)
                 {
-                    if (!s.Selected || l != layerList.SelectedItem)
-                        Render.Draw(s.Geometry, e.Graphics, l.Style);
-                    else if (l == layerList.SelectedItem)
-                        Render.Draw(s.Geometry, e.Graphics, Style.Selected);
+                    bw.CancelAsync();
+                    while(bw.IsBusy)
+                        Application.DoEvents();
                 }
-                //if (l.QuadTree != null)
-                //    l.QuadTree.render(e.Graphics);
-                renderScale(e.Graphics);
+                bw = new BackgroundWorker();
+                bw.WorkerSupportsCancellation = true;
+                bw.DoWork += (obj, args) =>
+                {
+                    OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
+                    var boundingGeometry = fact.ToGeometry(mapRectTemp);
+                    var mapGraphics = Graphics.FromImage(mapTemp);
+
+                    foreach (Layer l in Layers.Reverse())
+                    {
+                        if (!l.Visible)
+                            continue;
+                        var visibleFeatures = l.getWithin(boundingGeometry);
+                        Render render = new Render(ScreenManager.Scale, ScreenManager.Offset);
+                        foreach (Feature s in visibleFeatures)
+                        {
+                            if (bw.CancellationPending){
+                                args.Cancel = true;
+                                return;
+                            }
+                            if (!s.Selected || l != layerList.SelectedItem)
+                                render.Draw(s.Geometry, mapGraphics, l.Style);
+                            else if (l == layerList.SelectedItem)
+                                render.Draw(s.Geometry, mapGraphics, Style.Selected);
+                        }
+                        //if (l.QuadTree != null)
+                        //    l.QuadTree.render(e.Graphics);
+                    }
+                };
+                bw.RunWorkerCompleted += (obj, args) =>
+                {
+                    if (!args.Cancelled)
+                    {
+                        map = mapTemp;
+                        mapRect = mapRectTemp;
+                        redrawDirty();
+                    }
+                };
+                bw.RunWorkerAsync();
             }
 
+            var screenRect = ScreenManager.MapRealToScreen(mapRect);
+
+            e.Graphics.DrawImage(map, screenRect);
+            renderScale(e.Graphics);
             mouse.render(e.Graphics);
         }
 
@@ -101,7 +149,7 @@ namespace SGIS
         {
             ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
             ScreenManager.Calculate();
-            this.Refresh();
+            redraw();
         }
 
         // Getters and convenience functions
@@ -130,6 +178,12 @@ namespace SGIS
         }
 
         public void redraw()
+        {
+            mapDirty = true;
+            mapWindow.Refresh();
+        }
+
+        public void redrawDirty()
         {
             mapWindow.Refresh();
         }

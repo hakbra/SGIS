@@ -87,10 +87,20 @@ namespace SGIS
         {
             base.MouseMove(e);
 
-            if (leftMouseDown)
+            if (e.Button == MouseButtons.Left)
             {
                 SGIS.App.ScreenManager.ScrollScreen(new NTSPoint(oldMouse.X - mouse.X, oldMouse.Y - mouse.Y));
                 SGIS.App.ScreenManager.Calculate();
+                SGIS.App.redrawDirty();
+            }
+        }
+
+        public override void MouseUp(MouseEventArgs e)
+        {
+            base.MouseUp(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
                 SGIS.App.redraw();
             }
         }
@@ -119,7 +129,7 @@ namespace SGIS
                     f.Selected = false;
                 l.Selected.Clear();
 
-                List<Feature> s = l.getWithin(SGIS.App.ScreenManager.MapScreenToReal(new Envelope(mouse.X, leftMouse.X, mouse.Y, leftMouse.Y)));
+                List<Feature> s = l.getWithin(SGIS.App.ScreenManager.MapScreenToRealGeometry(new Envelope(mouse.X, leftMouse.X, mouse.Y, leftMouse.Y)));
                 
                 foreach (Feature f in s)
                 {

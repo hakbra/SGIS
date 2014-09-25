@@ -153,13 +153,13 @@ namespace SGIS
             toolBuilder.reset();
         }
 
-        private void unionButton_Click(object sender, EventArgs e)
+        private void mergeButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Union");
-            ComboBox layerSelect = toolBuilder.addLayerSelect("Union with:");
+            ComboBox layerSelect = toolBuilder.addLayerSelect("Merge with:");
             TextBox textbox = toolBuilder.addTextbox("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
-            Button button = toolBuilder.addButton("Union", (Layer l) =>
+            Button button = toolBuilder.addButton("Merge", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
@@ -187,17 +187,17 @@ namespace SGIS
             });
             toolBuilder.resetAction = (Layer l) =>
             {
-                textbox.Text = (l == null) ? "" : l.Name + "_union";
+                textbox.Text = (l == null) ? "" : l.Name + "_merge";
             };
             toolBuilder.reset();
         }
 
-        private void mergeButton_Click(object sender, EventArgs e)
+        private void unionButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Merge");
+            toolBuilder.addHeader("Union");
             TextBox textbox = toolBuilder.addTextbox("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
-            Button button = toolBuilder.addButton("Merge", (Layer l) =>
+            Button button = toolBuilder.addButton("Union", (Layer l) =>
             {
                 if (textbox.Text.Length == 0)
                 {
@@ -216,7 +216,7 @@ namespace SGIS
                 newLayer.createQuadTree();
 
                 int numFeatures = copyLayer.Features.Values.Count;
-                progressLabel.Text = "Merging";
+                progressLabel.Text = "Performing union";
                 progressBar.Minimum = 0;
                 progressBar.Maximum = numFeatures;
                 
@@ -298,7 +298,7 @@ namespace SGIS
                     {
                         progressBar.Value = 0;
                         progressBar.Maximum = -we.ProgressPercentage;
-                        progressLabel.Text = "Merging - Second pass";
+                        progressLabel.Text = "Union - Second pass";
                     }
                     else
                         progressBar.Value += we.ProgressPercentage;
@@ -306,7 +306,7 @@ namespace SGIS
                 bw.RunWorkerAsync();
             });
             toolBuilder.resetAction = (Layer l) => {
-                textbox.Text = (l == null) ? "" : l.Name + "_merge";
+                textbox.Text = (l == null) ? "" : l.Name + "_union";
             };
             toolBuilder.reset();
         }

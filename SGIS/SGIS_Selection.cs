@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -150,25 +151,22 @@ namespace SGIS
             toolBuilder.reset();
         }
 
-        private void deleteButton_Click(object sender, EventArgs e)
+        private void zoomButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Delete selection");
-            toolBuilder.addLabel("Are you sure?");
-            toolBuilder.addButton("Yes", (Layer l) =>
+            Layer l = (Layer)layerList.SelectedItem;
+            if (l == null || l.Selected.Count == 0)
+                return;
+            Envelope boundingbox = null;
+            foreach (Feature f in l.Selected)
             {
-                foreach (Feature f in l.Selected)
-                    l.Features.Remove(f.ID);
-                l.clearSelected();
-                l.calculateBoundingBox();
-                l.createQuadTree();
-                fireSelectionChanged();
-                redraw();
-            });
-            toolBuilder.addButton("No", (l) => { });
-            toolBuilder.resetAction += (Layer l) =>
-            {
-                toolBuilder.clear();
-            };
+                if (boundingbox == null)
+                    boundingbox = f.Geometry.EnvelopeInternal;
+                else
+                    boundingbox.ExpandToInclude(f.Geometry.EnvelopeInternal);
+            }
+            SGIS.App.ScreenManager.RealRect.Set(boundingbox);
+            SGIS.App.ScreenManager.Calculate();
+            SGIS.App.redraw();
         }
     }
 }

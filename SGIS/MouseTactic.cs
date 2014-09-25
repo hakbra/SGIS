@@ -113,7 +113,7 @@ namespace SGIS
             base.MouseMove(e);
 
             if (leftMouseDown)
-                SGIS.App.redraw();
+                SGIS.App.redrawDirty();
         }
         public override void MouseUp(MouseEventArgs e)
         {

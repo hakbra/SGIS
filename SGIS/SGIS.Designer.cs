@@ -51,9 +51,9 @@
             this.addButton = new System.Windows.Forms.Button();
             this.delButton = new System.Windows.Forms.Button();
             this.measureButton = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.subtractButton = new System.Windows.Forms.Button();
             this.intersectButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.bufferButton = new System.Windows.Forms.Button();
             this.unionButton = new System.Windows.Forms.Button();
             this.toLayerButton = new System.Windows.Forms.Button();
             this.selectPropButton = new System.Windows.Forms.Button();
@@ -68,7 +68,7 @@
             this.selectLabel = new System.Windows.Forms.Label();
             this.toolLabel = new System.Windows.Forms.Label();
             this.pointerLabel = new System.Windows.Forms.Label();
-            this.deleteButton = new System.Windows.Forms.Button();
+            this.zoomButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.statusStrip.SuspendLayout();
@@ -235,9 +235,9 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.Controls.Add(this.layerButtonPanel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.measureButton, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.button2, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.subtractButton, 1, 9);
             this.tableLayoutPanel1.Controls.Add(this.intersectButton, 2, 9);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.bufferButton, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.unionButton, 2, 8);
             this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 6);
@@ -252,7 +252,7 @@
             this.tableLayoutPanel1.Controls.Add(this.selectLabel, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.toolLabel, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.pointerLabel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.deleteButton, 2, 6);
+            this.tableLayoutPanel1.Controls.Add(this.zoomButton, 2, 6);
             this.tableLayoutPanel1.Controls.Add(this.mergeButton, 0, 9);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -385,17 +385,17 @@
             this.measureButton.UseVisualStyleBackColor = true;
             this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
             // 
-            // button2
+            // subtractButton
             // 
-            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Location = new System.Drawing.Point(59, 390);
-            this.button2.Margin = new System.Windows.Forms.Padding(0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(59, 20);
-            this.button2.TabIndex = 26;
-            this.button2.Text = "Diff.";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.diffButton_Click);
+            this.subtractButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.subtractButton.Location = new System.Drawing.Point(59, 390);
+            this.subtractButton.Margin = new System.Windows.Forms.Padding(0);
+            this.subtractButton.Name = "subtractButton";
+            this.subtractButton.Size = new System.Drawing.Size(59, 20);
+            this.subtractButton.TabIndex = 26;
+            this.subtractButton.Text = "Subtract";
+            this.subtractButton.UseVisualStyleBackColor = true;
+            this.subtractButton.Click += new System.EventHandler(this.diffButton_Click);
             // 
             // intersectButton
             // 
@@ -409,17 +409,17 @@
             this.intersectButton.UseVisualStyleBackColor = true;
             this.intersectButton.Click += new System.EventHandler(this.intersectButton_Click);
             // 
-            // button1
+            // bufferButton
             // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(59, 370);
-            this.button1.Margin = new System.Windows.Forms.Padding(0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(59, 20);
-            this.button1.TabIndex = 23;
-            this.button1.Text = "Buffer";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.bufferButton_Click);
+            this.bufferButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bufferButton.Location = new System.Drawing.Point(59, 370);
+            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
+            this.bufferButton.Name = "bufferButton";
+            this.bufferButton.Size = new System.Drawing.Size(59, 20);
+            this.bufferButton.TabIndex = 23;
+            this.bufferButton.Text = "Buffer";
+            this.bufferButton.UseVisualStyleBackColor = true;
+            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
             // 
             // unionButton
             // 
@@ -456,7 +456,7 @@
             this.selectPropButton.Name = "selectPropButton";
             this.selectPropButton.Size = new System.Drawing.Size(59, 23);
             this.selectPropButton.TabIndex = 17;
-            this.selectPropButton.Text = "Prop.";
+            this.selectPropButton.Text = "Attrib.";
             this.selectPropButton.UseVisualStyleBackColor = true;
             this.selectPropButton.Click += new System.EventHandler(this.selectByPropertyItem_Click);
             // 
@@ -613,17 +613,17 @@
             this.pointerLabel.Text = "Pointer";
             this.pointerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // deleteButton
+            // zoomButton
             // 
-            this.deleteButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deleteButton.Location = new System.Drawing.Point(118, 324);
-            this.deleteButton.Margin = new System.Windows.Forms.Padding(0);
-            this.deleteButton.Name = "deleteButton";
-            this.deleteButton.Size = new System.Drawing.Size(61, 23);
-            this.deleteButton.TabIndex = 21;
-            this.deleteButton.Text = "Delete";
-            this.deleteButton.UseVisualStyleBackColor = true;
-            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            this.zoomButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.zoomButton.Location = new System.Drawing.Point(118, 324);
+            this.zoomButton.Margin = new System.Windows.Forms.Padding(0);
+            this.zoomButton.Name = "zoomButton";
+            this.zoomButton.Size = new System.Drawing.Size(61, 23);
+            this.zoomButton.TabIndex = 21;
+            this.zoomButton.Text = "Zoom";
+            this.zoomButton.UseVisualStyleBackColor = true;
+            this.zoomButton.Click += new System.EventHandler(this.zoomButton_Click);
             // 
             // mergeButton
             // 
@@ -703,12 +703,12 @@
         private System.Windows.Forms.Label toolLabel;
         private System.Windows.Forms.Label pointerLabel;
         private System.Windows.Forms.TableLayoutPanel toolPanel;
-        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.Button zoomButton;
         private System.Windows.Forms.Button unionButton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bufferButton;
         private System.Windows.Forms.Button mergeButton;
         private System.Windows.Forms.Button intersectButton;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button subtractButton;
         private System.Windows.Forms.Button measureButton;
         private System.Windows.Forms.FlowLayoutPanel layerButtonPanel;
         private System.Windows.Forms.TableLayoutPanel innerTableLayoutPanel;

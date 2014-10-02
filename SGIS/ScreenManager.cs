@@ -147,6 +147,12 @@ namespace SGIS
             return re;
         }
 
+        public void ZoomTo(Point p)
+        {
+            Point diff = new Point(p.X - RealRect.Centre.X, p.Y - RealRect.Centre.Y);
+            RealRect.Move(diff);
+        }
+
         /// <summary>
         /// Returns a point on the screen from a real world point.
         /// </summary>

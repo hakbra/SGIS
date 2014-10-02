@@ -7,8 +7,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,7 +27,8 @@ namespace SGIS
         private Bitmap map;
         private Envelope mapRect;
         private bool mapDirty;
-        BackgroundWorker bw = new BackgroundWorker();
+        private BackgroundWorker bw = new BackgroundWorker();
+        int threadnum = 0;
 
         public SGIS()
         {
@@ -31,7 +36,7 @@ namespace SGIS
 
             Layers = new BindingList<Layer>();
             ScreenManager = new ScreenManager();
-            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactory("+proj = utm + zone = 33 + datum = WGS84 + units = m + no_defs");
+           SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32632"); // UTM 32N
             SelectionChanged += selectionChangedHandler;
         }
 
@@ -43,7 +48,8 @@ namespace SGIS
 
             // Screenmanager for converting between screenspace and real world
             ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, mapWindow.Width, 0, mapWindow.Height);
-            ScreenManager.RealRect = new ScreenManager.SGISEnvelope(0, 100, 0, 100);
+            ScreenManager.RealRect = new ScreenManager.SGISEnvelope(0, 10000, 0, 10000);
+            ScreenManager.ZoomTo(new NetTopologySuite.Geometries.Point(293405, 7039854));
             ScreenManager.Calculate();
             
             map = new Bitmap(mapWindow.Width, mapWindow.Height);
@@ -72,6 +78,10 @@ namespace SGIS
                 mapDirty = false;
                 Bitmap mapTemp = new Bitmap(mapWindow.Width, mapWindow.Height);
                 var mapRectTemp = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
+                Layer selectedLayer = (Layer)layerList.SelectedItem;
+                OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
+                var boundingGeometry = fact.ToGeometry(mapRectTemp);
+                Render render = new Render(ScreenManager.Scale, ScreenManager.Offset);
 
                 if (bw.IsBusy)
                 {
@@ -83,8 +93,6 @@ namespace SGIS
                 bw.WorkerSupportsCancellation = true;
                 bw.DoWork += (obj, args) =>
                 {
-                    OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
-                    var boundingGeometry = fact.ToGeometry(mapRectTemp);
                     var mapGraphics = Graphics.FromImage(mapTemp);
 
                     foreach (Layer l in Layers.Reverse())
@@ -92,16 +100,15 @@ namespace SGIS
                         if (!l.Visible)
                             continue;
                         var visibleFeatures = l.getWithin(boundingGeometry);
-                        Render render = new Render(ScreenManager.Scale, ScreenManager.Offset);
                         foreach (Feature s in visibleFeatures)
                         {
                             if (bw.CancellationPending){
                                 args.Cancel = true;
                                 return;
                             }
-                            if (!s.Selected || l != layerList.SelectedItem)
+                            if (!s.Selected || l != selectedLayer)
                                 render.Draw(s.Geometry, mapGraphics, l.Style);
-                            else if (l == layerList.SelectedItem)
+                            else if (l == selectedLayer)
                                 render.Draw(s.Geometry, mapGraphics, Style.Selected);
                         }
                         //if (l.QuadTree != null)

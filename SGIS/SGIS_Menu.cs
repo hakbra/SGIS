@@ -53,8 +53,8 @@ namespace SGIS
                         ScreenManager.RealRect.Set(l.Boundingbox);
                     }
 
-                    ScreenManager.Calculate();
                     layerList.SelectedIndex = 0;
+                    ScreenManager.Calculate();
                     redraw();
                 };
                 bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>

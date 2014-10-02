@@ -100,19 +100,23 @@ namespace SGIS
                         if (!l.Visible)
                             continue;
                         var visibleFeatures = l.getWithin(boundingGeometry);
-                        foreach (Feature s in visibleFeatures)
+                        lock (l)
                         {
-                            if (bw.CancellationPending){
-                                args.Cancel = true;
-                                return;
+                            foreach (Feature s in visibleFeatures)
+                            {
+                                if (bw.CancellationPending)
+                                {
+                                    args.Cancel = true;
+                                    return;
+                                }
+                                if (!s.Selected || l != selectedLayer)
+                                    render.Draw(s.Geometry, mapGraphics, l.Style);
+                                else if (l == selectedLayer)
+                                    render.Draw(s.Geometry, mapGraphics, Style.Selected);
                             }
-                            if (!s.Selected || l != selectedLayer)
-                                render.Draw(s.Geometry, mapGraphics, l.Style);
-                            else if (l == selectedLayer)
-                                render.Draw(s.Geometry, mapGraphics, Style.Selected);
+                            //if (l.QuadTree != null)
+                            //    l.QuadTree.render(e.Graphics);
                         }
-                        //if (l.QuadTree != null)
-                        //    l.QuadTree.render(e.Graphics);
                     }
                 };
                 bw.RunWorkerCompleted += (obj, args) =>
@@ -138,9 +142,14 @@ namespace SGIS
         {
             double mpp = 1/ScreenManager.Scale.X;
             double meters = mpp * 100;
-            string meterstr = meters.ToString("N0");
+            string meterstr = meters.ToString("N0")+"m";
             if (meters < 10)
-                meterstr = meters.ToString("N1");
+                meterstr = meters.ToString("N1")+"m";
+            if (meters > 1000)
+            {
+                meters /= 1000;
+                meterstr = meters.ToString("N1") + "km";
+            }
 
             Pen p = new Pen(Color.Black);
             System.Drawing.Point start = new System.Drawing.Point(20, this.Height-120);
@@ -149,7 +158,7 @@ namespace SGIS
             graphics.DrawLine(p, start, end);
 
             Font f = new Font(FontFamily.GenericMonospace, 10);
-            graphics.DrawString(meterstr + "m", f, new SolidBrush(Color.Black), text);
+            graphics.DrawString(meterstr, f, new SolidBrush(Color.Black), text);
         }
 
         private void SGIS_Resize(object sender, EventArgs e)

@@ -23,8 +23,11 @@ namespace SGIS
             Layer l = (Layer)layerList.SelectedItem;
             Bitmap colorImg = new Bitmap(20, 20);
             var graphics = Graphics.FromImage(colorImg);
-            graphics.FillRectangle(l.Style.brush, new Rectangle(0, 0, 20, 20));
-            graphics.DrawRectangle(l.Style.pen, new Rectangle(0, 0, 20, 20));
+            lock (l)
+            {
+                graphics.FillRectangle(l.Style.brush, new Rectangle(0, 0, 20, 20));
+                graphics.DrawRectangle(l.Style.pen, new Rectangle(0, 0, 20, 20));
+            }
 
             layerListContextMenu.Items.Clear();
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) =>

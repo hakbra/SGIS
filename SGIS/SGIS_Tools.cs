@@ -611,5 +611,76 @@ namespace SGIS
             sqmeters /= 1000000;
             return sqmeters.ToString("N1") + " km^2";
         }
+
+        private void renderButton_Click(object sender, EventArgs e)
+        {
+            toolBuilder.addHeader("Export render");
+            var zoom = toolBuilder.addTextbox("Zoom factor:", "1");
+            var file = toolBuilder.addTextbox("Filename:", "");
+            var browsebutton = toolBuilder.addButton("Browse...");
+            var error = toolBuilder.addErrorLabel();
+
+            browsebutton.Click += (o, w) =>
+            {
+                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                 saveFileDialog1.Filter = "bmp files (*.bmp)|*.bmp"  ;
+                 if(saveFileDialog1.ShowDialog() == DialogResult.OK)
+                     file.Text = saveFileDialog1.FileName;
+            };
+
+            Button button = toolBuilder.addButton("Export", (Layer selectedLayer) =>
+            {
+                if (file.Text == "")
+                {
+                    toolBuilder.setError("Please provide filename");
+                    return;
+                }
+                double zoomfactor = 1;
+                if (!double.TryParse(zoom.Text, out zoomfactor))
+                {
+                    toolBuilder.setError("Zoom factor not a number");
+                    return;
+                }
+
+                var oldWindowRect = ScreenManager.WindowsRect.Clone();
+                ScreenManager.WindowsRect = new ScreenManager.SGISEnvelope(0, oldWindowRect.MaxX * zoomfactor, 0, oldWindowRect.MaxY * zoomfactor);
+                ScreenManager.Calculate();
+                Bitmap mapTemp = new Bitmap((int)ScreenManager.WindowsRect.Width,
+                                            (int)ScreenManager.WindowsRect.Height);
+                var mapRectTemp = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
+                OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
+                var boundingGeometry = fact.ToGeometry(mapRectTemp);
+                Render render = new Render(ScreenManager.Scale, ScreenManager.Offset);
+                ScreenManager.WindowsRect.Set(oldWindowRect);
+                ScreenManager.Calculate();
+                
+                BackgroundWorker bwRender = new BackgroundWorker();
+                bwRender.DoWork += (obj, args) =>
+                {
+                    var mapGraphics = Graphics.FromImage(mapTemp);
+
+                    foreach (Layer l in Layers.Reverse())
+                    {
+                        if (!l.Visible)
+                            continue;
+                        var visibleFeatures = l.getWithin(boundingGeometry);
+                        lock (l)
+                        {
+                            foreach (Feature s in visibleFeatures)
+                            {
+                                render.Draw(s.Geometry, mapGraphics, l.Style);
+                            }
+                        }
+                    }
+                };
+                bwRender.RunWorkerCompleted += (obj, args) =>
+                {
+                    if (!file.Text.Contains(".bmp"))
+                        file.Text += ".bmp";
+                   mapTemp.Save(file.Text);
+                };
+                bwRender.RunWorkerAsync();
+            });
+        }
     }
 }

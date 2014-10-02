@@ -71,6 +71,7 @@
             this.zoomButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.renderButton = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -233,6 +234,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.Controls.Add(this.renderButton, 0, 10);
             this.tableLayoutPanel1.Controls.Add(this.layerButtonPanel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.measureButton, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.subtractButton, 1, 9);
@@ -271,7 +273,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 410);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 430);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // layerButtonPanel
@@ -283,7 +285,7 @@
             this.tableLayoutPanel1.SetColumnSpan(this.layerButtonPanel, 3);
             this.layerButtonPanel.Controls.Add(this.innerTableLayoutPanel);
             this.layerButtonPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.layerButtonPanel.Location = new System.Drawing.Point(0, 209);
+            this.layerButtonPanel.Location = new System.Drawing.Point(0, 232);
             this.layerButtonPanel.Margin = new System.Windows.Forms.Padding(0);
             this.layerButtonPanel.Name = "layerButtonPanel";
             this.layerButtonPanel.Size = new System.Drawing.Size(179, 23);
@@ -605,7 +607,7 @@
             this.pointerLabel.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanel1.SetColumnSpan(this.pointerLabel, 3);
             this.pointerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pointerLabel.Location = new System.Drawing.Point(3, 242);
+            this.pointerLabel.Location = new System.Drawing.Point(3, 219);
             this.pointerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.pointerLabel.Name = "pointerLabel";
             this.pointerLabel.Size = new System.Drawing.Size(173, 13);
@@ -636,6 +638,18 @@
             this.mergeButton.Text = "Merge";
             this.mergeButton.UseVisualStyleBackColor = true;
             this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
+            // 
+            // renderButton
+            // 
+            this.renderButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.renderButton.Location = new System.Drawing.Point(0, 410);
+            this.renderButton.Margin = new System.Windows.Forms.Padding(0);
+            this.renderButton.Name = "renderButton";
+            this.renderButton.Size = new System.Drawing.Size(59, 20);
+            this.renderButton.TabIndex = 28;
+            this.renderButton.Text = "Render";
+            this.renderButton.UseVisualStyleBackColor = true;
+            this.renderButton.Click += new System.EventHandler(this.renderButton_Click);
             // 
             // SGIS
             // 
@@ -716,6 +730,7 @@
         private System.Windows.Forms.Button downButton;
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Button delButton;
+        private System.Windows.Forms.Button renderButton;
     }
 }
 

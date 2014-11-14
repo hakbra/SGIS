@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace SGIS
 {
@@ -659,6 +662,11 @@ namespace SGIS
                 {
                     var mapGraphics = Graphics.FromImage(mapTemp);
 
+                    foreach (Photo p in photos)
+                    {
+                        if (p.Geometry.Intersects(boundingGeometry))
+                            render.Draw(p, mapGraphics);
+                    }
                     foreach (Layer l in Layers.Reverse())
                     {
                         if (!l.Visible)
@@ -675,12 +683,140 @@ namespace SGIS
                 };
                 bwRender.RunWorkerCompleted += (obj, args) =>
                 {
-                    if (!file.Text.Contains(".bmp"))
-                        file.Text += ".bmp";
-                   mapTemp.Save(file.Text);
+                    if (file.Text.EndsWith(".bmp"))
+                        file.Text = file.Text.Substring(0, file.Text.Length-4);
+                    mapTemp.Save(file.Text+".bmp");
+
+                    ///////////////////////////////
+                   OSGeo.GDAL.Gdal.AllRegister();
+                   OSGeo.GDAL.Driver srcDrv = OSGeo.GDAL.Gdal.GetDriverByName("GTiff");
+                   OSGeo.GDAL.Dataset srcDs = OSGeo.GDAL.Gdal.Open(file.Text+".bmp", OSGeo.GDAL.Access.GA_ReadOnly);
+                   OSGeo.GDAL.Dataset dstDs = srcDrv.CreateCopy(file.Text+".tiff", srcDs, 0, null, null, null);
+
+                   //Set the map projection
+                    {
+                        OSGeo.OSR.SpatialReference oSRS = new OSGeo.OSR.SpatialReference("");
+                        oSRS.ImportFromProj4( SRS.ToString() );
+                        string wkt;
+                        oSRS.ExportToWkt(out wkt);
+                        dstDs.SetProjection(wkt);
+                   }
+
+                   //Set the map georeferencing
+                   double mapWidth = mapRectTemp.Width;
+                   double mapHeight = mapRectTemp.Height;
+                   double[] geoTransfo = new double[] { mapRectTemp.MinX, mapWidth / mapTemp.Width, 0, mapRectTemp.MinY, 0, mapHeight / mapTemp.Height };
+                   dstDs.SetGeoTransform(geoTransfo);
+
+                   dstDs.FlushCache();
+                   dstDs.Dispose();
+                   srcDs.Dispose();
+                   srcDrv.Dispose();
+
+                    /////////////////////////
                 };
                 bwRender.RunWorkerAsync();
             });
+        }
+
+        private void photoButton_Click(object sender, EventArgs e)
+        {
+            toolBuilder.addHeader("Photo");
+
+            TextBox server = toolBuilder.addTextbox("WMS Server", "http://wms.geonorge.no/skwms1/wms.kartdata2");
+            Button connectButton = toolBuilder.addButton("Get layers");
+            toolBuilder.addLabel("");
+            toolBuilder.addLabel("Layers");
+
+            ListBox wmsLayers = new ListBox();
+            toolBuilder.addControl(wmsLayers);
+            wmsLayers.SelectionMode = SelectionMode.MultiExtended;
+
+            toolBuilder.addErrorLabel();
+            Button loadButton = toolBuilder.addButton("Load");
+            Button clearButton = toolBuilder.addButton("Clear");
+
+            connectButton.Click += (o, e2) =>
+            {
+                var par = "REQUEST=GetCapabilities&VERSION=1.1.1&service=WMS&format=text/xml";
+                var url = server.Text + "?" + par;
+                Console.WriteLine(url);
+                var capab = "";
+
+                try
+                {
+                    var request = System.Net.WebRequest.Create(url);
+                    using (var response = request.GetResponse())
+                    using (var stream = response.GetResponseStream())
+                    {
+                        capab = new StreamReader(stream).ReadToEnd();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    toolBuilder.setError("Server error");
+                    return;
+                }
+                toolBuilder.setError("");
+
+                List<String> wmsLayerNames = new List<String>();
+                XmlDataDocument xmldoc = new XmlDataDocument();
+                xmldoc.LoadXml(capab);
+                XmlNodeList xmlnodes = xmldoc.GetElementsByTagName("Name");
+                foreach (XmlNode n in xmlnodes)
+                    if (n.ParentNode.Name == "Layer")
+                        wmsLayerNames.Add(n.InnerText);
+                wmsLayers.DataSource = wmsLayerNames;
+            };
+
+            loadButton.Click += (o, e2) =>
+            {
+                var d = CultureInfo.InvariantCulture;
+                var b = ScreenManager.RealWindowsRect;
+                var sb = ScreenManager.MapRealToScreen(b);
+                var bbox = "BBOX=" + b.MinX.ToString(d) + "," + b.MinY.ToString(d) + "," + b.MaxX.ToString(d) + "," + b.MaxY.ToString(d) + "&WIDTH=" + sb.Width.ToString(d) + "&HEIGHT=" + sb.Height.ToString(d)+"&";
+                var srs = "SRS=EPSG:32633&";
+                var par = "STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&";
+                //var baseurl = "http://129.206.228.72/cached/osm?LAYERS=osm_auto:all&";
+                //baseurl = "http://openwms.statkart.no/skwms1/wms.toporaster?LAYERS=toporaster3&";
+                //baseurl = "http://wms.geonorge.no/skwms1/wms.kartdata2?LAYERS=Kartdata2_WMS&";
+                List<String> selectedLayers = wmsLayers.SelectedItems.Cast<String>().ToList<String>();
+                if (selectedLayers.Count == 0)
+                {
+                    toolBuilder.setError("Select layer");
+                    return;
+                }
+                var layerString = "LAYERS=" + String.Join(",", selectedLayers) + "&";
+
+                var url = server.Text + "?" + layerString + par + srs + bbox;
+                Console.WriteLine(url);
+                Photo p;
+
+                try
+                {
+                    var request = System.Net.WebRequest.Create(url);
+                    using (var response = request.GetResponse())
+                    using (var stream = response.GetResponseStream())
+                    {
+                        p = new Photo(Bitmap.FromStream(stream), b);
+                    }
+                } catch (Exception ex)
+                {
+                    toolBuilder.setError("Server error");
+                    Console.WriteLine(ex.Message);
+                    return;
+                }
+                toolBuilder.setError("");
+                photos.Add(p);
+                redraw();
+            };
+
+            clearButton.Click += (o, e2) => {
+                photos.Clear();
+                redraw();
+            };
+
+            toolBuilder.reset();
         }
     }
 }

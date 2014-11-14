@@ -30,6 +30,25 @@ namespace SGIS
             return p;
         }
 
+        public NTSPoint MapRealToScreen(NTSPoint pt)
+        {
+            return new NTSPoint(((pt.X - offset.X) * scale.X),
+                                ((pt.Y - offset.Y) * scale.Y));
+
+        }
+        public System.Drawing.Rectangle MapRealToScreen(Envelope e)
+        {
+            var min = MapRealToScreen(new NTSPoint(e.MinX, e.MinY));
+            var max = MapRealToScreen(new NTSPoint(e.MaxX, e.MaxY));
+            return new System.Drawing.Rectangle((int)min.X, (int)max.Y, (int)(max.X - min.X), (int)(min.Y - max.Y));
+        }
+
+        public void Draw(Photo p, Graphics gr)
+        {
+            Rectangle screenRect = MapRealToScreen(p.Bounds);
+            gr.DrawImage(p.Pic, screenRect);
+        }
+
         public  void Draw(IGeometry ge, Graphics gr, Style c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
@@ -45,7 +64,7 @@ namespace SGIS
         private  void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
             int rad = 5;
-            var mid = SGIS.App.ScreenManager.ScaleAndOffSet(ge);
+            var mid = ScaleAndOffSet(ge);
 
             gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
         }

@@ -27,16 +27,18 @@ namespace SGIS
         private Bitmap map;
         private Envelope mapRect;
         private bool mapDirty;
+        private List<Photo> photos;
         private BackgroundWorker bw = new BackgroundWorker();
-        int threadnum = 0;
+        public string EPSG;
 
         public SGIS()
         {
             InitializeComponent();
 
+            photos = new List<Photo>();
             Layers = new BindingList<Layer>();
             ScreenManager = new ScreenManager();
-           SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32632"); // UTM 32N
+            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32633"); // UTM 32N
             SelectionChanged += selectionChangedHandler;
         }
 
@@ -94,6 +96,12 @@ namespace SGIS
                 bw.DoWork += (obj, args) =>
                 {
                     var mapGraphics = Graphics.FromImage(mapTemp);
+
+                    foreach(Photo p in photos)
+                    {
+                        if (p.Geometry.Intersects(boundingGeometry))
+                            p.Draw(mapGraphics);
+                    }
 
                     foreach (Layer l in Layers.Reverse())
                     {

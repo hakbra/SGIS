@@ -29,7 +29,6 @@ namespace SGIS
         private bool mapDirty;
         private List<Photo> photos;
         private BackgroundWorker bw = new BackgroundWorker();
-        public string EPSG;
 
         public SGIS()
         {
@@ -139,10 +138,19 @@ namespace SGIS
                 bw.RunWorkerAsync();
             }
 
-            var screenRect = ScreenManager.MapRealToScreen(mapRect);
+            try
+            {
+                var screenRect = ScreenManager.MapRealToScreen(mapRect);
+                e.Graphics.DrawImage(map, screenRect);
+            }
+            catch (Exception ex)
+            {
+                // Will happen after changing SRS
+            }
 
-            e.Graphics.DrawImage(map, screenRect);
-            renderScale(e.Graphics);
+
+            if (!SRS.IsLatLong)
+                renderScale(e.Graphics);
             mouse.render(e.Graphics);
         }
 
@@ -210,6 +218,16 @@ namespace SGIS
         public void redrawDirty()
         {
             mapWindow.Refresh();
+        }
+
+        public string getSrsName()
+        {
+            OSGeo.OSR.SpatialReference oSRS = new OSGeo.OSR.SpatialReference("");
+            oSRS.ImportFromProj4(SRS.ToString());
+
+            if (oSRS.IsProjected() == 1)
+                return oSRS.GetAttrValue("projcs", 0);
+            return oSRS.GetAttrValue("geogcs", 0);
         }
     }
 }

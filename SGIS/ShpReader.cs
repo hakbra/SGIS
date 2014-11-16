@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
 using System.Data;
+using System.Windows.Forms;
 
 namespace SGIS
 {
@@ -43,6 +44,11 @@ namespace SGIS
             string prjName = filename.Substring(0, filename.Length - 3) + "prj";
             if (File.Exists(prjName))
                 layer.Projection = PrjReader.read(prjName);
+            else
+            {
+                string msg = "No projection da found. Assuming " + SGIS.App.getSrsName();
+                MessageBox.Show(msg, "Missing spatial reference system", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
             if (File.Exists(dbfName))

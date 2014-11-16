@@ -61,7 +61,18 @@ namespace SGIS
             panel.Controls.Add(lineLabel);
         }
 
-        public TextBox addTextbox(string caption)
+
+        public TextBox addTextbox(string value)
+        {
+            TextBox textbox = new TextBox();
+            textbox.Text = value;
+            textbox.Focus();
+            textbox.Select(textbox.Text.Length, 0);
+            addControl(textbox);
+
+            return textbox;
+        }
+        public TextBox addTextboxWithCaption(string caption)
         {
             return addTextbox(caption, "");
         }

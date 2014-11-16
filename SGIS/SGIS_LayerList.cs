@@ -79,7 +79,7 @@ namespace SGIS
                     }
                 };
 
-                TextBox alphaText = toolBuilder.addTextbox("Opacity 1-255:");
+                TextBox alphaText = toolBuilder.addTextboxWithCaption("Opacity 1-255:");
                 alphaText.TextChanged += (o2, e2) =>
                 {
                     Layer cl = (Layer)layerList.SelectedItem;
@@ -111,7 +111,7 @@ namespace SGIS
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) =>
             {
                 toolBuilder.addHeader("Rename layer");
-                TextBox name = toolBuilder.addTextbox("New name:");
+                TextBox name = toolBuilder.addTextboxWithCaption("New name:");
                 Label error = toolBuilder.addErrorLabel();
                 Button button = toolBuilder.addButton("Rename", (Layer currentLayer) =>
                 {

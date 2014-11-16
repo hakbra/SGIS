@@ -58,9 +58,8 @@ namespace SGIS
             double scale = 1.3;
             if (e.Delta > 0)
             { // Zoom in
-                if (SGIS.App.ScreenManager.RealRect.Width < 5)
-                    return;
-                SGIS.App.ScreenManager.RealRect.Grow(1 / scale);
+                if (Math.Abs(SGIS.App.ScreenManager.Scale.X) < 176386645655)
+                    SGIS.App.ScreenManager.RealRect.Grow(1 / scale);
             }
             else if (e.Delta < 0) // Zoom out
                 SGIS.App.ScreenManager.RealRect.Grow(scale);

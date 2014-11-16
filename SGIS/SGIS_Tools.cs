@@ -121,8 +121,8 @@ namespace SGIS
         {
             toolBuilder.addHeader("Buffer");
 
-            TextBox distBox = toolBuilder.addTextbox("Distance:");
-            TextBox nameBox = toolBuilder.addTextbox("Layer name:");
+            TextBox distBox = toolBuilder.addTextboxWithCaption("Distance:");
+            TextBox nameBox = toolBuilder.addTextboxWithCaption("Layer name:");
             Label errorLabel = toolBuilder.addErrorLabel();
 
             Button selectButton = toolBuilder.addButton("Buffer", (Layer l) =>
@@ -211,7 +211,7 @@ namespace SGIS
         {
             toolBuilder.addHeader("Union");
             ComboBox layerSelect = toolBuilder.addLayerSelect("Merge with:");
-            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button button = toolBuilder.addButton("Merge", (Layer l) =>
             {
@@ -249,7 +249,7 @@ namespace SGIS
         private void unionButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Union");
-            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button button = toolBuilder.addButton("Union", (Layer l) =>
             {
@@ -369,7 +369,7 @@ namespace SGIS
         {
             toolBuilder.addHeader("Difference");
             ComboBox layerSelect = toolBuilder.addLayerSelect("Subtract:");
-            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button button = toolBuilder.addButton("Subtract", (Layer l) =>
             {
@@ -459,7 +459,7 @@ namespace SGIS
         {
             toolBuilder.addHeader("Intersect");
             ComboBox layerSelect = toolBuilder.addLayerSelect("Intersect with:");
-            TextBox textbox = toolBuilder.addTextbox("New layername:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button button = toolBuilder.addButton("Intersect", (Layer l) =>
             {

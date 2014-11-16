@@ -57,7 +57,7 @@ namespace SGIS
         private void selectByPropertyItem_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Select by property");
-            TextBox textbox = toolBuilder.addTextbox("Expression:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("Expression:");
 
             ComboBox comboBox = new ComboBox();
             comboBox.Items.Add("Column name");
@@ -125,7 +125,7 @@ namespace SGIS
         private void toLayerButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Export selection");
-            TextBox textbox = toolBuilder.addTextbox("Layer name:");
+            TextBox textbox = toolBuilder.addTextboxWithCaption("Layer name:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button selectButton = toolBuilder.addButton("Copy selection", (Layer l) =>
             {

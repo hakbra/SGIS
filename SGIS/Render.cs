@@ -17,7 +17,7 @@ namespace SGIS
         public Render(NTSPoint s, NTSPoint o)
         {
             offset = (NTSPoint) o.Clone();
-            scale = (NTSPoint) s.Clone();
+            scale = (NTSPoint)s.Clone();
         }
 
         public NTSPoint ScaleAndOffSet(NTSPoint pt)

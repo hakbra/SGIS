@@ -16,55 +16,93 @@ namespace SGIS
             Application.Exit();
         }
 
-        private void shapefileMenuItem_Click(object sender, EventArgs e)
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "shp files|*.shp";
-            openFileDialog1.Multiselect = true;
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                progressBar.Minimum = 0;
-                progressBar.Maximum = openFileDialog1.FileNames.Count();
-                progressBar.Value = 0;
+            Form options = new Form();
 
-                BackgroundWorker bw = new BackgroundWorker();
-                bw.WorkerReportsProgress = true;
+            FlowLayoutPanel optionsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            GroupBox srsOptionsGroup = new System.Windows.Forms.GroupBox();
+            Button closeButton = new System.Windows.Forms.Button();
+            FlowLayoutPanel srsOptionsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            TextBox srsTextBox = new System.Windows.Forms.TextBox();
+            Button setSrsButton = new System.Windows.Forms.Button();
+            ComboBox srsType = new ComboBox();
+            Label currentSRS = new Label();
+            Label errorLabel = new Label();
 
-                List<Layer> readLayers = new List<Layer>();
+            optionsFlowLayout.SuspendLayout();
+            srsOptionsGroup.SuspendLayout();
+            srsOptionsFlowLayout.SuspendLayout();
+            SuspendLayout();
+            // 
+            // optionsFlowLayout
+            // 
+            optionsFlowLayout.Controls.Add(srsOptionsGroup);
+            optionsFlowLayout.SetFlowBreak(srsOptionsGroup, true);
+            optionsFlowLayout.Controls.Add(closeButton);
+            optionsFlowLayout.Location = new System.Drawing.Point(0, 0);
+            optionsFlowLayout.AutoSize = true;
+            optionsFlowLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            // 
+            // srsOptionsGroup
+            // 
+            srsOptionsGroup.Controls.Add(srsOptionsFlowLayout);
+            srsOptionsGroup.Location = new System.Drawing.Point(3, 3);
+            srsOptionsGroup.Text = "Spatial Reference System";
+            // 
+            // currentSRS
+            currentSRS.Text = "Placeholder";
+            currentSRS.Height = 20;
+            // closeButton
+            // 
+            closeButton.Text = "Close";
+            closeButton.Height = 20;
+            // errorLabel
+            errorLabel.Height = 20;
+            // 
+            // srsOptionsFlowLayout
+            // 
+            srsOptionsFlowLayout.Controls.Add(currentSRS);
+            srsOptionsFlowLayout.SetFlowBreak(currentSRS, true);
+            srsOptionsFlowLayout.Controls.Add(srsType);
+            srsOptionsFlowLayout.Controls.Add(srsTextBox);
+            srsOptionsFlowLayout.SetFlowBreak(srsTextBox, true);
+            srsOptionsFlowLayout.Controls.Add(setSrsButton);
+            srsOptionsFlowLayout.SetFlowBreak(setSrsButton, true);
+            srsOptionsFlowLayout.Controls.Add(errorLabel);
+            srsOptionsFlowLayout.Location = new System.Drawing.Point(5, 20);
+            srsOptionsFlowLayout.AutoSize = true;
+            srsOptionsFlowLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            // srsDropDown
+            srsType.DropDownStyle = ComboBoxStyle.DropDownList;
+            srsType.Items.Add("EPSG");
+            srsType.SelectedIndex = 0;
+            srsType.Width = 60;
+            srsType.Height = 20;
 
-                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
-                {
-                    foreach (String file in openFileDialog1.FileNames)
-                    {
-                        bw.ReportProgress(0, file.Split('\\').Last());
-                        Layer l = ShpReader.read(file);
-                        bw.ReportProgress(1);
-                        readLayers.Insert(0, l);
-                    }
-                };
-                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
-                {
-                    progressBar.Value = 0;
-                    progressLabel.Text = "";
+            // 
+            // srsTextBox
+            // 
+            // 
+            // setSrsButton
+            // 
+            setSrsButton.Text = "Set";
+            setSrsButton.Dock = DockStyle.Fill;
+            // 
+            // Form1
+            // 
+            options.AutoSize = true;
+            options.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            
+            options.Controls.Add(optionsFlowLayout);
+            options.Text = "Options";
+            optionsFlowLayout.ResumeLayout(false);
+            srsOptionsGroup.ResumeLayout(false);
+            srsOptionsFlowLayout.ResumeLayout(false);
+            srsOptionsFlowLayout.PerformLayout();
+            options.ResumeLayout(false);
 
-                    foreach (Layer l in readLayers)
-                    {
-                        Layers.Insert(0, l);
-                        ScreenManager.RealRect.Set(l.Boundingbox);
-                    }
-
-                    layerList.SelectedIndex = 0;
-                    ScreenManager.Calculate();
-                    redraw();
-                };
-                bw.ProgressChanged += (object wsender, ProgressChangedEventArgs we) =>
-                {
-                    progressBar.Value += we.ProgressPercentage;
-                    if (we.ProgressPercentage == 0)
-                        progressLabel.Text = "Reading " + (string)we.UserState;
-                };
-                bw.RunWorkerAsync();
-            }
+            options.Show();
         }
     }
 }

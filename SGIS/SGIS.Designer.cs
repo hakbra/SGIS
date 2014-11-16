@@ -37,42 +37,41 @@
             this.coordLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.shapefileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mapWindow = new System.Windows.Forms.PictureBox();
             this.toolPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.renderButton = new System.Windows.Forms.Button();
+            this.layerLabel = new System.Windows.Forms.Label();
+            this.layerList = new System.Windows.Forms.ListBox();
             this.layerButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.innerTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.upButton = new System.Windows.Forms.Button();
             this.downButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.delButton = new System.Windows.Forms.Button();
-            this.measureButton = new System.Windows.Forms.Button();
-            this.subtractButton = new System.Windows.Forms.Button();
-            this.intersectButton = new System.Windows.Forms.Button();
-            this.bufferButton = new System.Windows.Forms.Button();
-            this.unionButton = new System.Windows.Forms.Button();
-            this.toLayerButton = new System.Windows.Forms.Button();
-            this.selectPropButton = new System.Windows.Forms.Button();
-            this.selectInvertButton = new System.Windows.Forms.Button();
-            this.selectNoneButton = new System.Windows.Forms.Button();
-            this.selectAllButton = new System.Windows.Forms.Button();
+            this.pointerLabel = new System.Windows.Forms.Label();
             this.mouseMoveButton = new System.Windows.Forms.Button();
-            this.layerLabel = new System.Windows.Forms.Label();
-            this.layerList = new System.Windows.Forms.ListBox();
             this.mouseSelectButton = new System.Windows.Forms.Button();
             this.mouseInfoButton = new System.Windows.Forms.Button();
             this.selectLabel = new System.Windows.Forms.Label();
-            this.toolLabel = new System.Windows.Forms.Label();
-            this.pointerLabel = new System.Windows.Forms.Label();
+            this.selectAllButton = new System.Windows.Forms.Button();
+            this.selectNoneButton = new System.Windows.Forms.Button();
+            this.selectInvertButton = new System.Windows.Forms.Button();
+            this.selectPropButton = new System.Windows.Forms.Button();
+            this.toLayerButton = new System.Windows.Forms.Button();
             this.zoomButton = new System.Windows.Forms.Button();
+            this.toolLabel = new System.Windows.Forms.Label();
+            this.measureButton = new System.Windows.Forms.Button();
+            this.bufferButton = new System.Windows.Forms.Button();
+            this.unionButton = new System.Windows.Forms.Button();
             this.mergeButton = new System.Windows.Forms.Button();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.subtractButton = new System.Windows.Forms.Button();
+            this.intersectButton = new System.Windows.Forms.Button();
+            this.renderButton = new System.Windows.Forms.Button();
             this.photoButton = new System.Windows.Forms.Button();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -141,31 +140,23 @@
             // fileMenu
             // 
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
+            this.optionsToolStripMenuItem,
             this.exitMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(37, 20);
             this.fileMenu.Text = "File";
             // 
-            // openToolStripMenuItem
+            // optionsToolStripMenuItem
             // 
-            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.shapefileMenuItem});
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.openToolStripMenuItem.Text = "Open...";
-            // 
-            // shapefileMenuItem
-            // 
-            this.shapefileMenuItem.Name = "shapefileMenuItem";
-            this.shapefileMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.shapefileMenuItem.Text = "Shapefile";
-            this.shapefileMenuItem.Click += new System.EventHandler(this.shapefileMenuItem_Click);
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.optionsToolStripMenuItem.Text = "Options...";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(125, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -235,29 +226,29 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.tableLayoutPanel1.Controls.Add(this.photoButton, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.renderButton, 0, 10);
-            this.tableLayoutPanel1.Controls.Add(this.layerButtonPanel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.measureButton, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.subtractButton, 1, 9);
-            this.tableLayoutPanel1.Controls.Add(this.intersectButton, 2, 9);
-            this.tableLayoutPanel1.Controls.Add(this.bufferButton, 1, 8);
-            this.tableLayoutPanel1.Controls.Add(this.unionButton, 2, 8);
-            this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.selectInvertButton, 2, 5);
-            this.tableLayoutPanel1.Controls.Add(this.selectNoneButton, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.selectAllButton, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.mouseMoveButton, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.layerLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.layerList, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.mouseSelectButton, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.mouseInfoButton, 2, 3);
-            this.tableLayoutPanel1.Controls.Add(this.selectLabel, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.toolLabel, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.pointerLabel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.zoomButton, 2, 6);
-            this.tableLayoutPanel1.Controls.Add(this.mergeButton, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.layerButtonPanel, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pointerLabel, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.mouseMoveButton, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.mouseSelectButton, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.mouseInfoButton, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.selectLabel, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.selectAllButton, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.selectNoneButton, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.selectInvertButton, 2, 6);
+            this.tableLayoutPanel1.Controls.Add(this.selectPropButton, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.toLayerButton, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.zoomButton, 2, 7);
+            this.tableLayoutPanel1.Controls.Add(this.toolLabel, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.measureButton, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.bufferButton, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.unionButton, 2, 9);
+            this.tableLayoutPanel1.Controls.Add(this.mergeButton, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.subtractButton, 1, 10);
+            this.tableLayoutPanel1.Controls.Add(this.intersectButton, 2, 10);
+            this.tableLayoutPanel1.Controls.Add(this.renderButton, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.photoButton, 0, 11);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -278,17 +269,32 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 430);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // renderButton
+            // layerLabel
             // 
-            this.renderButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.renderButton.Location = new System.Drawing.Point(0, 410);
-            this.renderButton.Margin = new System.Windows.Forms.Padding(0);
-            this.renderButton.Name = "renderButton";
-            this.renderButton.Size = new System.Drawing.Size(59, 20);
-            this.renderButton.TabIndex = 28;
-            this.renderButton.Text = "Render";
-            this.renderButton.UseVisualStyleBackColor = true;
-            this.renderButton.Click += new System.EventHandler(this.renderButton_Click);
+            this.layerLabel.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.layerLabel, 3);
+            this.layerLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.layerLabel.Location = new System.Drawing.Point(3, 10);
+            this.layerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+            this.layerLabel.Name = "layerLabel";
+            this.layerLabel.Size = new System.Drawing.Size(173, 13);
+            this.layerLabel.TabIndex = 4;
+            this.layerLabel.Text = "Layers";
+            this.layerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // layerList
+            // 
+            this.layerList.AllowDrop = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.layerList, 3);
+            this.layerList.Dock = System.Windows.Forms.DockStyle.Top;
+            this.layerList.FormattingEnabled = true;
+            this.layerList.Location = new System.Drawing.Point(0, 23);
+            this.layerList.Margin = new System.Windows.Forms.Padding(0);
+            this.layerList.Name = "layerList";
+            this.layerList.Size = new System.Drawing.Size(179, 186);
+            this.layerList.TabIndex = 7;
+            this.layerList.SelectedIndexChanged += new System.EventHandler(this.layerList_SelectedIndexChanged);
+            this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
             // layerButtonPanel
             // 
@@ -299,7 +305,7 @@
             this.tableLayoutPanel1.SetColumnSpan(this.layerButtonPanel, 3);
             this.layerButtonPanel.Controls.Add(this.innerTableLayoutPanel);
             this.layerButtonPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.layerButtonPanel.Location = new System.Drawing.Point(0, 232);
+            this.layerButtonPanel.Location = new System.Drawing.Point(0, 209);
             this.layerButtonPanel.Margin = new System.Windows.Forms.Padding(0);
             this.layerButtonPanel.Name = "layerButtonPanel";
             this.layerButtonPanel.Size = new System.Drawing.Size(179, 23);
@@ -372,7 +378,7 @@
             this.addButton.TabIndex = 6;
             this.addButton.Text = "+";
             this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.shapefileMenuItem_Click);
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // delButton
             // 
@@ -389,134 +395,19 @@
             this.delButton.UseVisualStyleBackColor = true;
             this.delButton.Click += new System.EventHandler(this.delButton_Click);
             // 
-            // measureButton
+            // pointerLabel
             // 
-            this.measureButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.measureButton.Location = new System.Drawing.Point(0, 370);
-            this.measureButton.Margin = new System.Windows.Forms.Padding(0);
-            this.measureButton.Name = "measureButton";
-            this.measureButton.Size = new System.Drawing.Size(59, 20);
-            this.measureButton.TabIndex = 27;
-            this.measureButton.Text = "Measure";
-            this.measureButton.UseVisualStyleBackColor = true;
-            this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
-            // 
-            // subtractButton
-            // 
-            this.subtractButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.subtractButton.Location = new System.Drawing.Point(59, 390);
-            this.subtractButton.Margin = new System.Windows.Forms.Padding(0);
-            this.subtractButton.Name = "subtractButton";
-            this.subtractButton.Size = new System.Drawing.Size(59, 20);
-            this.subtractButton.TabIndex = 26;
-            this.subtractButton.Text = "Subtract";
-            this.subtractButton.UseVisualStyleBackColor = true;
-            this.subtractButton.Click += new System.EventHandler(this.diffButton_Click);
-            // 
-            // intersectButton
-            // 
-            this.intersectButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.intersectButton.Location = new System.Drawing.Point(118, 390);
-            this.intersectButton.Margin = new System.Windows.Forms.Padding(0);
-            this.intersectButton.Name = "intersectButton";
-            this.intersectButton.Size = new System.Drawing.Size(61, 20);
-            this.intersectButton.TabIndex = 25;
-            this.intersectButton.Text = "Intersect";
-            this.intersectButton.UseVisualStyleBackColor = true;
-            this.intersectButton.Click += new System.EventHandler(this.intersectButton_Click);
-            // 
-            // bufferButton
-            // 
-            this.bufferButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bufferButton.Location = new System.Drawing.Point(59, 370);
-            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
-            this.bufferButton.Name = "bufferButton";
-            this.bufferButton.Size = new System.Drawing.Size(59, 20);
-            this.bufferButton.TabIndex = 23;
-            this.bufferButton.Text = "Buffer";
-            this.bufferButton.UseVisualStyleBackColor = true;
-            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
-            // 
-            // unionButton
-            // 
-            this.unionButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.unionButton.Location = new System.Drawing.Point(118, 370);
-            this.unionButton.Margin = new System.Windows.Forms.Padding(0);
-            this.unionButton.Name = "unionButton";
-            this.unionButton.Size = new System.Drawing.Size(61, 20);
-            this.unionButton.TabIndex = 22;
-            this.unionButton.Text = "Union";
-            this.unionButton.UseVisualStyleBackColor = true;
-            this.unionButton.Click += new System.EventHandler(this.unionButton_Click);
-            // 
-            // toLayerButton
-            // 
-            this.toLayerButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toLayerButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toLayerButton.Location = new System.Drawing.Point(59, 324);
-            this.toLayerButton.Margin = new System.Windows.Forms.Padding(0);
-            this.toLayerButton.Name = "toLayerButton";
-            this.toLayerButton.Size = new System.Drawing.Size(59, 23);
-            this.toLayerButton.TabIndex = 19;
-            this.toLayerButton.Text = "Copy";
-            this.toLayerButton.UseVisualStyleBackColor = true;
-            this.toLayerButton.Click += new System.EventHandler(this.toLayerButton_Click);
-            // 
-            // selectPropButton
-            // 
-            this.selectPropButton.AutoSize = true;
-            this.selectPropButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.selectPropButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectPropButton.Location = new System.Drawing.Point(0, 324);
-            this.selectPropButton.Margin = new System.Windows.Forms.Padding(0);
-            this.selectPropButton.Name = "selectPropButton";
-            this.selectPropButton.Size = new System.Drawing.Size(59, 23);
-            this.selectPropButton.TabIndex = 17;
-            this.selectPropButton.Text = "Attrib.";
-            this.selectPropButton.UseVisualStyleBackColor = true;
-            this.selectPropButton.Click += new System.EventHandler(this.selectByPropertyItem_Click);
-            // 
-            // selectInvertButton
-            // 
-            this.selectInvertButton.AutoSize = true;
-            this.selectInvertButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.selectInvertButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectInvertButton.Location = new System.Drawing.Point(118, 301);
-            this.selectInvertButton.Margin = new System.Windows.Forms.Padding(0);
-            this.selectInvertButton.Name = "selectInvertButton";
-            this.selectInvertButton.Size = new System.Drawing.Size(61, 23);
-            this.selectInvertButton.TabIndex = 16;
-            this.selectInvertButton.Text = "Inv.";
-            this.selectInvertButton.UseVisualStyleBackColor = true;
-            this.selectInvertButton.Click += new System.EventHandler(this.selectInvertButton_Click);
-            // 
-            // selectNoneButton
-            // 
-            this.selectNoneButton.AutoSize = true;
-            this.selectNoneButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.selectNoneButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectNoneButton.Location = new System.Drawing.Point(59, 301);
-            this.selectNoneButton.Margin = new System.Windows.Forms.Padding(0);
-            this.selectNoneButton.Name = "selectNoneButton";
-            this.selectNoneButton.Size = new System.Drawing.Size(59, 23);
-            this.selectNoneButton.TabIndex = 15;
-            this.selectNoneButton.Text = "None";
-            this.selectNoneButton.UseVisualStyleBackColor = true;
-            this.selectNoneButton.Click += new System.EventHandler(this.selectNoneItem_Click);
-            // 
-            // selectAllButton
-            // 
-            this.selectAllButton.AutoSize = true;
-            this.selectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.selectAllButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectAllButton.Location = new System.Drawing.Point(0, 301);
-            this.selectAllButton.Margin = new System.Windows.Forms.Padding(0);
-            this.selectAllButton.Name = "selectAllButton";
-            this.selectAllButton.Size = new System.Drawing.Size(59, 23);
-            this.selectAllButton.TabIndex = 14;
-            this.selectAllButton.Text = "All";
-            this.selectAllButton.UseVisualStyleBackColor = true;
-            this.selectAllButton.Click += new System.EventHandler(this.selectAllItem_Click);
+            this.pointerLabel.AutoSize = true;
+            this.pointerLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanel1.SetColumnSpan(this.pointerLabel, 3);
+            this.pointerLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pointerLabel.Location = new System.Drawing.Point(3, 242);
+            this.pointerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+            this.pointerLabel.Name = "pointerLabel";
+            this.pointerLabel.Size = new System.Drawing.Size(173, 13);
+            this.pointerLabel.TabIndex = 20;
+            this.pointerLabel.Text = "Pointer";
+            this.pointerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // mouseMoveButton
             // 
@@ -532,33 +423,6 @@
             this.mouseMoveButton.Text = "Move";
             this.mouseMoveButton.UseVisualStyleBackColor = true;
             this.mouseMoveButton.Click += new System.EventHandler(this.mouseMoveItem_MouseDown);
-            // 
-            // layerLabel
-            // 
-            this.layerLabel.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.layerLabel, 3);
-            this.layerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.layerLabel.Location = new System.Drawing.Point(3, 10);
-            this.layerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
-            this.layerLabel.Name = "layerLabel";
-            this.layerLabel.Size = new System.Drawing.Size(173, 13);
-            this.layerLabel.TabIndex = 4;
-            this.layerLabel.Text = "Layers";
-            this.layerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // layerList
-            // 
-            this.layerList.AllowDrop = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.layerList, 3);
-            this.layerList.Dock = System.Windows.Forms.DockStyle.Top;
-            this.layerList.FormattingEnabled = true;
-            this.layerList.Location = new System.Drawing.Point(0, 23);
-            this.layerList.Margin = new System.Windows.Forms.Padding(0);
-            this.layerList.Name = "layerList";
-            this.layerList.Size = new System.Drawing.Size(179, 186);
-            this.layerList.TabIndex = 7;
-            this.layerList.SelectedIndexChanged += new System.EventHandler(this.layerList_SelectedIndexChanged);
-            this.layerList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.layerList_MouseDown);
             // 
             // mouseSelectButton
             // 
@@ -602,32 +466,74 @@
             this.selectLabel.Text = "Selection";
             this.selectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // toolLabel
+            // selectAllButton
             // 
-            this.toolLabel.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.toolLabel, 3);
-            this.toolLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.toolLabel.Location = new System.Drawing.Point(3, 357);
-            this.toolLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
-            this.toolLabel.Name = "toolLabel";
-            this.toolLabel.Size = new System.Drawing.Size(173, 13);
-            this.toolLabel.TabIndex = 18;
-            this.toolLabel.Text = "Tools";
-            this.toolLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.selectAllButton.AutoSize = true;
+            this.selectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.selectAllButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectAllButton.Location = new System.Drawing.Point(0, 301);
+            this.selectAllButton.Margin = new System.Windows.Forms.Padding(0);
+            this.selectAllButton.Name = "selectAllButton";
+            this.selectAllButton.Size = new System.Drawing.Size(59, 23);
+            this.selectAllButton.TabIndex = 14;
+            this.selectAllButton.Text = "All";
+            this.selectAllButton.UseVisualStyleBackColor = true;
+            this.selectAllButton.Click += new System.EventHandler(this.selectAllItem_Click);
             // 
-            // pointerLabel
+            // selectNoneButton
             // 
-            this.pointerLabel.AutoSize = true;
-            this.pointerLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.tableLayoutPanel1.SetColumnSpan(this.pointerLabel, 3);
-            this.pointerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pointerLabel.Location = new System.Drawing.Point(3, 219);
-            this.pointerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
-            this.pointerLabel.Name = "pointerLabel";
-            this.pointerLabel.Size = new System.Drawing.Size(173, 13);
-            this.pointerLabel.TabIndex = 20;
-            this.pointerLabel.Text = "Pointer";
-            this.pointerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.selectNoneButton.AutoSize = true;
+            this.selectNoneButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.selectNoneButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectNoneButton.Location = new System.Drawing.Point(59, 301);
+            this.selectNoneButton.Margin = new System.Windows.Forms.Padding(0);
+            this.selectNoneButton.Name = "selectNoneButton";
+            this.selectNoneButton.Size = new System.Drawing.Size(59, 23);
+            this.selectNoneButton.TabIndex = 15;
+            this.selectNoneButton.Text = "None";
+            this.selectNoneButton.UseVisualStyleBackColor = true;
+            this.selectNoneButton.Click += new System.EventHandler(this.selectNoneItem_Click);
+            // 
+            // selectInvertButton
+            // 
+            this.selectInvertButton.AutoSize = true;
+            this.selectInvertButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.selectInvertButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectInvertButton.Location = new System.Drawing.Point(118, 301);
+            this.selectInvertButton.Margin = new System.Windows.Forms.Padding(0);
+            this.selectInvertButton.Name = "selectInvertButton";
+            this.selectInvertButton.Size = new System.Drawing.Size(61, 23);
+            this.selectInvertButton.TabIndex = 16;
+            this.selectInvertButton.Text = "Inv.";
+            this.selectInvertButton.UseVisualStyleBackColor = true;
+            this.selectInvertButton.Click += new System.EventHandler(this.selectInvertButton_Click);
+            // 
+            // selectPropButton
+            // 
+            this.selectPropButton.AutoSize = true;
+            this.selectPropButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.selectPropButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectPropButton.Location = new System.Drawing.Point(0, 324);
+            this.selectPropButton.Margin = new System.Windows.Forms.Padding(0);
+            this.selectPropButton.Name = "selectPropButton";
+            this.selectPropButton.Size = new System.Drawing.Size(59, 23);
+            this.selectPropButton.TabIndex = 17;
+            this.selectPropButton.Text = "Attrib.";
+            this.selectPropButton.UseVisualStyleBackColor = true;
+            this.selectPropButton.Click += new System.EventHandler(this.selectByPropertyItem_Click);
+            // 
+            // toLayerButton
+            // 
+            this.toLayerButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toLayerButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toLayerButton.Location = new System.Drawing.Point(59, 324);
+            this.toLayerButton.Margin = new System.Windows.Forms.Padding(0);
+            this.toLayerButton.Name = "toLayerButton";
+            this.toLayerButton.Size = new System.Drawing.Size(59, 23);
+            this.toLayerButton.TabIndex = 19;
+            this.toLayerButton.Text = "Copy";
+            this.toLayerButton.UseVisualStyleBackColor = true;
+            this.toLayerButton.Click += new System.EventHandler(this.toLayerButton_Click);
             // 
             // zoomButton
             // 
@@ -641,6 +547,55 @@
             this.zoomButton.UseVisualStyleBackColor = true;
             this.zoomButton.Click += new System.EventHandler(this.zoomButton_Click);
             // 
+            // toolLabel
+            // 
+            this.toolLabel.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.toolLabel, 3);
+            this.toolLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.toolLabel.Location = new System.Drawing.Point(3, 357);
+            this.toolLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+            this.toolLabel.Name = "toolLabel";
+            this.toolLabel.Size = new System.Drawing.Size(173, 13);
+            this.toolLabel.TabIndex = 18;
+            this.toolLabel.Text = "Tools";
+            this.toolLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // measureButton
+            // 
+            this.measureButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.measureButton.Location = new System.Drawing.Point(0, 370);
+            this.measureButton.Margin = new System.Windows.Forms.Padding(0);
+            this.measureButton.Name = "measureButton";
+            this.measureButton.Size = new System.Drawing.Size(59, 20);
+            this.measureButton.TabIndex = 27;
+            this.measureButton.Text = "Measure";
+            this.measureButton.UseVisualStyleBackColor = true;
+            this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
+            // 
+            // bufferButton
+            // 
+            this.bufferButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bufferButton.Location = new System.Drawing.Point(59, 370);
+            this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
+            this.bufferButton.Name = "bufferButton";
+            this.bufferButton.Size = new System.Drawing.Size(59, 20);
+            this.bufferButton.TabIndex = 23;
+            this.bufferButton.Text = "Buffer";
+            this.bufferButton.UseVisualStyleBackColor = true;
+            this.bufferButton.Click += new System.EventHandler(this.bufferButton_Click);
+            // 
+            // unionButton
+            // 
+            this.unionButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.unionButton.Location = new System.Drawing.Point(118, 370);
+            this.unionButton.Margin = new System.Windows.Forms.Padding(0);
+            this.unionButton.Name = "unionButton";
+            this.unionButton.Size = new System.Drawing.Size(61, 20);
+            this.unionButton.TabIndex = 22;
+            this.unionButton.Text = "Union";
+            this.unionButton.UseVisualStyleBackColor = true;
+            this.unionButton.Click += new System.EventHandler(this.unionButton_Click);
+            // 
             // mergeButton
             // 
             this.mergeButton.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -653,15 +608,51 @@
             this.mergeButton.UseVisualStyleBackColor = true;
             this.mergeButton.Click += new System.EventHandler(this.mergeButton_Click);
             // 
+            // subtractButton
+            // 
+            this.subtractButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.subtractButton.Location = new System.Drawing.Point(59, 390);
+            this.subtractButton.Margin = new System.Windows.Forms.Padding(0);
+            this.subtractButton.Name = "subtractButton";
+            this.subtractButton.Size = new System.Drawing.Size(59, 20);
+            this.subtractButton.TabIndex = 26;
+            this.subtractButton.Text = "Subtract";
+            this.subtractButton.UseVisualStyleBackColor = true;
+            this.subtractButton.Click += new System.EventHandler(this.diffButton_Click);
+            // 
+            // intersectButton
+            // 
+            this.intersectButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.intersectButton.Location = new System.Drawing.Point(118, 390);
+            this.intersectButton.Margin = new System.Windows.Forms.Padding(0);
+            this.intersectButton.Name = "intersectButton";
+            this.intersectButton.Size = new System.Drawing.Size(61, 20);
+            this.intersectButton.TabIndex = 25;
+            this.intersectButton.Text = "Intersect";
+            this.intersectButton.UseVisualStyleBackColor = true;
+            this.intersectButton.Click += new System.EventHandler(this.intersectButton_Click);
+            // 
+            // renderButton
+            // 
+            this.renderButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.renderButton.Location = new System.Drawing.Point(59, 410);
+            this.renderButton.Margin = new System.Windows.Forms.Padding(0);
+            this.renderButton.Name = "renderButton";
+            this.renderButton.Size = new System.Drawing.Size(59, 20);
+            this.renderButton.TabIndex = 28;
+            this.renderButton.Text = "Export";
+            this.renderButton.UseVisualStyleBackColor = true;
+            this.renderButton.Click += new System.EventHandler(this.renderButton_Click);
+            // 
             // photoButton
             // 
             this.photoButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.photoButton.Location = new System.Drawing.Point(59, 410);
+            this.photoButton.Location = new System.Drawing.Point(0, 410);
             this.photoButton.Margin = new System.Windows.Forms.Padding(0);
             this.photoButton.Name = "photoButton";
             this.photoButton.Size = new System.Drawing.Size(59, 20);
             this.photoButton.TabIndex = 29;
-            this.photoButton.Text = "Photo";
+            this.photoButton.Text = "WMS";
             this.photoButton.UseVisualStyleBackColor = true;
             this.photoButton.Click += new System.EventHandler(this.photoButton_Click);
             // 
@@ -710,8 +701,6 @@
         private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PictureBox mapWindow;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem shapefileMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel progressLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel coordLabel;
@@ -746,6 +735,7 @@
         private System.Windows.Forms.Button delButton;
         private System.Windows.Forms.Button renderButton;
         private System.Windows.Forms.Button photoButton;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
     }
 }
 

@@ -779,9 +779,9 @@ namespace SGIS
             toolBuilder.addLabel("");
             toolBuilder.addLabel("Layers");
 
-            ListBox wmsLayers = new ListBox();
+            ComboBox wmsLayers = new ComboBox();
             toolBuilder.addControl(wmsLayers);
-            wmsLayers.SelectionMode = SelectionMode.MultiExtended;
+            wmsLayers.DropDownStyle = ComboBoxStyle.DropDownList;
 
             toolBuilder.addErrorLabel();
             Button loadButton = toolBuilder.addButton("Load");
@@ -810,14 +810,15 @@ namespace SGIS
                 }
                 toolBuilder.setError("");
 
-                List<String> wmsLayerNames = new List<String>();
                 XmlDataDocument xmldoc = new XmlDataDocument();
                 xmldoc.LoadXml(capab);
                 XmlNodeList xmlnodes = xmldoc.GetElementsByTagName("Name");
+                wmsLayers.Items.Clear();
                 foreach (XmlNode n in xmlnodes)
                     if (n.ParentNode.Name == "Layer")
-                        wmsLayerNames.Add(n.InnerText);
-                wmsLayers.DataSource = wmsLayerNames;
+                        wmsLayers.Items.Add(n.InnerText);
+                if (wmsLayers.Items.Count > 0)
+                    wmsLayers.SelectedIndex = 0;
             };
 
             loadButton.Click += (o, e2) =>
@@ -828,13 +829,12 @@ namespace SGIS
                 var bbox = "BBOX=" + b.MinX.ToString(d) + "," + b.MinY.ToString(d) + "," + b.MaxX.ToString(d) + "," + b.MaxY.ToString(d) + "&WIDTH=" + sb.Width.ToString(d) + "&HEIGHT=" + sb.Height.ToString(d)+"&";
                 var srs = "SRS=EPSG:32633&";
                 var par = "STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&";
-                List<String> selectedLayers = wmsLayers.SelectedItems.Cast<String>().ToList<String>();
-                if (selectedLayers.Count == 0)
+                if (wmsLayers.SelectedIndex == -1)
                 {
                     toolBuilder.setError("Select layer");
                     return;
                 }
-                var layerString = "LAYERS=" + String.Join(",", selectedLayers) + "&";
+                var layerString = "LAYERS=" + wmsLayers.SelectedItem + "&";
 
                 var url = server.Text + "?" + layerString + par + srs + bbox;
                 Console.WriteLine(url);

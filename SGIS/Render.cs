@@ -63,7 +63,7 @@ namespace SGIS
 
         private  void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
-            int rad = 5;
+            float rad = c.pen.Width*5;
             var mid = ScaleAndOffSet(ge);
 
             gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));

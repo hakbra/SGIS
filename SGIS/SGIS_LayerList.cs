@@ -97,7 +97,7 @@ namespace SGIS
                     }
                 };
 
-                TextBox widthText = toolBuilder.addTextboxWithCaption("Line width:");
+                TextBox widthText = toolBuilder.addTextboxWithCaption("Line width/Point size:");
                 widthText.TextChanged += (o2, e2) =>
                 {
                     Layer cl = (Layer)layerList.SelectedItem;
@@ -109,6 +109,8 @@ namespace SGIS
                         {
                             Color c = cl.Style.pen.Color;
                             cl.Style.pen = new Pen(c, width);
+                            Color sc = Style.Selected.pen.Color;
+                            Style.Selected.pen = new Pen(sc, width);
                             redraw();
                         }
                     }

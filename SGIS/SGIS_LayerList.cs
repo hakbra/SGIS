@@ -56,7 +56,8 @@ namespace SGIS
                         fcolor.BackColor = cd.Color;
                         if (cl != null)
                         {
-                            cl.Style.brush = new SolidBrush(cd.Color);
+                            Color c = Color.FromArgb(cl.Style.brush.Color.A, cd.Color);
+                            cl.Style.brush = new SolidBrush(c);
                             redraw();
                         }
                     }
@@ -117,10 +118,20 @@ namespace SGIS
                 {
                     if (l != null)
                     {
-                        fcolor.BackColor = il.Style.brush.Color;
-                        lcolor.BackColor = il.Style.pen.Color;
-                        alphaText.Text = il.Style.brush.Color.A.ToString();
-                        widthText.Text = il.Style.pen.Width.ToString();
+                        while (true)
+                        {
+                            try
+                            {
+                                fcolor.BackColor = il.Style.brush.Color;
+                                lcolor.BackColor = il.Style.pen.Color;
+                                alphaText.Text = il.Style.brush.Color.A.ToString();
+                                widthText.Text = il.Style.pen.Width.ToString();
+                                break;
+                            } catch (Exception ex)
+                            {
+
+                            }
+                        }
                     }
 
                 };

@@ -828,9 +828,6 @@ namespace SGIS
                 var bbox = "BBOX=" + b.MinX.ToString(d) + "," + b.MinY.ToString(d) + "," + b.MaxX.ToString(d) + "," + b.MaxY.ToString(d) + "&WIDTH=" + sb.Width.ToString(d) + "&HEIGHT=" + sb.Height.ToString(d)+"&";
                 var srs = "SRS=EPSG:32633&";
                 var par = "STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&";
-                //var baseurl = "http://129.206.228.72/cached/osm?LAYERS=osm_auto:all&";
-                //baseurl = "http://openwms.statkart.no/skwms1/wms.toporaster?LAYERS=toporaster3&";
-                //baseurl = "http://wms.geonorge.no/skwms1/wms.kartdata2?LAYERS=Kartdata2_WMS&";
                 List<String> selectedLayers = wmsLayers.SelectedItems.Cast<String>().ToList<String>();
                 if (selectedLayers.Count == 0)
                 {

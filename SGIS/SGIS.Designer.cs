@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SGIS));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.progressLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -152,7 +153,7 @@
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.spatialReferenceSystemToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             // 
             // spatialReferenceSystemToolStripMenuItem
@@ -165,7 +166,7 @@
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(116, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -232,7 +233,7 @@
             this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel1.Controls.Add(this.layerLabel, 0, 0);
@@ -265,6 +266,9 @@
             this.tableLayoutPanel1.RowCount = 12;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -272,10 +276,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 430);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(179, 434);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // layerLabel
@@ -317,7 +318,7 @@
             this.layerButtonPanel.Location = new System.Drawing.Point(0, 209);
             this.layerButtonPanel.Margin = new System.Windows.Forms.Padding(0);
             this.layerButtonPanel.Name = "layerButtonPanel";
-            this.layerButtonPanel.Size = new System.Drawing.Size(179, 23);
+            this.layerButtonPanel.Size = new System.Drawing.Size(179, 25);
             this.layerButtonPanel.TabIndex = 3;
             // 
             // innerTableLayoutPanel
@@ -341,7 +342,7 @@
             this.innerTableLayoutPanel.Name = "innerTableLayoutPanel";
             this.innerTableLayoutPanel.RowCount = 1;
             this.innerTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.innerTableLayoutPanel.Size = new System.Drawing.Size(179, 23);
+            this.innerTableLayoutPanel.Size = new System.Drawing.Size(179, 25);
             this.innerTableLayoutPanel.TabIndex = 0;
             // 
             // upButton
@@ -349,13 +350,13 @@
             this.upButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.upButton.AutoSize = true;
+            this.upButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("upButton.BackgroundImage")));
+            this.upButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.upButton.Location = new System.Drawing.Point(132, 0);
             this.upButton.Margin = new System.Windows.Forms.Padding(0);
             this.upButton.Name = "upButton";
-            this.upButton.Size = new System.Drawing.Size(47, 23);
+            this.upButton.Size = new System.Drawing.Size(47, 25);
             this.upButton.TabIndex = 4;
-            this.upButton.Text = "U";
             this.upButton.UseVisualStyleBackColor = true;
             this.upButton.Click += new System.EventHandler(this.upButton_Click);
             // 
@@ -364,13 +365,13 @@
             this.downButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.downButton.AutoSize = true;
+            this.downButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("downButton.BackgroundImage")));
+            this.downButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.downButton.Location = new System.Drawing.Point(88, 0);
             this.downButton.Margin = new System.Windows.Forms.Padding(0);
             this.downButton.Name = "downButton";
-            this.downButton.Size = new System.Drawing.Size(44, 23);
+            this.downButton.Size = new System.Drawing.Size(44, 25);
             this.downButton.TabIndex = 5;
-            this.downButton.Text = "D";
             this.downButton.UseVisualStyleBackColor = true;
             this.downButton.Click += new System.EventHandler(this.downButton_Click);
             // 
@@ -379,13 +380,13 @@
             this.addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.addButton.AutoSize = true;
+            this.addButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("addButton.BackgroundImage")));
+            this.addButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.addButton.Location = new System.Drawing.Point(0, 0);
             this.addButton.Margin = new System.Windows.Forms.Padding(0);
             this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(44, 23);
+            this.addButton.Size = new System.Drawing.Size(44, 25);
             this.addButton.TabIndex = 6;
-            this.addButton.Text = "+";
             this.addButton.UseVisualStyleBackColor = true;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
@@ -394,13 +395,13 @@
             this.delButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.delButton.AutoSize = true;
+            this.delButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("delButton.BackgroundImage")));
+            this.delButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.delButton.Location = new System.Drawing.Point(44, 0);
             this.delButton.Margin = new System.Windows.Forms.Padding(0);
             this.delButton.Name = "delButton";
-            this.delButton.Size = new System.Drawing.Size(44, 23);
+            this.delButton.Size = new System.Drawing.Size(44, 25);
             this.delButton.TabIndex = 7;
-            this.delButton.Text = "X";
             this.delButton.UseVisualStyleBackColor = true;
             this.delButton.Click += new System.EventHandler(this.delButton_Click);
             // 
@@ -410,7 +411,7 @@
             this.pointerLabel.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanel1.SetColumnSpan(this.pointerLabel, 3);
             this.pointerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pointerLabel.Location = new System.Drawing.Point(3, 242);
+            this.pointerLabel.Location = new System.Drawing.Point(3, 244);
             this.pointerLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.pointerLabel.Name = "pointerLabel";
             this.pointerLabel.Size = new System.Drawing.Size(173, 13);
@@ -420,44 +421,44 @@
             // 
             // mouseMoveButton
             // 
-            this.mouseMoveButton.AutoSize = true;
             this.mouseMoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.mouseMoveButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("mouseMoveButton.BackgroundImage")));
+            this.mouseMoveButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.mouseMoveButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mouseMoveButton.Enabled = false;
-            this.mouseMoveButton.Location = new System.Drawing.Point(0, 255);
+            this.mouseMoveButton.Location = new System.Drawing.Point(0, 257);
             this.mouseMoveButton.Margin = new System.Windows.Forms.Padding(0);
             this.mouseMoveButton.Name = "mouseMoveButton";
-            this.mouseMoveButton.Size = new System.Drawing.Size(59, 23);
+            this.mouseMoveButton.Size = new System.Drawing.Size(59, 25);
             this.mouseMoveButton.TabIndex = 10;
-            this.mouseMoveButton.Text = "Move";
             this.mouseMoveButton.UseVisualStyleBackColor = true;
             this.mouseMoveButton.Click += new System.EventHandler(this.mouseMoveItem_MouseDown);
             // 
             // mouseSelectButton
             // 
-            this.mouseSelectButton.AutoSize = true;
             this.mouseSelectButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.mouseSelectButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("mouseSelectButton.BackgroundImage")));
+            this.mouseSelectButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.mouseSelectButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mouseSelectButton.Location = new System.Drawing.Point(59, 255);
+            this.mouseSelectButton.Location = new System.Drawing.Point(59, 257);
             this.mouseSelectButton.Margin = new System.Windows.Forms.Padding(0);
             this.mouseSelectButton.Name = "mouseSelectButton";
-            this.mouseSelectButton.Size = new System.Drawing.Size(59, 23);
+            this.mouseSelectButton.Size = new System.Drawing.Size(59, 25);
             this.mouseSelectButton.TabIndex = 11;
-            this.mouseSelectButton.Text = "Select";
             this.mouseSelectButton.UseVisualStyleBackColor = true;
             this.mouseSelectButton.Click += new System.EventHandler(this.mouseSelectItem_Click);
             // 
             // mouseInfoButton
             // 
-            this.mouseInfoButton.AutoSize = true;
             this.mouseInfoButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.mouseInfoButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("mouseInfoButton.BackgroundImage")));
+            this.mouseInfoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.mouseInfoButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mouseInfoButton.Location = new System.Drawing.Point(118, 255);
+            this.mouseInfoButton.Location = new System.Drawing.Point(118, 257);
             this.mouseInfoButton.Margin = new System.Windows.Forms.Padding(0);
             this.mouseInfoButton.Name = "mouseInfoButton";
-            this.mouseInfoButton.Size = new System.Drawing.Size(61, 23);
+            this.mouseInfoButton.Size = new System.Drawing.Size(61, 25);
             this.mouseInfoButton.TabIndex = 12;
-            this.mouseInfoButton.Text = "Info";
             this.mouseInfoButton.UseVisualStyleBackColor = true;
             this.mouseInfoButton.Click += new System.EventHandler(this.mouseInfoItem_Click);
             // 
@@ -467,7 +468,7 @@
             this.selectLabel.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanel1.SetColumnSpan(this.selectLabel, 3);
             this.selectLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.selectLabel.Location = new System.Drawing.Point(3, 288);
+            this.selectLabel.Location = new System.Drawing.Point(3, 292);
             this.selectLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.selectLabel.Name = "selectLabel";
             this.selectLabel.Size = new System.Drawing.Size(173, 13);
@@ -480,7 +481,7 @@
             this.selectAllButton.AutoSize = true;
             this.selectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectAllButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectAllButton.Location = new System.Drawing.Point(0, 301);
+            this.selectAllButton.Location = new System.Drawing.Point(0, 305);
             this.selectAllButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectAllButton.Name = "selectAllButton";
             this.selectAllButton.Size = new System.Drawing.Size(59, 23);
@@ -494,7 +495,7 @@
             this.selectNoneButton.AutoSize = true;
             this.selectNoneButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectNoneButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectNoneButton.Location = new System.Drawing.Point(59, 301);
+            this.selectNoneButton.Location = new System.Drawing.Point(59, 305);
             this.selectNoneButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectNoneButton.Name = "selectNoneButton";
             this.selectNoneButton.Size = new System.Drawing.Size(59, 23);
@@ -508,7 +509,7 @@
             this.selectInvertButton.AutoSize = true;
             this.selectInvertButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectInvertButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectInvertButton.Location = new System.Drawing.Point(118, 301);
+            this.selectInvertButton.Location = new System.Drawing.Point(118, 305);
             this.selectInvertButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectInvertButton.Name = "selectInvertButton";
             this.selectInvertButton.Size = new System.Drawing.Size(61, 23);
@@ -522,7 +523,7 @@
             this.selectPropButton.AutoSize = true;
             this.selectPropButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.selectPropButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectPropButton.Location = new System.Drawing.Point(0, 324);
+            this.selectPropButton.Location = new System.Drawing.Point(0, 328);
             this.selectPropButton.Margin = new System.Windows.Forms.Padding(0);
             this.selectPropButton.Name = "selectPropButton";
             this.selectPropButton.Size = new System.Drawing.Size(59, 23);
@@ -535,7 +536,7 @@
             // 
             this.toLayerButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toLayerButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toLayerButton.Location = new System.Drawing.Point(59, 324);
+            this.toLayerButton.Location = new System.Drawing.Point(59, 328);
             this.toLayerButton.Margin = new System.Windows.Forms.Padding(0);
             this.toLayerButton.Name = "toLayerButton";
             this.toLayerButton.Size = new System.Drawing.Size(59, 23);
@@ -547,7 +548,7 @@
             // zoomButton
             // 
             this.zoomButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.zoomButton.Location = new System.Drawing.Point(118, 324);
+            this.zoomButton.Location = new System.Drawing.Point(118, 328);
             this.zoomButton.Margin = new System.Windows.Forms.Padding(0);
             this.zoomButton.Name = "zoomButton";
             this.zoomButton.Size = new System.Drawing.Size(61, 23);
@@ -561,7 +562,7 @@
             this.toolLabel.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.toolLabel, 3);
             this.toolLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.toolLabel.Location = new System.Drawing.Point(3, 357);
+            this.toolLabel.Location = new System.Drawing.Point(3, 361);
             this.toolLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.toolLabel.Name = "toolLabel";
             this.toolLabel.Size = new System.Drawing.Size(173, 13);
@@ -572,7 +573,7 @@
             // measureButton
             // 
             this.measureButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.measureButton.Location = new System.Drawing.Point(0, 370);
+            this.measureButton.Location = new System.Drawing.Point(0, 374);
             this.measureButton.Margin = new System.Windows.Forms.Padding(0);
             this.measureButton.Name = "measureButton";
             this.measureButton.Size = new System.Drawing.Size(59, 20);
@@ -584,7 +585,7 @@
             // bufferButton
             // 
             this.bufferButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bufferButton.Location = new System.Drawing.Point(59, 370);
+            this.bufferButton.Location = new System.Drawing.Point(59, 374);
             this.bufferButton.Margin = new System.Windows.Forms.Padding(0);
             this.bufferButton.Name = "bufferButton";
             this.bufferButton.Size = new System.Drawing.Size(59, 20);
@@ -596,7 +597,7 @@
             // unionButton
             // 
             this.unionButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.unionButton.Location = new System.Drawing.Point(118, 370);
+            this.unionButton.Location = new System.Drawing.Point(118, 374);
             this.unionButton.Margin = new System.Windows.Forms.Padding(0);
             this.unionButton.Name = "unionButton";
             this.unionButton.Size = new System.Drawing.Size(61, 20);
@@ -608,7 +609,7 @@
             // mergeButton
             // 
             this.mergeButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mergeButton.Location = new System.Drawing.Point(0, 390);
+            this.mergeButton.Location = new System.Drawing.Point(0, 394);
             this.mergeButton.Margin = new System.Windows.Forms.Padding(0);
             this.mergeButton.Name = "mergeButton";
             this.mergeButton.Size = new System.Drawing.Size(59, 20);
@@ -620,7 +621,7 @@
             // subtractButton
             // 
             this.subtractButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.subtractButton.Location = new System.Drawing.Point(59, 390);
+            this.subtractButton.Location = new System.Drawing.Point(59, 394);
             this.subtractButton.Margin = new System.Windows.Forms.Padding(0);
             this.subtractButton.Name = "subtractButton";
             this.subtractButton.Size = new System.Drawing.Size(59, 20);
@@ -632,7 +633,7 @@
             // intersectButton
             // 
             this.intersectButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.intersectButton.Location = new System.Drawing.Point(118, 390);
+            this.intersectButton.Location = new System.Drawing.Point(118, 394);
             this.intersectButton.Margin = new System.Windows.Forms.Padding(0);
             this.intersectButton.Name = "intersectButton";
             this.intersectButton.Size = new System.Drawing.Size(61, 20);
@@ -644,7 +645,7 @@
             // renderButton
             // 
             this.renderButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.renderButton.Location = new System.Drawing.Point(59, 410);
+            this.renderButton.Location = new System.Drawing.Point(59, 414);
             this.renderButton.Margin = new System.Windows.Forms.Padding(0);
             this.renderButton.Name = "renderButton";
             this.renderButton.Size = new System.Drawing.Size(59, 20);
@@ -656,7 +657,7 @@
             // photoButton
             // 
             this.photoButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.photoButton.Location = new System.Drawing.Point(0, 410);
+            this.photoButton.Location = new System.Drawing.Point(0, 414);
             this.photoButton.Margin = new System.Windows.Forms.Padding(0);
             this.photoButton.Name = "photoButton";
             this.photoButton.Size = new System.Drawing.Size(59, 20);
@@ -693,7 +694,6 @@
             this.layerButtonPanel.ResumeLayout(false);
             this.layerButtonPanel.PerformLayout();
             this.innerTableLayoutPanel.ResumeLayout(false);
-            this.innerTableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

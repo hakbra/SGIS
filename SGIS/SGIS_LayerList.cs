@@ -96,6 +96,23 @@ namespace SGIS
                     }
                 };
 
+                TextBox widthText = toolBuilder.addTextboxWithCaption("Line width:");
+                widthText.TextChanged += (o2, e2) =>
+                {
+                    Layer cl = (Layer)layerList.SelectedItem;
+                    float width;
+                    if (cl != null &&
+                        float.TryParse(widthText.Text, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture,out width))
+                    {
+                        if (width >= 1 && width <= 20)
+                        {
+                            Color c = cl.Style.pen.Color;
+                            cl.Style.pen = new Pen(c, width);
+                            redraw();
+                        }
+                    }
+                };
+
                 toolBuilder.resetAction = (Layer il) =>
                 {
                     if (l != null)
@@ -103,6 +120,7 @@ namespace SGIS
                         fcolor.BackColor = il.Style.brush.Color;
                         lcolor.BackColor = il.Style.pen.Color;
                         alphaText.Text = il.Style.brush.Color.A.ToString();
+                        widthText.Text = il.Style.pen.Width.ToString();
                     }
 
                 };

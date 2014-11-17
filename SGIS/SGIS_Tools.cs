@@ -756,7 +756,7 @@ namespace SGIS
                    //Set the map georeferencing
                    double mapWidth = mapRectTemp.Width;
                    double mapHeight = mapRectTemp.Height;
-                   double[] geoTransfo = new double[] { mapRectTemp.MinX, mapWidth / mapTemp.Width, 0, mapRectTemp.MinY, 0, mapHeight / mapTemp.Height };
+                   double[] geoTransfo = new double[] { mapRectTemp.MinX, mapWidth / mapTemp.Width, 0, mapRectTemp.MaxY, 0, -mapHeight / mapTemp.Height };
                    dstDs.SetGeoTransform(geoTransfo);
 
                    dstDs.FlushCache();

@@ -121,13 +121,18 @@ namespace SGIS
         {
             toolBuilder.addHeader("Buffer");
 
-            TextBox distBox = toolBuilder.addTextboxWithCaption("Distance:");
+            TextBox distBox = toolBuilder.addTextboxWithCaption("Distance (m):");
             TextBox nameBox = toolBuilder.addTextboxWithCaption("Layer name:");
             Label errorLabel = toolBuilder.addErrorLabel();
 
             Button selectButton = toolBuilder.addButton("Buffer", (Layer l) =>
             {
                 double dist = 0;
+                if (SRS.IsLatLong)
+                {
+                    toolBuilder.setError("Incompatible SRS");
+                    return;
+                }
                 if (!double.TryParse(distBox.Text, out dist))
                 {
                     toolBuilder.setError("Not a number");
@@ -148,8 +153,8 @@ namespace SGIS
 
                 progressLabel.Text = "Buffering";
                 progressBar.Minimum = 0;
-                progressBar.Maximum = flist.Count;
                 ConcurrentBag<Feature> newFeatures = new ConcurrentBag<Feature>();
+                progressBar.Maximum = flist.Count;
 
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.WorkerReportsProgress = true;
@@ -201,6 +206,8 @@ namespace SGIS
 
             toolBuilder.resetAction = (Layer l) =>
             {
+                if (SRS.IsLatLong)
+                    toolBuilder.setError("Incompatible SRS");
                 nameBox.Text = (l == null) ? "" : l.Name + "_buffer";
             };
 
@@ -668,7 +675,7 @@ namespace SGIS
 
         private void renderButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Export render");
+            toolBuilder.addHeader("Export to GeoTiff");
             var zoom = toolBuilder.addTextbox("Zoom factor:", "1");
             var file = toolBuilder.addTextbox("Filename:", "");
             var browsebutton = toolBuilder.addButton("Browse...");
@@ -772,7 +779,7 @@ namespace SGIS
 
         private void photoButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Photo");
+            toolBuilder.addHeader("Background WMS");
 
             TextBox server = toolBuilder.addTextbox("WMS Server", "http://wms.geonorge.no/skwms1/wms.kartdata2");
             Button connectButton = toolBuilder.addButton("Get layers");

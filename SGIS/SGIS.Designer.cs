@@ -473,7 +473,7 @@
             this.selectLabel.Name = "selectLabel";
             this.selectLabel.Size = new System.Drawing.Size(173, 13);
             this.selectLabel.TabIndex = 13;
-            this.selectLabel.Text = "Selection";
+            this.selectLabel.Text = "Select";
             this.selectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // selectAllButton
@@ -514,7 +514,7 @@
             this.selectInvertButton.Name = "selectInvertButton";
             this.selectInvertButton.Size = new System.Drawing.Size(61, 23);
             this.selectInvertButton.TabIndex = 16;
-            this.selectInvertButton.Text = "Inv.";
+            this.selectInvertButton.Text = "Invert";
             this.selectInvertButton.UseVisualStyleBackColor = true;
             this.selectInvertButton.Click += new System.EventHandler(this.selectInvertButton_Click);
             // 
@@ -528,7 +528,7 @@
             this.selectPropButton.Name = "selectPropButton";
             this.selectPropButton.Size = new System.Drawing.Size(59, 23);
             this.selectPropButton.TabIndex = 17;
-            this.selectPropButton.Text = "Attrib.";
+            this.selectPropButton.Text = "Attribute";
             this.selectPropButton.UseVisualStyleBackColor = true;
             this.selectPropButton.Click += new System.EventHandler(this.selectByPropertyItem_Click);
             // 
@@ -650,7 +650,7 @@
             this.renderButton.Name = "renderButton";
             this.renderButton.Size = new System.Drawing.Size(59, 20);
             this.renderButton.TabIndex = 28;
-            this.renderButton.Text = "Export";
+            this.renderButton.Text = "GeoTiff";
             this.renderButton.UseVisualStyleBackColor = true;
             this.renderButton.Click += new System.EventHandler(this.renderButton_Click);
             // 

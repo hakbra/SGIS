@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SGIS
 {
 
-    class DBFReader
+    class DbfReader
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         private struct DBFHeader

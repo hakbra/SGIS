@@ -36,14 +36,18 @@ namespace SGIS
         }
         public Layer readImpl(string filename)
         {
-            string name = filename.Split('\\').Last();
+            string[] split = filename.Split('\\');
+            string name = split.Last();
             name = name.Substring(0, name.Length - 4);
+            string path = filename.Substring(0, filename.Length - name.Length - 4);
 
             layer = new Layer(name);
 
             string prjName = filename.Substring(0, filename.Length - 3) + "prj";
             if (File.Exists(prjName))
                 layer.Projection = PrjReader.read(prjName);
+            else if (File.Exists(path + "default.prj"))
+                layer.Projection = PrjReader.read(path + "default.prj");
             else
             {
                 string msg = "No projection da found. Assuming " + SGIS.App.getSrsName();
@@ -52,7 +56,7 @@ namespace SGIS
 
             string dbfName = filename.Substring(0, filename.Length - 3) + "dbf";
             if (File.Exists(dbfName))
-                layer.DataTable = DBFReader.read(dbfName);
+                layer.DataTable = DbfReader.read(dbfName);
 
             FileStream f = File.Open(filename, FileMode.Open);
             br = new BinaryReaderExtension(f);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 using NTSPoint = NetTopologySuite.Geometries.Point;
 
 namespace SGIS
@@ -20,7 +21,7 @@ namespace SGIS
         protected bool leftMouseDown = false;
         protected bool rightMouseDown = false;
 
-        public virtual void MouseDown(MouseEventArgs e)
+        public virtual void MouseDown(System.Windows.Forms.MouseEventArgs e)
         {
             mouse = SGIS.App.MousePosition;
             if (e.Button == MouseButtons.Left)
@@ -35,7 +36,7 @@ namespace SGIS
             }
             SGIS.App.MapWindow.Focus();
         }
-        public virtual void MouseUp(MouseEventArgs e)
+        public virtual void MouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -46,13 +47,13 @@ namespace SGIS
                 rightMouseDown = false;
             }
         }
-        public virtual void MouseMove(MouseEventArgs e)
+        public virtual void MouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             oldMouse = mouse;
             mouse = SGIS.App.MousePosition;
             updateLabel();
         }
-        public virtual void MouseWheel(MouseEventArgs e)
+        public virtual void MouseWheel(System.Windows.Forms.MouseEventArgs e)
         {
             var oldGeoPos = SGIS.App.ScreenManager.MapScreenToReal(mouse);
             double scale = 1.3;
@@ -82,7 +83,7 @@ namespace SGIS
 
     public class MoveMouseTactic : MouseTactic
     {
-        public override void MouseMove(MouseEventArgs e)
+        public override void MouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.MouseMove(e);
 
@@ -94,7 +95,7 @@ namespace SGIS
             }
         }
 
-        public override void MouseUp(MouseEventArgs e)
+        public override void MouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             base.MouseUp(e);
 
@@ -107,14 +108,14 @@ namespace SGIS
 
     public class SelectMouseTactic : MouseTactic
     {
-        public override void MouseMove(MouseEventArgs e)
+        public override void MouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.MouseMove(e);
 
             if (leftMouseDown)
                 SGIS.App.redrawDirty();
         }
-        public override void MouseUp(MouseEventArgs e)
+        public override void MouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             base.MouseUp(e);
 
@@ -124,16 +125,34 @@ namespace SGIS
                 if (l == null)
                     return;
 
-                foreach (Feature f in l.Selected)
-                    f.Selected = false;
-                l.Selected.Clear();
+                bool ctrl = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+                bool alt = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+                if (!ctrl && !alt)
+                {
+                    foreach (Feature f in l.Selected)
+                        f.Selected = false;
+                    l.Selected.Clear();
+                }
 
                 List<Feature> s = l.getWithin(SGIS.App.ScreenManager.MapScreenToRealGeometry(new Envelope(mouse.X, leftMouse.X, mouse.Y, leftMouse.Y)));
                 
                 foreach (Feature f in s)
                 {
-                    f.Selected = true;
-                    l.Selected.Add(f);
+                    if (!ctrl && !alt)
+                    {
+                        f.Selected = true;
+                        l.Selected.Add(f);
+                    }
+                    else if (ctrl && !alt && !f.Selected)
+                    {
+                        f.Selected = true;
+                        l.Selected.Add(f);
+                    }
+                    else if (!ctrl && alt && f.Selected)
+                    {
+                        f.Selected = false;
+                        l.Selected.Remove(f);
+                    }
                 }
 
                 SGIS.App.fireSelectionChanged();
@@ -159,7 +178,7 @@ namespace SGIS
 
     public class InfoMouseTactic : MouseTactic
     {
-        public override void MouseUp(MouseEventArgs e)
+        public override void MouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             base.MouseUp(e);
 

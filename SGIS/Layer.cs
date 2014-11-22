@@ -113,7 +113,7 @@ namespace SGIS
                 case ShapeType.LINE:
                     return "L: " + name;
                 case ShapeType.POLYGON:
-                    return "F: " + name;
+                    return "S: " + name;
             }
             return name;
         }

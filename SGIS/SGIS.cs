@@ -33,7 +33,7 @@ namespace SGIS
         public SGIS()
         {
             InitializeComponent();
-
+            this.WindowState = FormWindowState.Maximized;
             photos = new List<Photo>();
             Layers = new BindingList<Layer>();
             ScreenManager = new ScreenManager();

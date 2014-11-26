@@ -63,7 +63,7 @@ namespace SGIS
 
         private  void drawPoint(NTSPoint ge, Graphics gr, Style c)
         {
-            float rad = c.pen.Width*5;
+            float rad = Math.Max(1, c.pen.Width * 5 * (float)scale.X);
             var mid = ScaleAndOffSet(ge);
 
             gr.FillEllipse(c.brush, (int)(mid.X - rad), (int)(mid.Y - rad), (int)(rad*2), (int)(rad*2));
@@ -104,7 +104,8 @@ namespace SGIS
             gp.FillMode = System.Drawing.Drawing2D.FillMode.Alternate;
             gr.FillPath(c.brush, gp);
 
-            gr.DrawPath(c.pen, gp);
+            if (c.pen.Width > 0)
+                gr.DrawPath(c.pen, gp);
         }
     }
 }

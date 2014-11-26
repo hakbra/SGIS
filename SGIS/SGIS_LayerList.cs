@@ -97,7 +97,8 @@ namespace SGIS
                     }
                 };
 
-                TextBox widthText = toolBuilder.addTextboxWithCaption("Line width/Point size:");
+                Label widthLabel = toolBuilder.addLabel("");
+                TextBox widthText = toolBuilder.addTextbox("");
                 widthText.TextChanged += (o2, e2) =>
                 {
                     Layer cl = (Layer)layerList.SelectedItem;
@@ -105,7 +106,7 @@ namespace SGIS
                     if (cl != null &&
                         float.TryParse(widthText.Text, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture,out width))
                     {
-                        if (width >= 1 && width <= 20)
+                        if (width >= 0 && width <= 20)
                         {
                             Color c = cl.Style.pen.Color;
                             cl.Style.pen = new Pen(c, width);
@@ -135,7 +136,10 @@ namespace SGIS
                             }
                         }
                     }
-
+                    if (il.shapetype == ShapeType.POINT)
+                        widthLabel.Text = "Point size:";
+                    else
+                        widthLabel.Text = "Line width:";
                 };
                 toolBuilder.reset();
             }));
@@ -155,7 +159,7 @@ namespace SGIS
                 });
                 toolBuilder.reset();
             }));
-            layerListContextMenu.Items.Add(new ToolStripMenuItem("Remove", null, (o, i) =>
+            layerListContextMenu.Items.Add(new ToolStripMenuItem("Delete", null, (o, i) =>
             {
                 delButton_Click(o, i);
             }));

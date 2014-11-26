@@ -675,6 +675,7 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SGIS";
             this.Text = "SGIS";
             this.Load += new System.EventHandler(this.SGIS_Load);

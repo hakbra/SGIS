@@ -13,6 +13,7 @@ namespace SGIS
         private TableLayoutPanel panel;
         private Label errorLabel;
         private List<ComboBox> layerSelects = new List<ComboBox>();
+        private Label currentLabel;
         public bool autoClose = true;
         public Action<Layer> resetAction;
 
@@ -26,6 +27,17 @@ namespace SGIS
 
         public void reset(object sender, EventArgs e){
             Layer layer = (Layer)SGIS.App.getLayerList().SelectedItem;
+            if (currentLabel != null)
+            {
+                string layerName = "No layer selected";
+                if (layer != null)
+                {
+                    layerName = "Layer: " + layer.Name;
+                    if (layerName.Length > 20)
+                        layerName = layerName.Substring(0, 20) + "...";
+                }
+                currentLabel.Text = layerName;
+            }
             if (resetAction != null)
                 resetAction(layer);
         }
@@ -46,6 +58,10 @@ namespace SGIS
 
         public void addHeader(string title)
         {
+            addHeader(title, true);
+        }
+        public void addHeader(string title, bool currentLayer)
+        {
             clear();
             Label titleLabel = new Label();
             titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
@@ -58,7 +74,10 @@ namespace SGIS
             lineLabel.BorderStyle = BorderStyle.FixedSingle;
 
             addControl(titleLabel);
+            if (currentLayer)
+                currentLabel = addLabel("Current layer");
             panel.Controls.Add(lineLabel);
+            reset();
         }
 
 
@@ -78,16 +97,13 @@ namespace SGIS
         }
         public TextBox addTextbox(string caption, string value)
         {
-            Label textboxLabel = new Label();
-            textboxLabel.Text = caption;
-            textboxLabel.TextAlign = ContentAlignment.MiddleLeft;
+            addLabel(caption);
 
             TextBox textbox = new TextBox();
             textbox.Text = value;
             textbox.Focus();
             textbox.Select(textbox.Text.Length, 0);
 
-            addControl(textboxLabel);
             addControl(textbox);
 
             return textbox;
@@ -149,6 +165,7 @@ namespace SGIS
         {
             Label label = new Label();
             label.Text = text;
+            label.TextAlign = ContentAlignment.MiddleLeft;
 
             addControl(label);
 
@@ -170,7 +187,7 @@ namespace SGIS
         {
             panel.Controls.Add(c);
             c.Anchor = AnchorStyles.None;
-            c.Width = (int) (panel.Width * 0.75);
+            c.Width = (int)(panel.Width * 0.75);
         }
 
         public void setError(string s)

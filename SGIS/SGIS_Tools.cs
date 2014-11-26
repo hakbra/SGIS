@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,7 +123,7 @@ namespace SGIS
             toolBuilder.addHeader("Buffer");
 
             TextBox distBox = toolBuilder.addTextboxWithCaption("Distance (m):");
-            TextBox nameBox = toolBuilder.addTextboxWithCaption("Layer name:");
+            TextBox nameBox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
 
             Button selectButton = toolBuilder.addButton("Buffer", (Layer l) =>
@@ -216,7 +217,7 @@ namespace SGIS
 
         private void mergeButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Union");
+            toolBuilder.addHeader("Merge");
             ComboBox layerSelect = toolBuilder.addLayerSelect("Merge with:");
             TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
@@ -375,7 +376,7 @@ namespace SGIS
         private void diffButton_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Difference");
-            ComboBox layerSelect = toolBuilder.addLayerSelect("Subtract:");
+            ComboBox layerSelect = toolBuilder.addLayerSelect("Layer to subtract:");
             TextBox textbox = toolBuilder.addTextboxWithCaption("New layername:");
             Label errorLabel = toolBuilder.addErrorLabel();
             Button button = toolBuilder.addButton("Subtract", (Layer l) =>
@@ -675,7 +676,7 @@ namespace SGIS
 
         private void renderButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Export to GeoTiff");
+            toolBuilder.addHeader("Export to GeoTiff", false);
             var zoom = toolBuilder.addTextbox("Zoom factor:", "1");
             var file = toolBuilder.addTextbox("Filename:", "");
             var browsebutton = toolBuilder.addButton("Browse...");
@@ -694,6 +695,11 @@ namespace SGIS
                 if (file.Text == "")
                 {
                     toolBuilder.setError("Please provide filename");
+                    return;
+                }
+                if (file.Text.ToLower().IndexOfAny("æøå".ToCharArray()) > -1)
+                {
+                    toolBuilder.setError("No æøå in filename");
                     return;
                 }
                 double zoomfactor = 1;
@@ -779,11 +785,10 @@ namespace SGIS
 
         private void photoButton_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Background WMS");
+            toolBuilder.addHeader("Background WMS", false);
 
             TextBox server = toolBuilder.addTextbox("WMS Server", "http://wms.geonorge.no/skwms1/wms.kartdata2");
             Button connectButton = toolBuilder.addButton("Get layers");
-            toolBuilder.addLabel("");
             toolBuilder.addLabel("Layers");
 
             ComboBox wmsLayers = new ComboBox();
@@ -796,40 +801,84 @@ namespace SGIS
 
             connectButton.Click += (o, e2) =>
             {
-                var par = "REQUEST=GetCapabilities&VERSION=1.1.1&service=WMS&format=text/xml";
-                var url = server.Text + "?" + par;
-                Console.WriteLine(url);
-                var capab = "";
+                progressLabel.Text = "Loading layers";
+                progressBar.Style = ProgressBarStyle.Marquee;
 
-                try
+                XmlNodeList xmlnodes = null;
+
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    var request = System.Net.WebRequest.Create(url);
-                    using (var response = request.GetResponse())
-                    using (var stream = response.GetResponseStream())
+                    var par = "REQUEST=GetCapabilities&VERSION=1.1.1&service=WMS&format=text/xml";
+                    var url = server.Text + "?" + par;
+                    Console.WriteLine(url);
+                    var capab = "";
+
+                    try
                     {
-                        capab = new StreamReader(stream).ReadToEnd();
+                        var request = System.Net.WebRequest.Create(url);
+                        using (var response = request.GetResponse())
+                        using (var stream = response.GetResponseStream())
+                        {
+                            capab = new StreamReader(stream).ReadToEnd();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    toolBuilder.setError("Server error");
-                    return;
-                }
-                toolBuilder.setError("");
+                    catch (WebException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        if (ex.Status == WebExceptionStatus.ProtocolError)
+                        {
+                            var response = ex.Response as HttpWebResponse;
+                            if (response != null)
+                            {
+                                int errorNum = (int)response.StatusCode;
+                                if (errorNum == 504)
+                                {
+                                    we.Result = "Server Timeout";
+                                    return;
+                                }
 
-                XmlDataDocument xmldoc = new XmlDataDocument();
-                xmldoc.LoadXml(capab);
-                XmlNodeList xmlnodes = xmldoc.GetElementsByTagName("Name");
-                wmsLayers.Items.Clear();
-                foreach (XmlNode n in xmlnodes)
-                    if (n.ParentNode.Name == "Layer")
-                        wmsLayers.Items.Add(n.InnerText);
-                if (wmsLayers.Items.Count > 0)
-                    wmsLayers.SelectedIndex = 0;
+                                we.Result = "Http Error " + errorNum;
+                            }
+                        }
+                        we.Result = "Server Error";
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        we.Result = "Server Error";
+                        return;
+                    }
+
+                    XmlDataDocument xmldoc = new XmlDataDocument();
+                    xmldoc.LoadXml(capab);
+                    xmlnodes = xmldoc.GetElementsByTagName("Name");
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
+                {
+                    wmsLayers.Items.Clear();
+                    if (xmlnodes != null)
+                    {
+                        foreach (XmlNode n in xmlnodes)
+                            if (n.ParentNode.Name == "Layer")
+                                wmsLayers.Items.Add(n.InnerText);
+                        if (wmsLayers.Items.Count > 0)
+                            wmsLayers.SelectedIndex = 0;
+                        toolBuilder.setError("");
+                    }
+                    else
+                        toolBuilder.setError((string)we.Result);
+
+                    progressLabel.Text = "";
+                    progressBar.Style = ProgressBarStyle.Continuous;
+                };
+                bw.RunWorkerAsync();
             };
 
             loadButton.Click += (o, e2) =>
             {
+
                 var d = CultureInfo.InvariantCulture;
                 var b = ScreenManager.RealWindowsRect;
                 var sb = ScreenManager.MapRealToScreen(b);
@@ -845,25 +894,74 @@ namespace SGIS
 
                 var url = server.Text + "?" + layerString + par + srs + bbox;
                 Console.WriteLine(url);
-                Photo p;
-
-                try
+                Photo p = null;
+                
+                progressLabel.Text = "Loading map";
+                progressBar.Style = ProgressBarStyle.Marquee;
+                
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.DoWork += (object wsender, DoWorkEventArgs we) =>
                 {
-                    var request = System.Net.WebRequest.Create(url);
-                    using (var response = request.GetResponse())
-                    using (var stream = response.GetResponseStream())
+                    try
                     {
-                        p = new Photo(Bitmap.FromStream(stream), b);
+                        var request = System.Net.WebRequest.Create(url);
+                        Console.WriteLine("Start");
+                        using (var response = request.GetResponse())
+                        {
+                            Console.WriteLine("response");
+                            using (var stream = response.GetResponseStream())
+                            {
+                                Console.WriteLine("responseStream");
+                                p = new Photo(Bitmap.FromStream(stream), b);
+                                Console.WriteLine("bitmap");
+                            }
+                        }
                     }
-                } catch (Exception ex)
+                    catch (WebException ex)
+                    {
+                        p = null;
+                        Console.WriteLine(ex.Message);
+                        if (ex.Status == WebExceptionStatus.ProtocolError)
+                        {
+                            var response = ex.Response as HttpWebResponse;
+                            if (response != null)
+                            {
+                                int errorNum = (int)response.StatusCode;
+                                if(errorNum == 504)
+                                {
+                                    we.Result = "Server Timeout";
+                                    return;
+                                }
+
+                                we.Result = "Http Error " + errorNum;
+                            }
+                        }
+                        we.Result = "Server Error";
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        p = null;
+                        Console.WriteLine(ex.Message);
+                        we.Result = "Server Error";
+                        return;
+                    }
+                };
+                bw.RunWorkerCompleted += (object wsender, RunWorkerCompletedEventArgs we) =>
                 {
-                    toolBuilder.setError("Server error");
-                    Console.WriteLine(ex.Message);
-                    return;
-                }
-                toolBuilder.setError("");
-                photos.Add(p);
-                redraw();
+                    if (p != null)
+                    {
+                        photos.Add(p);
+                        redraw();
+                        toolBuilder.setError("");
+                    }
+                    else
+                        toolBuilder.setError((string) we.Result);
+
+                    progressLabel.Text = "";
+                    progressBar.Style = ProgressBarStyle.Continuous;
+                };
+                bw.RunWorkerAsync();
             };
 
             clearButton.Click += (o, e2) => {

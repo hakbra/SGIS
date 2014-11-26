@@ -18,7 +18,7 @@ namespace SGIS
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toolBuilder.addHeader("Spatial Ref. Sys.");
+            toolBuilder.addHeader("Spatial Ref. Sys.", false);
             Label current = toolBuilder.addLabel("Current SRS:");
             Label currentSrs = toolBuilder.addLabel("");
             Label setNew = toolBuilder.addLabel("Set new SRS:");

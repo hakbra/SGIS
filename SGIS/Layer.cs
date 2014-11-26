@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 
 namespace SGIS
 {
-    public struct Style
+    public class Style
     {
         public System.Drawing.Pen pen;
         public System.Drawing.SolidBrush brush;
@@ -21,6 +21,11 @@ namespace SGIS
             pen = new System.Drawing.Pen(System.Drawing.Color.DarkCyan),
             brush = new System.Drawing.SolidBrush(System.Drawing.Color.Cyan)
         };
+        public Style()
+        {
+            pen = new System.Drawing.Pen(System.Drawing.Color.Black);
+            brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray);
+        }
     }
     public enum ShapeType
     {
@@ -59,11 +64,7 @@ namespace SGIS
             Selected = new List<Feature>();
             shapetype = ShapeType.EMPTY;
 
-            Style = new Style()
-            {
-                pen = new System.Drawing.Pen(System.Drawing.Color.Black),
-                brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray)
-            };
+            Style = new Style();
         }
 
         public ShapeType convert(string s)

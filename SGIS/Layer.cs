@@ -12,10 +12,13 @@ using System.Runtime.CompilerServices;
 
 namespace SGIS
 {
+    // Class with properties for rendering
     public class Style
     {
         public System.Drawing.Pen pen;
         public System.Drawing.SolidBrush brush;
+
+        // style for selected objects
         public static Style Selected = new Style()
         {
             pen = new System.Drawing.Pen(System.Drawing.Color.DarkCyan),
@@ -27,6 +30,8 @@ namespace SGIS
             brush = new System.Drawing.SolidBrush(System.Drawing.Color.Gray);
         }
     }
+
+    // enum for supported layer types
     public enum ShapeType
     {
         EMPTY,
@@ -35,19 +40,42 @@ namespace SGIS
         POLYGON,
         UNKNOWN
     }
+
+    // class representing one layer with many feature and one style
     public class Layer : INotifyPropertyChanged
     {
+        // event fired when name is changed
         public event PropertyChangedEventHandler PropertyChanged;
+
+        // highest feature id in layer, for assigening new id's
         private int maxid = 1;
+
+        // list of features for O(1) access based on id
         public Dictionary<int, Feature> Features {get;private set;}
+
+        // list of selected features
         public List<Feature> Selected { get; set; }
+
+        // common style for all features in layer
         public Style Style;
+
+        // boolean determining if layer is drawn on map or not
         public bool Visible {get;set;}
+
         public ShapeType shapetype { get; private set; }
+
+        // boundingbox containing all features in layer
         public Envelope Boundingbox { get; set; }
+
+        // datatable containg attributes for all features
         public DataTable DataTable { get; set; }
+
+        // quadtree for fast spatial selection on features
         public QuadTree QuadTree = null;
+
+        // curret projection of layer
         public Proj4CSharp.IProjection Projection { get; set; }
+
         private string name;
         public string Name
         {
@@ -67,6 +95,7 @@ namespace SGIS
             Style = new Style();
         }
 
+        // Converts textual representation of shape type to ShapeType
         public ShapeType convert(string s)
         {
             switch (s)
@@ -118,13 +147,22 @@ namespace SGIS
             }
             return name;
         }
+
+        // adds feature to layer
         public int addFeature(Feature s)
         {
+            // checks for correct shapetype
+            // a layer may only contain shapes of one type
             if (shapetype == ShapeType.EMPTY)
+            {
                 shapetype = convert(s.Geometry.GeometryType);
+                if (shapetype == ShapeType.POINT) // default to black color for points
+                    Style.brush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
+            }
             else if (shapetype != convert(s.Geometry.GeometryType))
                 throw new Exception("Wrong shapetype in layer " + name);
 
+            // assigns id to feature
             if (s.ID > maxid)
                 maxid = s.ID + 1;
             if (s.ID == -1)
@@ -135,13 +173,18 @@ namespace SGIS
             return s.ID;
         }
 
-        public void delFeature(Feature f)
+        // delete feature to layer
+        public void delFeature(Feature s)
         {
-            Features.Remove(f.ID);
-            if (f.Parent != null)
-                f.Parent.remove(f);
+            if (s.Selected)
+                Selected.Remove(s);
+            if (s.Parent != null)
+                s.Parent.remove(s);
+            Features.Remove(s.ID);
         }
 
+        // returns closest feature to real-world coordinate
+        // return null if no features within limit
         public Feature getClosest(Point p, double limit)
         {
             GeometricShapeFactory gsf = new GeometricShapeFactory();
@@ -163,6 +206,7 @@ namespace SGIS
             return minf;
         }
 
+        // deselects all selected features
         public void clearSelected()
         {
             foreach (Feature f in Selected)
@@ -170,6 +214,7 @@ namespace SGIS
             Selected.Clear();
         }
 
+        // return list of features within or intersecting with geometry
         public List<Feature> getWithin(IGeometry rect)
         {
             if (QuadTree != null)
@@ -182,6 +227,8 @@ namespace SGIS
             }
             return ret;
         }
+
+        // returns attributes for feature in layer
         public DataRow getRow(Feature f)
         {
             if (DataTable == null)
@@ -189,6 +236,7 @@ namespace SGIS
             return DataTable.Rows[f.ID - 1];
         }
 
+        // fires PorpertyChanged event
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
             if (PropertyChanged != null)

@@ -17,10 +17,13 @@ namespace SGIS
 
         private ContextMenuStrip layerListContextMenu = new ContextMenuStrip();
 
+        // populates drop down when right click in layer list occures
         private void layerListContextMenu_Opening(object sender, CancelEventArgs e)
         {
             e.Cancel = false;
             Layer l = (Layer)layerList.SelectedItem;
+
+            // creates colored quare representing the layers style
             Bitmap colorImg = new Bitmap(20, 20);
             var graphics = Graphics.FromImage(colorImg);
             lock (l)
@@ -30,21 +33,27 @@ namespace SGIS
             }
 
             layerListContextMenu.Items.Clear();
+            // move layer up
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Up", null, (o, i) =>
             {
                 upButton_Click(o, i);
             }));
+            // move layer down
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Down", null, (o, i) =>
             {
                 downButton_Click(o, i);
             }));
             layerListContextMenu.Items.Add("-");
+            // hide layer
             layerListContextMenu.Items.Add(new ToolStripMenuItem(l.Visible ? "Hide" : "Show", null, (o, i) => { l.Visible = !l.Visible; redraw(); }));
+            // zoom to layer extent
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Zoom", null, (o, i) => { ScreenManager.RealRect.Set(l.Boundingbox); ScreenManager.Calculate(); redraw(); }));
+            // change layer style
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Style", colorImg, (o, i) =>
             {
                 toolBuilder.addHeader("Style layer");
 
+                // button for selecting fill color
                 Label fcolorLabel = toolBuilder.addLabel("Fill color:");
                 Button fcolor = toolBuilder.addButton("");
                 fcolor.Click += (o2, e2) =>
@@ -63,6 +72,7 @@ namespace SGIS
                     }
                 };
 
+                // button for selecting line color
                 Label lcolorLabel = toolBuilder.addLabel("Line color:");
                 Button lcolor = toolBuilder.addButton("");
                 lcolor.Click += (o2, e2) =>
@@ -80,6 +90,7 @@ namespace SGIS
                     }
                 };
 
+                // textbox for changing layer opacity
                 TextBox alphaText = toolBuilder.addTextboxWithCaption("Opacity 1-255:");
                 alphaText.TextChanged += (o2, e2) =>
                 {
@@ -97,6 +108,7 @@ namespace SGIS
                     }
                 };
 
+                // textbox for changing linewidth or pointsize
                 Label widthLabel = toolBuilder.addLabel("");
                 TextBox widthText = toolBuilder.addTextbox("");
                 widthText.TextChanged += (o2, e2) =>
@@ -117,6 +129,7 @@ namespace SGIS
                     }
                 };
 
+                // function called when selected layer is changed
                 toolBuilder.resetAction = (Layer il) =>
                 {
                     if (l != null)
@@ -143,6 +156,7 @@ namespace SGIS
                 };
                 toolBuilder.reset();
             }));
+            // rename layer
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Rename", null, (o, i) =>
             {
                 toolBuilder.addHeader("Rename layer");
@@ -159,6 +173,7 @@ namespace SGIS
                 });
                 toolBuilder.reset();
             }));
+            // delete layer
             layerListContextMenu.Items.Add(new ToolStripMenuItem("Delete", null, (o, i) =>
             {
                 delButton_Click(o, i);
@@ -170,6 +185,7 @@ namespace SGIS
             return layerList;
         }
 
+        // function called on mouse click in layerlist
         private void layerList_MouseDown(object sender, MouseEventArgs e)
         {
 
@@ -194,6 +210,7 @@ namespace SGIS
             SelectionChanged();
         }
 
+        // function for setting correct amount of selected objects in statusbar
         private void selectionChangedHandler()
         {
             Layer l = (Layer)(layerList.SelectedItem);

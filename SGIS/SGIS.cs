@@ -18,26 +18,46 @@ using System.Windows.Forms;
 
 namespace SGIS
 {
+    // main class of SGIS application. Singleton with instance in App member.
     public partial class SGIS : Form
     {
+        // Static instance of application
         public static SGIS App { get; private set; }
+
+        // List of layers
         public BindingList<Layer> Layers {get;private set;}
+
+        // Screen manager for calculating real-world and screen coordinates
         public ScreenManager ScreenManager {get;private set;}
+
+        // current projection in use
         public IProjection SRS { get; private set; }
+
+        // temporary storage of drawn map
         private Bitmap map;
+
+        // bounding box of stored map
         private Envelope mapRect;
+
+        // value deciding if map is to be redrawn, or stored map simply moved and scaled
         private bool mapDirty;
+
+        // list of loaded wms-maps
         private List<Photo> photos;
+
+        // backgroundWorker for rendering refreshed map
         private BackgroundWorker bw = new BackgroundWorker();
 
         public SGIS()
         {
             InitializeComponent();
+            // maximise window on startup
             this.WindowState = FormWindowState.Maximized;
             photos = new List<Photo>();
             Layers = new BindingList<Layer>();
             ScreenManager = new ScreenManager();
-            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32633"); // UTM 32N
+            // initialise projectiond to UTM 33N
+            SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32633"); // UTM 33N
             SelectionChanged += selectionChangedHandler;
         }
 
@@ -72,45 +92,59 @@ namespace SGIS
             toolBuilder = new ToolBuilder(toolPanel);
         }
 
+        // draws map
         private void SGIS_Paint(object sender, PaintEventArgs e)
         {
+            // if map is to be cmpletely redrawn
             if (mapDirty)
             {
                 mapDirty = false;
+                // create temporary map and bounding box
                 Bitmap mapTemp = new Bitmap(mapWindow.Width, mapWindow.Height);
                 var mapRectTemp = ScreenManager.MapScreenToReal(ScreenManager.WindowsRect);
                 Layer selectedLayer = (Layer)layerList.SelectedItem;
                 OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
                 var boundingGeometry = fact.ToGeometry(mapRectTemp);
+                // create new render instance
                 Render render = new Render(ScreenManager.Scale, ScreenManager.Offset);
 
+                // if we are already rendering a new map
                 if (bw.IsBusy)
                 {
+                    // cancel previous rendering
                     bw.CancelAsync();
                     while(bw.IsBusy)
                         Application.DoEvents();
                 }
                 bw = new BackgroundWorker();
                 bw.WorkerSupportsCancellation = true;
+                // start new rendering in other thread
+                // this avoids making the application unresponsive
                 bw.DoWork += (obj, args) =>
                 {
                     var mapGraphics = Graphics.FromImage(mapTemp);
 
+                    // draw wms-maps
                     foreach(Photo p in photos)
                     {
                         if (p.Geometry.Intersects(boundingGeometry))
                             p.Draw(mapGraphics);
                     }
 
+                    // draw layers
                     foreach (Layer l in Layers.Reverse())
                     {
+                        // skip layer if not visible
                         if (!l.Visible)
                             continue;
+                        // get all visible features in layer
                         var visibleFeatures = l.getWithin(boundingGeometry);
                         lock (l)
                         {
+                            // draw feature
                             foreach (Feature s in visibleFeatures)
                             {
+                                // abort if this rendering has been cancelled
                                 if (bw.CancellationPending)
                                 {
                                     args.Cancel = true;
@@ -121,6 +155,7 @@ namespace SGIS
                                 else if (l == selectedLayer)
                                     render.Draw(s.Geometry, mapGraphics, Style.Selected);
                             }
+                            // render quad tree, only for debug purposes
                             //if (l.QuadTree != null)
                             //    l.QuadTree.render(e.Graphics);
                         }
@@ -128,10 +163,13 @@ namespace SGIS
                 };
                 bw.RunWorkerCompleted += (obj, args) =>
                 {
+                    // if rendering was not cancelled
                     if (!args.Cancelled)
                     {
+                        // copy temporary map to stored map
                         map = mapTemp;
                         mapRect = mapRectTemp;
+                        // draw new map
                         redrawDirty();
                     }
                 };
@@ -140,6 +178,7 @@ namespace SGIS
 
             try
             {
+                // draw map stored in member map
                 var screenRect = ScreenManager.MapRealToScreen(mapRect);
                 e.Graphics.DrawImage(map, screenRect);
             }
@@ -148,9 +187,11 @@ namespace SGIS
                 // Will happen after changing SRS
             }
 
-
+            // if current srs is projected, draw scale in lower left corner
             if (!SRS.IsLatLong)
                 renderScale(e.Graphics);
+
+            // calls mouse render function, will only draw select-rectangle when select is being used
             mouse.render(e.Graphics);
         }
 
@@ -220,6 +261,7 @@ namespace SGIS
             mapWindow.Refresh();
         }
 
+        // returns wkt-representation of current srs
         public string getSrsName()
         {
             OSGeo.OSR.SpatialReference oSRS = new OSGeo.OSR.SpatialReference("");

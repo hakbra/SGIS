@@ -16,22 +16,30 @@ namespace SGIS
             Application.Exit();
         }
 
+        // function called when opening SRS-options
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             toolBuilder.addHeader("Spatial Ref. Sys.", false);
+
+            // label with current SRS
             Label current = toolBuilder.addLabel("Current SRS:");
             Label currentSrs = toolBuilder.addLabel("");
+
             Label setNew = toolBuilder.addLabel("Set new SRS:");
             setNew.Height = current.Height = (int)(current.Height * 0.7);
 
+            // combobox for selecting SRS input type. only epsg currently supportes
             ComboBox type = new ComboBox();
             type.Items.Add("EPSG");
             type.SelectedIndex = 0;
             type.DropDownStyle = ComboBoxStyle.DropDownList;
             toolBuilder.addControl(type);
 
+            // textbox for inputting epsg value
             TextBox value = toolBuilder.addTextbox("");
             toolBuilder.addErrorLabel();
+
+            // button for setting currently input SRS
             Button setButton = toolBuilder.addButton("Set");
 
             currentSrs.Text = getSrsName();

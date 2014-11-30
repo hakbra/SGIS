@@ -14,6 +14,7 @@ namespace SGIS
 
     class DbfReader
     {
+        // Header structure
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         private struct DBFHeader
         {
@@ -34,8 +35,7 @@ namespace SGIS
             public Int16 reserved4;
         }
 
-        // This is the field descriptor structure. 
-        // There will be one of these for each column in the table.
+        // Field descriptor structure
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         private struct FieldDescriptor
         {
@@ -61,15 +61,14 @@ namespace SGIS
             BinaryReader br = new BinaryReader(File.OpenRead(filename));
             byte[] buffer = br.ReadBytes(Marshal.SizeOf(typeof(DBFHeader)));
 
-            // Marshall the header into a DBFHeader structure
+            // Convert buffer to header struct
             GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             DBFHeader header = (DBFHeader)Marshal.PtrToStructure(
                                 handle.AddrOfPinnedObject(), typeof(DBFHeader));
             handle.Free();
 
 
-            // Read in all the field descriptors. 
-            // Per the spec, 13 (0D) marks the end of the field descriptors
+            // Read field descriptors 
             ArrayList fields = new ArrayList();
             while ((13 != br.PeekChar()))
             {
@@ -82,6 +81,7 @@ namespace SGIS
 
             char endchar = br.ReadChar();
 
+            // create field types
             DataColumn pk = new DataColumn("sgis_id", typeof(Int32));
             dt.Columns.Add(pk);
             dt.PrimaryKey = new DataColumn[]{pk};
@@ -114,12 +114,10 @@ namespace SGIS
                 dt.Columns.Add(col);
             }
 
-            // Read in all the records
+            // Read all records
             for (int counter = 0; counter <= header.numRecords - 1; counter++)
             {
-                // First we'll read the entire record into a buffer and then read each 
-                // field from the buffer. This helps account for any extra space at the 
-                // end of each record and probably performs better.
+                // Read into buffer
                 buffer = br.ReadBytes(header.recordLen);
                 BinaryReader recReader = new BinaryReader(new MemoryStream(buffer));
 
@@ -151,7 +149,7 @@ namespace SGIS
                             }
                             catch {}
                             break;
-                        case 'N':
+                        case 'N': // string
                             string strnum = Encoding.ASCII.GetString(recReader.ReadBytes(fieldLen));
                             try
                             {
@@ -171,7 +169,7 @@ namespace SGIS
                                 Console.WriteLine(error);
                             }
                             break;
-                        case 'F':
+                        case 'F': // float
                             string strfloat = Encoding.ASCII.GetString(recReader.ReadBytes(fieldLen));
                             try
                             {
@@ -184,11 +182,11 @@ namespace SGIS
                                 Console.WriteLine(error);
                             }
                             break;
-                        case 'C':
+                        case 'C': // char
                             string data = Encoding.ASCII.GetString(recReader.ReadBytes(fieldLen));
                             row[field.fieldName] = data;
                             break;
-                        case 'L':
+                        case 'L': // boolean
                             char boolchar = recReader.ReadChar();
                             row[field.fieldName] = ("1tTyY".IndexOf(boolchar) > -1) ? true : false;
                             break;

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SGIS
 {
+    // class representing one background map loaded from wms-server
     class Photo
     {
         public Photo(System.Drawing.Image i, ScreenManager.SGISEnvelope b)
@@ -18,10 +19,17 @@ namespace SGIS
             OgcCompliantGeometryFactory fact = new OgcCompliantGeometryFactory();
             Geometry = fact.ToGeometry(b);
         }
+
+        // real world bounding coordinates of map
         public ScreenManager.SGISEnvelope Bounds;
+
+        // bitmap representation of map
         public System.Drawing.Image Pic;
+
+        // geometry representing map, used for intersection tests
         public GeoAPI.Geometries.IGeometry Geometry;
 
+        // draws map to graphics
         public void Draw(System.Drawing.Graphics mapGraphics)
         {
            Rectangle screenRect = SGIS.App.ScreenManager.MapRealToScreen(Bounds);

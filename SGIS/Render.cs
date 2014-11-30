@@ -9,17 +9,20 @@ using System.Threading.Tasks;
 using NTSPoint = NetTopologySuite.Geometries.Point;
 namespace SGIS
 {
+    // class for rendering map given scale and offset
     class Render
     {
         NTSPoint offset;
         NTSPoint scale;
 
+        // constructor clones objects so they are not changed in other threads
         public Render(NTSPoint s, NTSPoint o)
         {
             offset = (NTSPoint) o.Clone();
             scale = (NTSPoint)s.Clone();
         }
 
+        // transforms real world point to screen point
         public NTSPoint ScaleAndOffSet(NTSPoint pt)
         {
             NTSPoint p = new NTSPoint(0, 0);
@@ -30,12 +33,15 @@ namespace SGIS
             return p;
         }
 
+        // transforms real world point to screen point
         public NTSPoint MapRealToScreen(NTSPoint pt)
         {
             return new NTSPoint(((pt.X - offset.X) * scale.X),
                                 ((pt.Y - offset.Y) * scale.Y));
 
         }
+
+        // transforms real world rect to screen rect
         public System.Drawing.Rectangle MapRealToScreen(Envelope e)
         {
             var min = MapRealToScreen(new NTSPoint(e.MinX, e.MinY));
@@ -43,12 +49,14 @@ namespace SGIS
             return new System.Drawing.Rectangle((int)min.X, (int)max.Y, (int)(max.X - min.X), (int)(min.Y - max.Y));
         }
 
+        // drawm wms-map
         public void Draw(Photo p, Graphics gr)
         {
             Rectangle screenRect = MapRealToScreen(p.Bounds);
             gr.DrawImage(p.Pic, screenRect);
         }
 
+        // draws arbitrary geometry
         public  void Draw(IGeometry ge, Graphics gr, Style c) {
             if (ge.GeometryType == "Polygon")
                 drawPolygon((Polygon)ge, gr, c);
@@ -79,6 +87,8 @@ namespace SGIS
                 gr.DrawLine(c.pen, (int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
             }
         }
+
+        // creates line path for polygon
         private  System.Drawing.Drawing2D.GraphicsPath CreatePath(ILineString poly)
         {
             System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath();
@@ -92,6 +102,8 @@ namespace SGIS
             }
             return gp;
         }
+
+        // draws polygon and then path around polygon
         private  void drawPolygon(Polygon ge, Graphics gr, Style c)
         {
 

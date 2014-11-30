@@ -12,6 +12,7 @@ using NTSPoint = NetTopologySuite.Geometries.Point;
 
 namespace SGIS
 {
+    // abstract class for handling mouse input
     public abstract class MouseTactic
     {
         protected System.Drawing.Point oldMouse;
@@ -51,10 +52,12 @@ namespace SGIS
         {
             oldMouse = mouse;
             mouse = SGIS.App.MousePosition;
+            // updates coordinates on bottom line
             updateLabel();
         }
         public virtual void MouseWheel(System.Windows.Forms.MouseEventArgs e)
         {
+            // saves previous real world mouse position
             var oldGeoPos = SGIS.App.ScreenManager.MapScreenToReal(mouse);
             double scale = 1.3;
             if (e.Delta > 0)
@@ -66,6 +69,8 @@ namespace SGIS
                 SGIS.App.ScreenManager.RealRect.Grow(scale);
             SGIS.App.ScreenManager.Calculate();
             var newGeoPos = SGIS.App.ScreenManager.MapScreenToReal(mouse);
+            // ensures new real world coordinates is equal to the previous
+            // this gives intuitive zooming
             SGIS.App.ScreenManager.ScrollReal(new NTSPoint(oldGeoPos.X - newGeoPos.X, oldGeoPos.Y - newGeoPos.Y));
             SGIS.App.ScreenManager.Calculate();
             SGIS.App.redraw();
@@ -81,6 +86,8 @@ namespace SGIS
         }
     }
 
+    // mouse tactic used for moving the map
+    // mouseUp and MouseMove is overridden, but calls base functions
     public class MoveMouseTactic : MouseTactic
     {
         public override void MouseMove(System.Windows.Forms.MouseEventArgs e)
@@ -106,6 +113,8 @@ namespace SGIS
         }
     }
 
+    // mouse tactic for selecting features
+    // render, mouseUp and MouseMove is overridden, but calls base functions
     public class SelectMouseTactic : MouseTactic
     {
         public override void MouseMove(System.Windows.Forms.MouseEventArgs e)
@@ -176,6 +185,8 @@ namespace SGIS
         }
     }
 
+    // mouse tactic used for getting info of features
+    // mouseUp is overridden, but calls base function
     public class InfoMouseTactic : MouseTactic
     {
         public override void MouseUp(System.Windows.Forms.MouseEventArgs e)

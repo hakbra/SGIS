@@ -7,10 +7,12 @@ using System.Text;
 namespace SGIS
 {
     /// <summary>
+    /// Class originally written for GeoView 1.0
     /// Class which can be used to help calculate drawing offsets and scales. 
     /// </summary>
     public class ScreenManager
     {
+        // Extension of NTS-envelope for use in SGIS
         public class SGISEnvelope : Envelope
         {
             public SGISEnvelope(double x1, double x2, double y1, double y2) : base(x1, x2, y1, y2) { }

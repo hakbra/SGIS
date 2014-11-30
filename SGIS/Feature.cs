@@ -23,9 +23,15 @@ namespace SGIS
             ID = -1;
             Selected = false;
         }
+
+        // NetToplogySuite geometry
         public IGeometry Geometry;
+
+        // internal id in layer
         public int ID;
-        public bool Selected;
+
+        // containing quadtree
         public QuadTree Parent;
+        public bool Selected;
     }
 }

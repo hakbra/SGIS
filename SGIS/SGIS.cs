@@ -59,6 +59,8 @@ namespace SGIS
             // initialise projectiond to UTM 33N
             SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32633"); // UTM 33N
             SelectionChanged += selectionChangedHandler;
+            AcceptButton = null;
+            CancelButton = null;
         }
 
         private void SGIS_Load(object sender, EventArgs e)

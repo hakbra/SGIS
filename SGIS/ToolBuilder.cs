@@ -17,6 +17,7 @@ namespace SGIS
         private Label currentLabel;
         public bool autoClose = true;
         public Action<Layer> resetAction;
+        private Button cancelButton = new Button();
 
         // constructor sets target panel and adds reset-function to events
         public ToolBuilder(TableLayoutPanel p)
@@ -25,10 +26,15 @@ namespace SGIS
             SGIS.App.Layers.ListChanged += reset;
             SGIS.App.SelectionChanged += reset;
             SGIS.App.getLayerList().SelectedIndexChanged += reset;
+            cancelButton.Click += (o, e) =>
+            {
+                clear();
+            };
         }
 
         // function called when resetting interface, e.g. when selected layer is changed
-        public void reset(object sender, EventArgs e){
+        public void reset(object sender, EventArgs e)
+        {
             // get selected layer
             Layer layer = (Layer)SGIS.App.getLayerList().SelectedItem;
             // if current tool has a label showing currently selected layer
@@ -62,6 +68,8 @@ namespace SGIS
             layerSelects.Clear();
             autoClose = true;
             resetAction = null;
+            SGIS.App.AcceptButton = null;
+            SGIS.App.CancelButton = cancelButton;
         }
         // convenience function for adding header with current layer label
         public void addHeader(string title)
@@ -98,9 +106,9 @@ namespace SGIS
         {
             TextBox textbox = new TextBox();
             textbox.Text = value;
+            addControl(textbox);
             textbox.Focus();
             textbox.Select(textbox.Text.Length, 0);
-            addControl(textbox);
 
             return textbox;
         }
@@ -114,16 +122,7 @@ namespace SGIS
         {
             // label for textbox caption
             addLabel(caption);
-
-            // textbox
-            TextBox textbox = new TextBox();
-            textbox.Text = value;
-            textbox.Focus();
-            textbox.Select(textbox.Text.Length, 0);
-
-            addControl(textbox);
-
-            return textbox;
+            return addTextbox(value);
         }
 
         // convenience function for adding button with simple error checking, and potentially an action to be executed
@@ -132,6 +131,7 @@ namespace SGIS
         {
             Button button = new Button();
             button.Text = caption;
+            SGIS.App.AcceptButton = button;
 
             addControl(button);
 

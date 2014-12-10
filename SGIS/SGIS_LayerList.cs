@@ -171,6 +171,13 @@ namespace SGIS
                     }
                     currentLayer.Name = name.Text;
                 });
+                toolBuilder.resetAction = (Layer il) =>
+                {
+                    if (l != null)
+                    {
+                        name.Text = l.Name;
+                    }
+                };
                 toolBuilder.reset();
             }));
             // delete layer

@@ -93,14 +93,15 @@ namespace SGIS
             toolBuilder.addHeader("Delete layer");
             toolBuilder.addLabel("Are you sure?");
             // button for clicking i am sure
-            toolBuilder.addButton("Yes", (Layer il) =>
+            Button yesButton = toolBuilder.addButton("Yes", (Layer il) =>
             {
                 SGIS.App.Layers.Remove(il);
                 redraw();
             });
             // button for i am not sure
-            toolBuilder.addButton("No", (il) => { });
+            Button noButton = toolBuilder.addButton("No", (il) => { });
             // function called when another layer is selected
+            AcceptButton = yesButton;
             toolBuilder.resetAction = (Layer il) =>
             {
                 toolBuilder.clear();

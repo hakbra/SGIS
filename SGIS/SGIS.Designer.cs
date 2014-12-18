@@ -584,6 +584,7 @@
             this.measureButton.Text = "Measure";
             this.measureButton.UseVisualStyleBackColor = true;
             this.measureButton.Click += new System.EventHandler(this.measureButton_Click);
+            
             // 
             // bufferButton
             // 

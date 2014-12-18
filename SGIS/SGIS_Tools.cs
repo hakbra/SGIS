@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -70,7 +71,8 @@ namespace SGIS
                         ScreenManager.RealRect.Set(l.Boundingbox);
                     }
 
-                    layerList.SelectedIndex = 0;
+                    if (layerList.Items.Count > 0)
+                        layerList.SelectedIndex = 0;
                     ScreenManager.Calculate();
                     redraw();
                 };

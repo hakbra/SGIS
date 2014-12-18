@@ -25,8 +25,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>SGIS</ProductName>
     <PublisherName>Håkon Bråten</PublisherName>
-    <ApplicationRevision>5</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -43,7 +43,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -191,6 +191,40 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icon\icon2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="gdal_fw.dll" />
+    <Content Include="gdal_wrap.dll" />
+    <Content Include="geos_fw.dll" />
+    <Content Include="geotiff_fw.dll" />
+    <Content Include="hdf5dll.dll" />
+    <Content Include="hdf_fw.dll" />
+    <Content Include="jpeg12_osgeo.dll" />
+    <Content Include="jpeg_osgeo.dll" />
+    <Content Include="libcurl.dll" />
+    <Content Include="libeay32.dll" />
+    <Content Include="libexpat.dll" />
+    <Content Include="libmysql.dll" />
+    <Content Include="libpq.dll" />
+    <Content Include="libtiff_fw.dll" />
+    <Content Include="lti_dsdk_dll.dll" />
+    <Content Include="mfhdf_fw.dll" />
+    <Content Include="msvcp71.dll" />
+    <Content Include="msvcr71.dll" />
+    <Content Include="NCScnet_fw.dll" />
+    <Content Include="NCSEcw_fw.dll" />
+    <Content Include="NCSUtil_fw.dll" />
+    <Content Include="netcdf.dll" />
+    <Content Include="ogdi_32b1.dll" />
+    <Content Include="osr_wrap.dll" />
+    <Content Include="proj.dll" />
+    <Content Include="sqlite3.dll" />
+    <Content Include="ssleay32.dll" />
+    <Content Include="szlibdll.dll" />
+    <Content Include="xerces-c_2_7.dll" />
+    <Content Include="zlib1.dll" />
+    <Content Include="zlib_osgeo.dll" />
+    <Content Include="IEShims.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

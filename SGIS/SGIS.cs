@@ -28,7 +28,7 @@ namespace SGIS
         public BindingList<Layer> Layers {get;private set;}
 
         // Screen manager for calculating real-world and screen coordinates
-        public ScreenManager ScreenManager {get;private set;}
+        public ScreenManager ScreenManager = new ScreenManager();
 
         // current projection in use
         public IProjection SRS { get; private set; }
@@ -45,6 +45,9 @@ namespace SGIS
         // list of loaded wms-maps
         private List<Photo> photos;
 
+        // background color of map
+        private Color mapBgColor;
+
         // backgroundWorker for rendering refreshed map
         private BackgroundWorker bw = new BackgroundWorker();
 
@@ -52,15 +55,16 @@ namespace SGIS
         {
             InitializeComponent();
             // maximise window on startup
-            this.WindowState = FormWindowState.Maximized;
+            ScreenManager = new ScreenManager();
             photos = new List<Photo>();
             Layers = new BindingList<Layer>();
-            ScreenManager = new ScreenManager();
             // initialise projectiond to UTM 33N
             SRS = Proj4CSharp.Proj4CSharp.ProjectionFactoryFromName("EPSG:32633"); // UTM 33N
             SelectionChanged += selectionChangedHandler;
+            mapBgColor = Color.White;
             AcceptButton = null;
             CancelButton = null;
+            this.WindowState = FormWindowState.Maximized;
         }
 
         private void SGIS_Load(object sender, EventArgs e)
@@ -182,6 +186,11 @@ namespace SGIS
             {
                 // draw map stored in member map
                 var screenRect = ScreenManager.MapRealToScreen(mapRect);
+
+                // draw background color
+                if (mapBgColor != Color.White)
+                    e.Graphics.Clear(mapBgColor);
+
                 e.Graphics.DrawImage(map, screenRect);
             }
             catch (Exception ex)
@@ -211,9 +220,9 @@ namespace SGIS
             }
 
             Pen p = new Pen(Color.Black);
-            System.Drawing.Point start = new System.Drawing.Point(20, this.Height-120);
-            System.Drawing.Point end = new System.Drawing.Point(120, this.Height-120);
-            System.Drawing.Point text = new System.Drawing.Point(30, this.Height-110);
+            System.Drawing.Point start = new System.Drawing.Point(20, this.Height-150);
+            System.Drawing.Point end = new System.Drawing.Point(120, this.Height-150);
+            System.Drawing.Point text = new System.Drawing.Point(30, this.Height-140);
             graphics.DrawLine(p, start, end);
 
             Font f = new Font(FontFamily.GenericMonospace, 10);

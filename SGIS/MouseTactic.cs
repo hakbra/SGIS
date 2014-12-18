@@ -128,6 +128,7 @@ namespace SGIS
         {
             base.MouseUp(e);
 
+            string timing = "";
             if (e.Button == MouseButtons.Left)
             {
                 Layer l = (Layer)SGIS.App.getLayerList().SelectedItem;
@@ -166,6 +167,7 @@ namespace SGIS
 
                 SGIS.App.fireSelectionChanged();
             }
+
             SGIS.App.redraw();
         }
 

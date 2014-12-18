@@ -165,6 +165,7 @@ namespace SGIS
                 // select newly made layer
                 layerList.SelectedItem = newl;
             });
+
             // change default new layer name when new layer is selected
             toolBuilder.resetAction = (Layer l) =>
             {

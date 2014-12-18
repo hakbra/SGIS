@@ -61,7 +61,7 @@ namespace SGIS
             {
                 // warning message if missing prj file
                 string msg = "No projection da found. Assuming " + SGIS.App.getSrsName();
-                MessageBox.Show(msg, "Missing spatial reference system", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(msg, "Missing spatial reference system: " + name, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             // try reading attribute file with same name

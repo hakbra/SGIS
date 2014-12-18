@@ -217,6 +217,11 @@ namespace SGIS
             panel.Controls.Add(c);
             c.Anchor = AnchorStyles.None;
             c.Width = (int)(panel.Width * 0.75);
+            if (c is Button)
+            {
+                Button b = c as Button;
+                b.Height = (int)(b.Height * 1.2);
+            }
         }
 
         // convenience function for setting the error text. Will also add toolTip for long error messages

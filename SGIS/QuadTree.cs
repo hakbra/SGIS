@@ -116,10 +116,12 @@ namespace SGIS
 
             // create list for returning features
             List<Feature> retfeatures = new List<Feature>();
+
             // recursively add features from children
             if (hasChildren)
                 foreach (QuadTree qt in children)
                     retfeatures.AddRange(qt.getWithin(rect));
+
             // check each feature in current node
             foreach (Feature f in features)
                 if (rect.Intersects(f.Geometry))

@@ -64,5 +64,11 @@ namespace SGIS
                 currentSrs.Text = getSrsName();
             };
         }
+
+        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mapBgColor = chooseColor(mapBgColor);
+            redraw();
+        }
     }
 }
